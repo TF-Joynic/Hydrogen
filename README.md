@@ -4,6 +4,6 @@
 
 ## Easy to use, Flexible, Powerfull and Convenient for Developers
 
->Author: TF-Joynic
+>Author: Terrance Fung
 
 >license: New BSD (3-clause)
