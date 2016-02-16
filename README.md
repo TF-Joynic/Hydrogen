@@ -7,5 +7,3 @@
 >Author: TF-Joynic
 
 >license: New BSD (3-clause)
-
-
