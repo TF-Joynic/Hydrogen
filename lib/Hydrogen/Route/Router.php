@@ -40,19 +40,21 @@ class Router
         $urlMatcher = new UrlMatcher();
         global $module, $ctrl, $act;
 
-        $urlMatcher->setUserRouteRule($this->_rules);
-        if (false === $matchResult = $urlMatcher->match()) {
+        if (!empty($this->_rules))
+            $urlMatcher->setUserRouteRule($this->_rules);
+
+        $request = new ServerRequest();
+        $response = new Response();
+        if (false === $matchResult = $urlMatcher->match($request, $response)) {
         	// match failed
         	throw new DispatchException('can not match url: '.$_SERVER['REQUEST_URI'].', review your typo!');
         }
 
         list($module, $ctrl, $act) = $matchResult;
-        $request = new ServerRequest();
+
         $request->setExtraParam('module', $module);
         $request->setExtraParam('ctrl', $ctrl);
         $request->setExtraParam('act', $act);
-
-        $response = new Response();
 
         // dispatch now
         $dispatcher = new Dispatcher($request, $response);

@@ -2,30 +2,24 @@
 
 namespace Hydrogen\Route\Rule;
 
+use Hydrogen\Http\Exception\InvalidArgumentException;
+
 class RuleFixed extends AbstractRule
 {
-    public function __construct($ruleStr, $context)
+    public function __construct($ruleStr, array $context)
     {
-        if (0 < strlen($ruleStr)) {
-            if (!is_array($context))
-                $context = array($context);
-
-            $this->_rule = array(
-                'str' => $ruleStr,
-                'context' => $context
-            );
+        if (0 == strlen($ruleStr)) {
+            throw new InvalidArgumentException('rule str must not be empty');
         }
+
+        $this->_ruleStr = $ruleStr;
+        $this->_ruleContext = $context;
     }
 
-    public function apply($uri)
+    public function apply($path)
     {
-        if (!is_array($this->_rule))
-            $this->_rule = array();
-
-        foreach ($this->_rule as $rule) {
-            if (1) {
-
-            }
+        if (!is_string($path) || 0 == strlen($path)) {
+            throw new InvalidArgumentException('path must be type string and can not be empty!');
         }
     }
 }

@@ -8,20 +8,15 @@ use Psr\Http\Message\UriInterface;
 
 class Uri implements UriInterface
 {
-    private $_scheme = '';
-    private $_host = '';
-    private $_port = '';
-    private $_path = '';
-    private $_query = '';
+    private $_scheme = null;
+    private $_host = null;
+    private $_port = null;
+    private $_path = null;
+    private $_query = null;
+    private $_fragment = null;
 
     public function __construct()
-    {
-        $this->_scheme = isset($_SERVER['REQUEST_SCHEME']) ? strtolower($_SERVER['REQUEST_SCHEME']) : '';
-        $this->_host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
-        $this->_port = isset($_SERVER['SERVER_PORT']) ? (int) $_SERVER['SERVER_PORT'] : 80;
-        $this->_path = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
-        $this->_query = isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '';
-    }
+    {}
 
     /**
      * Retrieve the scheme component of the URI.
@@ -39,6 +34,12 @@ class Uri implements UriInterface
      */
     public function getScheme()
     {
+        return null !== $this->_scheme ? $this->_scheme : $this->extractScheme();
+    }
+
+    private function extractScheme()
+    {
+        $this->_scheme = isset($_SERVER['REQUEST_SCHEME']) ? strtolower($_SERVER['REQUEST_SCHEME']) : '';
         return $this->_scheme;
     }
 
@@ -98,6 +99,12 @@ class Uri implements UriInterface
      */
     public function getHost()
     {
+        return null !== $this->_host ? $this->_host : $this->extractHost();
+    }
+
+    private function extractHost()
+    {
+        $this->_host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
         return $this->_host;
     }
 
@@ -118,6 +125,12 @@ class Uri implements UriInterface
      */
     public function getPort()
     {
+        return null !== $this->_port ? $this->_port : $this->extractPort();
+    }
+
+    private function extractPort()
+    {
+        $this->_port = isset($_SERVER['SERVER_PORT']) ? (int)$_SERVER['SERVER_PORT'] : 80;
         return $this->_port;
     }
 
@@ -148,6 +161,21 @@ class Uri implements UriInterface
      */
     public function getPath()
     {
+        return null !== $this->_path ? $this->_path : $this->extractPath();
+    }
+
+    private function extractPath()
+    {
+        if (isset($_SERVER['REQUEST_URI'])) {
+            if (false !== $path = strstr($_SERVER['REQUEST_URI'], '?', true)) {
+                $this->_path = $path;
+            } else {
+                $this->_path = $_SERVER['REQUEST_URI'];
+            }
+        } else {
+            $this->_path = '';
+        }
+
         return $this->_path;
     }
 
@@ -173,6 +201,19 @@ class Uri implements UriInterface
      */
     public function getQuery()
     {
+        return null !== $this->_query ? $this->_query : $this->extractQuery();
+    }
+
+    private function extractQuery()
+    {
+        if (isset($_SERVER['QUERY_STRING'])) {
+            $this->_query = $_SERVER['QUERY_STRING'];
+        } elseif (isset($_SERVER['REQUEST_URI'])) {
+            if (false !== $query = strstr($_SERVER['REQUEST_URI'], '?')) {
+                $this->_query = substr($query, 1);
+            }
+        }
+
         return $this->_query;
     }
 

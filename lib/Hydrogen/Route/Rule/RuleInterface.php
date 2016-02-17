@@ -4,5 +4,5 @@ namespace Hydrogen\Route\Rule;
 
 interface RuleInterface
 {
-    public function apply($rui);
+    public function apply($path);
 }

@@ -5,6 +5,7 @@ namespace Hydrogen\Route\UrlMatch;
 use Hydrogen\Http\Request\ServerRequest;
 use Hydrogen\Http\Response\Response;
 use Hydrogen\Application\Execute\Executor;
+use Hydrogen\Route\Rule\RuleInterface;
 
 class UrlMatcher extends AbstractUrlMatcher
 {
@@ -18,25 +19,7 @@ class UrlMatcher extends AbstractUrlMatcher
     private $_rules = array();
 
     public function __construct()
-    {
-//        $request =
-        $raw_request_uri = $_SERVER['REQUEST_URI'];
-        $query_string = $_SERVER['QUERY_STRING'];
-
-        $request_uri = $raw_request_uri;
-        if (false !== $sec_request_uri = strstr($raw_request_uri, '?', true)) {
-            $request_uri = $sec_request_uri;
-        }
-
-        if (false !== $sec_request_uri = strstr($request_uri, '#', true)) {
-            $request_uri = $sec_request_uri;
-        }
-
-        $this->_request_uri = $request_uri;
-        $this->_query_string = $query_string;
-        /*echo $this->_request_uri."<br />";
-        echo $this->_query_string."<br />";*/
-    }
+    {}
 
     public function setUserRouteRule($rules)
     {
@@ -46,19 +29,30 @@ class UrlMatcher extends AbstractUrlMatcher
     /**
      * match and extact module, ctrl and act
      *
+     * @param ServerRequest $request
+     * @param Response $response
      * @return array|bool
      */
-    public function match()
+    public function match(ServerRequest $request, Response $response)
     {
-        $request_uri = ltrim($this->_request_uri, '/');
-        $request_uri = preg_replace('/\/{2,}/', '/', $request_uri);
-        $request_uriArr = explode('/', $request_uri);
+        $sanitizedPath = ltrim(preg_replace('/\/{2,}/', '/', $request->getUri()->getPath()), '/');
+        $pathArr = explode('/', $sanitizedPath);
 
         $EXECUTOR = Executor::getInstance();
         $AVAILABLE_MODULES = $EXECUTOR->getAvailableModules();
         $DEFAULT_MODULE = $EXECUTOR->getDefaultModule();
 
-        foreach ($request_uriArr as $k => $segment) {
+        if ($this->_rules) {
+            foreach ($this->_rules as $routeRule) {
+                if ($routeRule instanceof RuleInterface) {
+                    if ($routeRule->apply($sanitizedPath)) {
+
+                    }
+                }
+            }
+        }
+
+        foreach ($pathArr as $k => $segment) {
             if (!$segment) {
                 break;
             }
