@@ -72,4 +72,14 @@ class Mysqli extends AbstractRelationalDb
     {
         // TODO: Implement delete() method.
     }
+
+    public function escapeStr($str)
+    {
+        // TODO: Implement escapeStr() method.
+    }
+
+    protected function _disconnect($dbname, $force_master)
+    {
+        // TODO: Implement _disconnect() method.
+    }
 }

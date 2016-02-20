@@ -1,6 +1,9 @@
 <?php
 
 use Hydrogen\Debug\Variable;
+use Hydrogen\Route\Router;
+use Hydrogen\Route\Rule\RuleFixed;
+use Hydrogen\Route\Rule\RuleParam;
 
 if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
 	echo '<strong>Hello, SAE!</strong>';
@@ -24,11 +27,13 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
 	$autoloader = Hydrogen\Load\Autoloader::getInstance();
 	$autoloader->attachCallback(
         array(
-            Hydrogen\Load\Autoloader::CALLBACK_NS2PATH
+            Hydrogen\Load\Autoloader::CALLBACK_NS2PATH,
+            Hydrogen\Load\Autoloader::CALLBACK_COMPOSER
         )
     );
 
 	$autoloader->attachNamespace('application', APPLICATION_PATH);
+	$autoloader->attachNamespace('Psr', LIB_PATH.'/Psr', true);
 
 	// include Framework constant
 	Hydrogen\Load\Loader::getInstance()
@@ -84,6 +89,28 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
 	exit;*/
     $EXECUTOR->setModuleDir(APPLICATION_PATH.'/module');
     $EXECUTOR->setAvailableModules(array('admin'));
+
+//    Hydrogen\Load\Loader::getInstance()->import(APPLICATION_PATH.'/config/route.php');
+
+
+
+    $router = Router::getInstance();
+
+    $router->addRule(new RuleFixed('/simple/master', array(
+        'module' => '',
+        'ctrl' => 'branch',
+        'act' => 'master'
+    )));
+
+    $router->addRule(new RuleParam('/simple/:id', array(
+        'ctrl' => 'branch',
+        'act' => 'master',
+        'param' => array(
+            'cd' => 1
+        )
+    )));
+
+//    var_dump($router->_rules);exit;
 
 	$application = new Hydrogen\Application\Application();
 	$application->run();

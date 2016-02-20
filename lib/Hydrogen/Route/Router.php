@@ -2,8 +2,10 @@
 
 namespace Hydrogen\Route;
 
+use Hydrogen\Debug\Variable;
 use Hydrogen\Http\Request\ServerRequest;
 use Hydrogen\Http\Response\Response;
+use Hydrogen\Load\Loader;
 use Hydrogen\Route\Rule\RuleInterface;
 use Hydrogen\Route\UrlMatch\UrlMatcher;
 use Hydrogen\Route\Exception\DispatchException;
@@ -13,7 +15,7 @@ class Router
 {
 	private static $_instance = null;
 
-    private $_rules = array();
+    public $_rules = array();
 
 	private function __construct()
 	{}
@@ -33,6 +35,7 @@ class Router
     public function addRule(RuleInterface $routeRule)
     {
         $this->_rules[] = $routeRule;
+        return self::$_instance;
     }
 
 	public function route()
@@ -49,13 +52,6 @@ class Router
         	// match failed
         	throw new DispatchException('can not match url: '.$_SERVER['REQUEST_URI'].', review your typo!');
         }
-
-        list($module, $ctrl, $act) = $matchResult;
-
-        $request->setExtraParam('module', $module);
-        $request->setExtraParam('ctrl', $ctrl);
-        $request->setExtraParam('act', $act);
-
         // dispatch now
         $dispatcher = new Dispatcher($request, $response);
         $dispatcher->dispatch();

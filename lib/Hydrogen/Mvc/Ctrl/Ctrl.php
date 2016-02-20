@@ -20,10 +20,10 @@ class Ctrl
 
     protected static $_plugins = array();
 
-    public function __construct()
+    public function __construct(Request $request, Response $reponse)
     {
-        $this->_request = new Request();
-        $this->_response = new Response();
+        $this->_request = $request;
+        $this->_response = $reponse;
     }
 
     public function init()

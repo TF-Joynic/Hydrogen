@@ -43,9 +43,9 @@ class Dispatcher extends AbstractDispatcher
      */
     public function dispatch()
     {
-        $target_module = $this->_request->getExtraParam('module');
-        $target_ctrl = $this->_request->getExtraParam('ctrl');
-        $target_act = $this->_request->getExtraParam('act');
+        $target_module = $this->_request->getContextAttr('module');
+        $target_ctrl = $this->_request->getContextAttr('ctrl');
+        $target_act = $this->_request->getContextAttr('act');
 
         if (!$target_module || !$target_act || !$target_ctrl) {
             return false;
@@ -95,7 +95,7 @@ class Dispatcher extends AbstractDispatcher
             throw new DispatchException('ctrl class: ' . $mvcCtrlClassName . ' is not found', 404);
         }
 
-        $mvcCtrlInstance = new $mvcCtrlClassName;
+        $mvcCtrlInstance = new $mvcCtrlClassName($this->_request, $this->_response);
         if (!method_exists($mvcCtrlInstance, $actMethodName)) {
             throw new DispatchException('ctrl: ' . $mvcCtrlClassName . ' has no act called: ' . $actMethodName, 404);
         }

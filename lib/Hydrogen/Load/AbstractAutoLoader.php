@@ -54,16 +54,20 @@ abstract class AbstractAutoLoader
                 foreach ($ns_dir as $ns => $dir) {
                     $dir = rtrim($dir, '/\\');
 
-                    /*if (false !== strpos($classPath, 'front/ctrl')) {
+                    if (false !== strpos($classPath, 'Psr')) {
 //                        pre(pathinfo($classPath));exit;
-                        echo $classPath.'-'.$ns.'-'.$dir;exit;
-                    }*/
+//                        echo $classPath.'-'.$ns.'-'.$dir;exit;
+                    }
 
                     if (0 === strpos($classPath, str_replace('\\', DIRECTORY_SEPARATOR, $ns))) {
                         $pathInfo = pathinfo($classPath);
                         $baseName = isset($pathInfo['basename']) ? $pathInfo['basename'] : '';
 
-                        if ($this->_doLoad($dir.DIRECTORY_SEPARATOR.$baseName))
+                        if (false !== strpos($classPath, 'Branch')) {
+//                        pre(pathinfo($classPath));exit;
+                            echo rtrim($dir, $ns).$classPath."<br />";
+                        }
+                        if ($this->_doLoad(rtrim($dir, $ns).$classPath/*$dir.DIRECTORY_SEPARATOR.$baseName*/))
                             return true;
                         else
                             continue;

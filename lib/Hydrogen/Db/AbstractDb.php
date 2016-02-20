@@ -49,10 +49,7 @@ abstract class AbstractDb
 	 * 
 	 * @return mixed
 	 */
-	public function closeConnection()
-	{
-		return $this->_disconnect();
-	}
+	public abstract function closeConnection();
 
 	public abstract function beginTransaction();
 
@@ -63,4 +60,6 @@ abstract class AbstractDb
 	public abstract function descTable($table);
 
 	public abstract function listTables();
+
+    public abstract function escapeStr($str);
 }

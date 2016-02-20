@@ -2,15 +2,15 @@
 
 namespace Hydrogen\Load\AutoloadCallback;
 
-use Hydrogen\Load;
+use Hydrogen\Load\Autoloader;
 
-include __DIR__.DIRECTORY_SEPARATOR.'/AbstractAutoloadCallback.php';
+//include __DIR__.DIRECTORY_SEPARATOR.'/AbstractAutoloadCallback.php';
 
 class Namespace2Path extends AbstractAutoloadCallback
 {
 	public function autoLoad($class_name)
 	{
 		$classPath = str_replace(self::NAMESPACE_SEPARATOR, DIRECTORY_SEPARATOR, $class_name.'.php');
-		Load\Autoloader::getInstance()->loadClass($classPath);
+		Autoloader::getInstance()->loadClass($classPath);
 	}
 }

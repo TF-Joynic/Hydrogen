@@ -7,13 +7,14 @@ use Hydrogen\Http\Message;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Hydrogen\Http\Uri;
+use Psr\Http\Message\UriInterface;
 
 class ServerRequest implements ServerRequestInterface
 {
     const SERVER_HTTP_HEADER_PREFIX = 'HTTP_';
 
     private $_param = array();
-    private $_extra_param = array();
+    private $_context_attr = array();
 
     private $_request_method = '';
     private $_request_target = '';
@@ -120,10 +121,10 @@ class ServerRequest implements ServerRequestInterface
 
     }
 
-    public function getParams(array $params)
+    public function getParams(array $params = array())
     {
         if (!$params) {
-            return array_merge($this->_GET, $this->_POST);
+            return array_merge($this->_GET, $this->_POST, $this->_context_attr);
         }
 
         $fields = array();
@@ -144,38 +145,47 @@ class ServerRequest implements ServerRequestInterface
         return $this->attrMessage()->getHeader($name);
     }
 
-    public function setExtraParam($name, $value)
+    public function setContextAttr($name, $value)
     {
         if ($name && is_string($name))
-            $this->_extra_param[$name] = $value;
+            $this->_context_attr[$name] = $value;
 
         return $this;
     }
 
-    public function getExtraParam($name)
+    public function getContextAttr($name)
     {
-        if (!$name && !isset($this->_extra_param[$name])) {
+        if (!$name || !isset($this->_context_attr[$name])) {
             return null;
         }
 
-        return $this->_extra_param[$name];
+        return $this->_context_attr[$name];
     }
 
     protected function _sanitize($str)
     {
-        if (0 == strlen($str)) {
-            return $str;
+        if (is_string($str)) {
+            if (0 == strlen($str)) {
+                return $str;
+            }
+
+            $str = $this->escape($str);
+        } elseif (is_array($str)) {
+            foreach ($str as &$v) {
+                $v = $this->_sanitize($v);
+            }
         }
 
+        return $str;
+    }
+
+    private function escape($str)
+    {
         if (!get_magic_quotes_gpc()) {
             $str = addslashes($str);
         }
 
-        $str = str_replace(array('_', '%'), array('\_', '\%'), $str);
-        if ($this->isPost()) {
-            $str = htmlspecialchars(nl2br($str));
-        }
-
+        $str = htmlspecialchars($str, ENT_QUOTES);
         return $str;
     }
 
@@ -454,7 +464,7 @@ class ServerRequest implements ServerRequestInterface
      * This method MUST return a UriInterface instance.
      *
      * @link http://tools.ietf.org/html/rfc3986#section-4.3
-     * @return UriInterface Returns a UriInterface instance
+     * @return Uri Returns a UriInterface instance
      *     representing the URI of the request.
      */
     public function getUri()
@@ -739,18 +749,25 @@ class ServerRequest implements ServerRequestInterface
      */
     public function withAttribute($name, $value)
     {
-        if (is_string($value)) {
-            $this->_param[$name] = $this->_sanitize($value);
-        } elseif (is_array($value)) {
-            $new_value = array();
-            foreach ($value as &$v) {
-                if (!is_string($v) || !is_int($v)) {
-                    continue;
-                }
-                $new_value[] = $this->_sanitize($v);
-            }
+        if (is_string($name) && 0 < strlen($name)) {
+            $this->_context_attr[$name] = $value;
+        }
 
-            $this->_param[$name] = $new_value;
+        return $this;
+    }
+
+    public function withAttributes($attrs)
+    {
+        if (!is_array($attrs)) {
+            $attrs = array($attrs);
+        }
+
+        foreach ($attrs as $attr => $value) {
+            if (is_int($attr)) {
+                $this->withAttribute($value, null);
+            } else {
+                $this->withAttribute($attr, $value);
+            }
         }
 
         return $this;
@@ -772,8 +789,8 @@ class ServerRequest implements ServerRequestInterface
      */
     public function withoutAttribute($name)
     {
-        if (isset($this->_param[$name])) {
-            unset($this->_param[$name]);
+        if (isset($this->_context_attr[$name])) {
+            unset($this->_context_attr[$name]);
         }
 
         return $this;

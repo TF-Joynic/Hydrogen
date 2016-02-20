@@ -84,4 +84,9 @@ class Mysql extends AbstractRelationalDb
 	{
 		// TODO: Implement _disconnect() method.
 	}
+
+    public function escapeStr($str)
+    {
+        // TODO: Implement escapeStr() method.
+    }
 }

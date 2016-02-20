@@ -9,6 +9,7 @@ use Hydrogen\Load\AutoloadCallback;
 class Autoloader extends AbstractAutoLoader
 {
 	CONST CALLBACK_NS2PATH = 'Namespace2path';
+    CONST CALLBACK_COMPOSER = 'Composer';
 
 	public static $_instance = null;
 
@@ -60,6 +61,8 @@ class Autoloader extends AbstractAutoLoader
 		}
 
 		$callbackClassPath = $this->_getCallbackClassPath();
+
+        include $callbackClassPath.'/AbstractAutoloadCallback.php';
 
 		foreach ($callbackClassNames as $key => $callbackClassName) {
 

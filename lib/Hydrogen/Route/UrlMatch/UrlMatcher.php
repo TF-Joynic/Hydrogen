@@ -2,10 +2,12 @@
 
 namespace Hydrogen\Route\UrlMatch;
 
+use Hydrogen\Debug\Variable;
 use Hydrogen\Http\Request\ServerRequest;
 use Hydrogen\Http\Response\Response;
 use Hydrogen\Application\Execute\Executor;
 use Hydrogen\Route\Rule\RuleInterface;
+use Hydrogen\Route\Rule\RuleParam;
 
 class UrlMatcher extends AbstractUrlMatcher
 {
@@ -31,23 +33,39 @@ class UrlMatcher extends AbstractUrlMatcher
      *
      * @param ServerRequest $request
      * @param Response $response
-     * @return array|bool
+     * @return boolean
      */
-    public function match(ServerRequest $request, Response $response)
+    public function match(ServerRequest &$request, Response &$response)
     {
-        $sanitizedPath = ltrim(preg_replace('/\/{2,}/', '/', $request->getUri()->getPath()), '/');
+        $sanitizedPath = trim(preg_replace('/\/{2,}/', '/', $request->getUri()->getPath()));
         $pathArr = explode('/', $sanitizedPath);
 
         $EXECUTOR = Executor::getInstance();
         $AVAILABLE_MODULES = $EXECUTOR->getAvailableModules();
         $DEFAULT_MODULE = $EXECUTOR->getDefaultModule();
+        $DEFAULT_CTRL = $EXECUTOR->getDefaultCtrl();
+        $DEFAULT_ACT = $EXECUTOR->getDefaultAct();
 
         if ($this->_rules) {
             foreach ($this->_rules as $routeRule) {
-                if ($routeRule instanceof RuleInterface) {
-                    if ($routeRule->apply($sanitizedPath)) {
+                if ($routeRule instanceof RuleInterface && $ruleContext = $routeRule->apply($sanitizedPath)) {
+                    $module = isset($ruleContext['module']) ? $ruleContext['module'] : $DEFAULT_MODULE;
+                    $ctrl = isset($ruleContext['ctrl']) ? $ruleContext['ctrl'] : $DEFAULT_CTRL;
+                    $act = isset($ruleContext['act']) ? $ruleContext['act'] : $DEFAULT_ACT;
 
+                    if (isset($ruleContext['param'])) {
+                        if (!is_array($ruleContext['param'])) {
+                            $ruleContext['param'] = array($ruleContext['param']);
+                        }
+                        $request->withAttributes($ruleContext['param']);
                     }
+//                    Variable::dump($request);exit;
+
+                    $request->setContextAttr('module', $module);
+                    $request->setContextAttr('ctrl', ucfirst($ctrl));
+                    $request->setContextAttr('act', $act);
+
+                    return true;
                 }
             }
         }
@@ -90,10 +108,12 @@ class UrlMatcher extends AbstractUrlMatcher
             }
         }
 
-        $this->tailing($EXECUTOR->getDefaultModule(),
-            $EXECUTOR->getDefaultCtrl(), $EXECUTOR->getDefaultAct());
+        $this->tailing($DEFAULT_MODULE, $DEFAULT_CTRL, $DEFAULT_ACT);
 
-        return array($this->_module, $this->_ctrl, $this->_act);
+        $request->setContextAttr('module', $this->_module);
+        $request->setContextAttr('ctrl', $this->_ctrl);
+        $request->setContextAttr('act', $this->_act);
+        return true;
     }
 
     /**
