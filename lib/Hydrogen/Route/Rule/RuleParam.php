@@ -2,12 +2,12 @@
 
 namespace Hydrogen\Route\Rule;
 
-use Hydrogen\Exception;
 use Hydrogen\Http\Exception\InvalidArgumentException;
 
 class RuleParam extends AbstractRule
 {
     CONST RULE_PARAM_PREFIX = ':';
+    CONST SEGMENT_DELIMITER = '/';
 
     public function __construct($ruleStr, array $ruleContext)
     {
@@ -30,12 +30,10 @@ class RuleParam extends AbstractRule
             return false;
         }
 
-        $path_segments = explode('/', $path);
+        $path_segments = explode(self::SEGMENT_DELIMITER, $path);
 
         array_shift($rule_segments);
         array_shift($path_segments);
-        /*var_dump($param_names);
-        var_dump($path_segments);exit;*/
 
         $tmp_param = array();
         if (count($rule_segments) == count($path_segments)) {
@@ -62,12 +60,9 @@ class RuleParam extends AbstractRule
      */
     public function extractFromRuleStr()
     {
-        $seg_delimiter = '/';
-
         $param_names = array();
-        $segments = explode($seg_delimiter, $this->_ruleStr);
+        $segments = explode(self::SEGMENT_DELIMITER, $this->_ruleStr);
 
-//        var_dump($segments);exit;
         foreach ($segments as $k => $segment) {
             if (0 < strlen($segment) && false !== strpos($segment, self::RULE_PARAM_PREFIX)) {
                 $param_names[] = ltrim($segment, self::RULE_PARAM_PREFIX);

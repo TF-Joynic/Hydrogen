@@ -3,7 +3,7 @@
 namespace Hydrogen\Route;
 
 use Hydrogen\Debug\Variable;
-use Hydrogen\Http\Request\ServerRequest;
+use Hydrogen\Http\Request\ServerRequest as Request;
 use Hydrogen\Http\Response\Response;
 use Hydrogen\Load\Loader;
 use Hydrogen\Route\Rule\RuleInterface;
@@ -41,21 +41,20 @@ class Router
 	public function route()
 	{
         $urlMatcher = new UrlMatcher();
-        global $module, $ctrl, $act;
 
         if (!empty($this->_rules))
             $urlMatcher->setUserRouteRule($this->_rules);
 
-        $request = new ServerRequest();
+        $request = new Request();
         $response = new Response();
         if (false === $matchResult = $urlMatcher->match($request, $response)) {
         	// match failed
         	throw new DispatchException('can not match url: '.$_SERVER['REQUEST_URI'].', review your typo!');
         }
+
         // dispatch now
         $dispatcher = new Dispatcher($request, $response);
         $dispatcher->dispatch();
-//        pomvc();
 	}
 
 }

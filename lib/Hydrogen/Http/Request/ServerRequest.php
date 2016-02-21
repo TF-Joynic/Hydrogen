@@ -124,7 +124,7 @@ class ServerRequest implements ServerRequestInterface
     public function getParams(array $params = array())
     {
         if (!$params) {
-            return array_merge($this->_GET, $this->_POST, $this->_context_attr);
+            return array_merge($this->_GET, $this->_POST);
         }
 
         $fields = array();
@@ -750,7 +750,7 @@ class ServerRequest implements ServerRequestInterface
     public function withAttribute($name, $value)
     {
         if (is_string($name) && 0 < strlen($name)) {
-            $this->_context_attr[$name] = $value;
+            $this->_param[$name] = $value;
         }
 
         return $this;
@@ -789,8 +789,8 @@ class ServerRequest implements ServerRequestInterface
      */
     public function withoutAttribute($name)
     {
-        if (isset($this->_context_attr[$name])) {
-            unset($this->_context_attr[$name]);
+        if (isset($this->_param[$name])) {
+            unset($this->_param[$name]);
         }
 
         return $this;

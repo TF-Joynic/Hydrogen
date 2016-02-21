@@ -18,6 +18,8 @@ class Executor
     private $_ctrlClassPostfix = 'Ctrl';
     private $_actMethodPostfix = 'Act';
 
+    private $_error_ctrl_name = 'Error';
+
     private $_modules = array();   // available modules
     private $_moduleDir = APPLICATION_PATH;
     private $_applicationConfigDir = 'config';
@@ -146,6 +148,20 @@ class Executor
     public function setNamespaceDir($namespace, $dir, $prepend = false)
     {
         return Autoloader::getInstance()->attachNamespace($namespace, $dir, $prepend);
+    }
+
+    public function setErrorCtrlName($ctrl_name)
+    {
+        if (is_string($ctrl_name) && 0 < strlen($ctrl_name)) {
+            $this->_error_ctrl_name = $ctrl_name;
+        }
+
+        return $this;
+    }
+
+    public function getErrorCtrlName()
+    {
+        $this->_error_ctrl_name;
     }
 
     /**

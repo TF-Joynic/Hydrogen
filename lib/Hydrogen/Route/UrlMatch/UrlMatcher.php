@@ -3,7 +3,7 @@
 namespace Hydrogen\Route\UrlMatch;
 
 use Hydrogen\Debug\Variable;
-use Hydrogen\Http\Request\ServerRequest;
+use Hydrogen\Http\Request\ServerRequest as Request;
 use Hydrogen\Http\Response\Response;
 use Hydrogen\Application\Execute\Executor;
 use Hydrogen\Route\Rule\RuleInterface;
@@ -11,9 +11,6 @@ use Hydrogen\Route\Rule\RuleParam;
 
 class UrlMatcher extends AbstractUrlMatcher
 {
-    private $_request_uri = '';
-    private $_query_string = '';
-
     private $_module = '';
     private $_ctrl = '';
     private $_act = '';
@@ -31,11 +28,11 @@ class UrlMatcher extends AbstractUrlMatcher
     /**
      * match and extact module, ctrl and act
      *
-     * @param ServerRequest $request
+     * @param Request $request
      * @param Response $response
      * @return boolean
      */
-    public function match(ServerRequest &$request, Response &$response)
+    public function match(Request &$request, Response &$response)
     {
         $sanitizedPath = trim(preg_replace('/\/{2,}/', '/', $request->getUri()->getPath()));
         $pathArr = explode('/', $sanitizedPath);
@@ -59,7 +56,6 @@ class UrlMatcher extends AbstractUrlMatcher
                         }
                         $request->withAttributes($ruleContext['param']);
                     }
-//                    Variable::dump($request);exit;
 
                     $request->setContextAttr('module', $module);
                     $request->setContextAttr('ctrl', ucfirst($ctrl));
@@ -70,6 +66,7 @@ class UrlMatcher extends AbstractUrlMatcher
             }
         }
 
+        array_shift($pathArr);
         foreach ($pathArr as $k => $segment) {
             if (!$segment) {
                 break;
@@ -96,7 +93,7 @@ class UrlMatcher extends AbstractUrlMatcher
 
                 case 2:
                     if ($this->_ctrl) {
-                        $this->_act = $segment;
+                        '' === $this->_act && $this->_act = $segment;
                     } else {
                         $this->_ctrl = $segment;
                     }
@@ -107,6 +104,10 @@ class UrlMatcher extends AbstractUrlMatcher
                     break;
             }
         }
+
+        /*var_dump($this->_module);
+        var_dump($this->_ctrl);
+        var_dump($this->_act);exit;*/
 
         $this->tailing($DEFAULT_MODULE, $DEFAULT_CTRL, $DEFAULT_ACT);
 

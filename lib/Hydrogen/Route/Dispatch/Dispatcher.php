@@ -8,13 +8,10 @@ use Hydrogen\Http\Response\Response;
 use Hydrogen\Load\Loader;
 use Hydrogen\Load\Exception\LoadFailedException;
 use Hydrogen\Route\Exception\DispatchException;
+use Hydrogen\Route\Exception\RuntimeException;
 
 class Dispatcher extends AbstractDispatcher
 {
-    private $_module;
-    private $_ctrl;
-    private $_act;
-
     /**
      * @var Request
      */
@@ -68,12 +65,22 @@ class Dispatcher extends AbstractDispatcher
 
         $tmp = $moduleBaseNamespace ? $moduleBaseNamespace .'\\' : '';
 
+        $ctrlClassBaseName = ($target_ctrl) . $EXEC->getCtrlClassPostfix();
         $mvcCtrlClassName = 'application\\'.$tmp.$target_module
-            . '\\ctrl\\' . ($target_ctrl) . $EXEC->getCtrlClassPostfix();
+            . '\\ctrl\\' . $ctrlClassBaseName;
 
         $actMethodName = $target_act . $EXEC->getActMethodPostfix();
 //        pre(Autoloader::getInstance()->getNamespaces());exit;
-        $this->executeAct($mvcCtrlClassName, $actMethodName);
+
+        try {
+            $this->executeAct($mvcCtrlClassName, $actMethodName);
+        } catch (DispatchException $e) {
+
+            // force to ErrorCtrl -> (indexAct)
+            $this->handleMvcError(str_replace($ctrlClassBaseName,
+                $EXEC->getErrorCtrlName().$EXEC->getCtrlClassPostfix(), $mvcCtrlClassName), $EXEC->getDefaultAct(), $e);
+
+        }
 //        $response = new Response();
 
         // attach 'em to ctrl
@@ -86,6 +93,21 @@ class Dispatcher extends AbstractDispatcher
 
 
         // plugin terminate
+    }
+
+    public function handleMvcError($mvcErrorCtrlClassName, $mvcErrorActName, DispatchException $e)
+    {
+        if (!class_exists($mvcErrorCtrlClassName, true)) {
+            // second argument means we use autoload impl to find the class
+            throw new RuntimeException('Error ctrl class: ' . $mvcErrorCtrlClassName . ' is not properly defined!');
+        }
+
+        $mvcCtrlInstance = new $mvcErrorCtrlClassName($this->_request, $this->_response);
+        if (!method_exists($mvcCtrlInstance, $mvcErrorActName)) {
+            throw new RuntimeException('Error ctrl: ' . $mvcErrorCtrlClassName . ' has no act called: ' . $mvcErrorActName);
+        }
+
+        $mvcCtrlInstance->$mvcErrorActName();
     }
 
     private function executeAct($mvcCtrlClassName, $actMethodName)
