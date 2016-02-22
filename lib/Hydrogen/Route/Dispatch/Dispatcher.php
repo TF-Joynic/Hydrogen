@@ -102,6 +102,7 @@ class Dispatcher extends AbstractDispatcher
             throw new RuntimeException('Error ctrl class: ' . $mvcErrorCtrlClassName . ' is not properly defined!');
         }
 
+        $this->_response->setHttpStatusCode($e->getCode());
         $mvcCtrlInstance = new $mvcErrorCtrlClassName($this->_request, $this->_response);
         if (!method_exists($mvcCtrlInstance, $mvcErrorActName)) {
             throw new RuntimeException('Error ctrl: ' . $mvcErrorCtrlClassName . ' has no act called: ' . $mvcErrorActName);
