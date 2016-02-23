@@ -2,13 +2,14 @@
 
 namespace Hydrogen\Route\Dispatch;
 
-use Hydrogen\Application\Execute\Executor;
-use Hydrogen\Http\Request\ServerRequest;
-use Hydrogen\Http\Response\Response;
 use Hydrogen\Load\Loader;
-use Hydrogen\Load\Exception\LoadFailedException;
-use Hydrogen\Route\Exception\DispatchException;
+use Hydrogen\Mvc\Ctrl\Ctrl;
+use Hydrogen\Http\Response\Response;
+use Hydrogen\Application\Execute\Executor;
+use Hydrogen\Http\Request\ServerRequest as Request;
 use Hydrogen\Route\Exception\RuntimeException;
+use Hydrogen\Route\Exception\DispatchException;
+use Hydrogen\Load\Exception\LoadFailedException;
 
 class Dispatcher extends AbstractDispatcher
 {
@@ -22,17 +23,10 @@ class Dispatcher extends AbstractDispatcher
      */
     private $_response;
 
-    public function __construct(ServerRequest $request, Response $response)
+    public function __construct(Request $request, Response $response)
     {
         $this->_request = $request;
         $this->_response = $response;
-        if (1) {
-
-        }
-
-        /*$this->_module = $_module;
-        $this->_ctrl = $_ctrl;
-        $this->_act = $_act;*/
     }
 
     /**
@@ -69,7 +63,8 @@ class Dispatcher extends AbstractDispatcher
         $mvcCtrlClassName = 'application\\'.$tmp.$target_module
             . '\\ctrl\\' . $ctrlClassBaseName;
 
-        $actMethodName = $target_act . $EXEC->getActMethodPostfix();
+        $actPostFix = $EXEC->getActMethodPostfix();
+        $actMethodName = $target_act . $actPostFix;
 //        pre(Autoloader::getInstance()->getNamespaces());exit;
 
         try {
@@ -78,7 +73,9 @@ class Dispatcher extends AbstractDispatcher
 
             // force to ErrorCtrl -> (indexAct)
             $this->handleMvcError(str_replace($ctrlClassBaseName,
-                $EXEC->getErrorCtrlName().$EXEC->getCtrlClassPostfix(), $mvcCtrlClassName), $EXEC->getDefaultAct(), $e);
+                $EXEC->getErrorCtrlName().$EXEC->getCtrlClassPostfix(),
+                $mvcCtrlClassName), $EXEC->getDefaultAct().$actPostFix, $e);
+
 
         }
 //        $response = new Response();
@@ -95,6 +92,11 @@ class Dispatcher extends AbstractDispatcher
         // plugin terminate
     }
 
+    /**
+     * @param string $mvcErrorCtrlClassName
+     * @param string $mvcErrorActName
+     * @param DispatchException $e
+     */
     public function handleMvcError($mvcErrorCtrlClassName, $mvcErrorActName, DispatchException $e)
     {
         if (!class_exists($mvcErrorCtrlClassName, true)) {
@@ -102,15 +104,26 @@ class Dispatcher extends AbstractDispatcher
             throw new RuntimeException('Error ctrl class: ' . $mvcErrorCtrlClassName . ' is not properly defined!');
         }
 
-        $this->_response->setHttpStatusCode($e->getCode());
-        $mvcCtrlInstance = new $mvcErrorCtrlClassName($this->_request, $this->_response);
+        $mvcCtrlInstance = new $mvcErrorCtrlClassName();
+        if (! $mvcCtrlInstance instanceof Ctrl) {
+            throw new DispatchException('Ctrl class: '.$mvcErrorCtrlClassName.' is not subclass of Ctrl', 404);
+        }
+
         if (!method_exists($mvcCtrlInstance, $mvcErrorActName)) {
             throw new RuntimeException('Error ctrl: ' . $mvcErrorCtrlClassName . ' has no act called: ' . $mvcErrorActName);
         }
 
+        $mvcCtrlInstance->withRequest($this->_request);
+        $this->_response->withStatus($e->getCode());
+        $mvcCtrlInstance->withResponse($this->_response);
+
         $mvcCtrlInstance->$mvcErrorActName();
     }
 
+    /**
+     * @param string $mvcCtrlClassName
+     * @param string $actMethodName
+     */
     private function executeAct($mvcCtrlClassName, $actMethodName)
     {
         if (!class_exists($mvcCtrlClassName, true)) {
@@ -118,10 +131,19 @@ class Dispatcher extends AbstractDispatcher
             throw new DispatchException('ctrl class: ' . $mvcCtrlClassName . ' is not found', 404);
         }
 
-        $mvcCtrlInstance = new $mvcCtrlClassName($this->_request, $this->_response);
-        if (!method_exists($mvcCtrlInstance, $actMethodName)) {
+        $mvcCtrlInstance = new $mvcCtrlClassName();
+
+        if (! $mvcCtrlInstance instanceof Ctrl) {
+            throw new DispatchException('Ctrl class: '.$mvcCtrlClassName.' is not subclass of Ctrl', 404);
+        }
+
+        $methodVar = array($mvcCtrlInstance, $actMethodName);
+        if (!method_exists($mvcCtrlInstance, $actMethodName) && is_callable($methodVar, true, $callable_name)) {
             throw new DispatchException('ctrl: ' . $mvcCtrlClassName . ' has no act called: ' . $actMethodName, 404);
         }
+
+        $mvcCtrlInstance->withRequest($this->_request);
+        $mvcCtrlInstance->withResponse($this->_response);
 
         $mvcCtrlInstance->$actMethodName();
     }

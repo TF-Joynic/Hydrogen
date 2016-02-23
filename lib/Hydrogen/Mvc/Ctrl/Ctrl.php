@@ -20,10 +20,8 @@ class Ctrl
 
     protected static $_plugins = array();
 
-    public function __construct(Request $request, Response $reponse)
+    public function __construct()
     {
-        $this->_request = $request;
-        $this->_response = $reponse;
     }
 
     public function init()
@@ -78,9 +76,21 @@ class Ctrl
     {
     }
 
+    public function withRequest(Request $request)
+    {
+        $this->_request = $request;
+        return $this;
+    }
+
     public function getRequest()
     {
         return $this->_request;
+    }
+
+    public function withResponse(Response $response)
+    {
+        $this->_response = $response;
+        return $this;
     }
 
     public function getResponse()

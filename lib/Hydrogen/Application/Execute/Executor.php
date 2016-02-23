@@ -3,8 +3,8 @@
 namespace Hydrogen\Application\Execute;
 
 use Hydrogen\Config\Config;
-use Hydrogen\Load\Autoloader;
 use Hydrogen\Mvc\Ctrl\Ctrl;
+use Hydrogen\Load\Autoloader;
 use Hydrogen\Mvc\Ctrl\Plugin\PluginInterface;
 
 class Executor
@@ -161,7 +161,7 @@ class Executor
 
     public function getErrorCtrlName()
     {
-        $this->_error_ctrl_name;
+        return $this->_error_ctrl_name;
     }
 
     /**

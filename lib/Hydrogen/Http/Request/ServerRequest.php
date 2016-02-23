@@ -124,7 +124,7 @@ class ServerRequest implements ServerRequestInterface
     public function getParams(array $params = array())
     {
         if (!$params) {
-            return array_merge($this->_GET, $this->_POST);
+            return array_merge($this->_GET, $this->_POST, $this->_param);
         }
 
         $fields = array();

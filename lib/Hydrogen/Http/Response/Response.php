@@ -2,18 +2,21 @@
 
 namespace Hydrogen\Http\Response;
 
+use Hydrogen\Http\Exception\InvalidArgumentException;
+use Hydrogen\Http\Message;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
 use Psr\Http\Message\StreamInterface;
+use Hydrogen\Http\Response\cookie;
 
 /**
  * @property cookie $cookie return response cookie maniplation class
  */
 class Response implements PsrResponseInterface
 {
-    private $_protocol_version = '';
     private $_http_status_code = '';
-    private $_reason_phrase = '';
+
+    private $_message = null;
 
     public static $_http_status_codes = [
         100 => "Continue",
@@ -97,24 +100,22 @@ class Response implements PsrResponseInterface
 	}
 
     /**
-     * get this Http Status code
+     * Gets the response status code.
+     *
+     * The status code is a 3-digit integer result code of the server's attempt
+     * to understand and satisfy the request.
+     *
+     * @return int Status code.
      */
     public function getStatusCode()
     {
-        $code = '';
-    }
-
-    public function withStatus($code, $reasonPhrase = '')
-    {
-        if (version_compare(PHP_VERSION, '5.4.0', '>=')) {
-            http_response_code($code);
-        }
+        return $this->_http_status_code;
     }
 
 	/**
 	 * access child class
 	 * @param  string $name key
-	 * @return Hydrogen\Http\Response\Response\_{$name}
+     * @return cookie
 	 */
 	public function __get($name)
 	{
@@ -122,10 +123,25 @@ class Response implements PsrResponseInterface
 			return $this->$name;
 		}
 
-        $innerClassName = __NAMESPACE__.'\_'.ucfirst($name);
+        $innerClassName = __NAMESPACE__.'\\'.$name;
         $this->$name = new $innerClassName;
         return $this->$name;
 	}
+
+    /**
+     * return Message
+     *
+     * @return Message
+     */
+    public function getMessage()
+    {
+        if (null !== $this->_message && $this->_message instanceof MessageInterface) {
+            return $this->_message;
+        }
+
+        $this->_message = new Message();
+        return $this->_message;
+    }
 
     /**
      * Retrieves the HTTP protocol version as a string.
@@ -136,7 +152,7 @@ class Response implements PsrResponseInterface
      */
     public function getProtocolVersion()
     {
-        return $this->_protocol_version;
+        return $this->getMessage()->getProtocolVersion();
     }
 
     /**
@@ -154,7 +170,7 @@ class Response implements PsrResponseInterface
      */
     public function withProtocolVersion($version)
     {
-        $this->_protocol_version = $version;
+        $this->getMessage()->withProtocolVersion($version);
         return $this;
     }
 
@@ -185,7 +201,7 @@ class Response implements PsrResponseInterface
      */
     public function getHeaders()
     {
-        // TODO: Implement getHeaders() method.
+        return $this->getMessage()->getHeaders();
     }
 
     /**
@@ -198,7 +214,7 @@ class Response implements PsrResponseInterface
      */
     public function hasHeader($name)
     {
-        // TODO: Implement hasHeader() method.
+        return $this->getMessage()->hasHeader($name);
     }
 
     /**
@@ -217,7 +233,7 @@ class Response implements PsrResponseInterface
      */
     public function getHeader($name)
     {
-        // TODO: Implement getHeader() method.
+        return $this->getMessage()->hasHeader($name);
     }
 
     /**
@@ -241,7 +257,7 @@ class Response implements PsrResponseInterface
      */
     public function getHeaderLine($name)
     {
-        // TODO: Implement getHeaderLine() method.
+        return $this->getMessage()->getHeaderLine($name);
     }
 
     /**
@@ -261,7 +277,7 @@ class Response implements PsrResponseInterface
      */
     public function withHeader($name, $value)
     {
-        // TODO: Implement withHeader() method.
+        return $this->getMessage()->withHeader($name, $value);
     }
 
     /**
@@ -282,7 +298,7 @@ class Response implements PsrResponseInterface
      */
     public function withAddedHeader($name, $value)
     {
-        // TODO: Implement withAddedHeader() method.
+        return $this->getMessage()->withAddedHeader($name, $value);
     }
 
     /**
@@ -299,7 +315,7 @@ class Response implements PsrResponseInterface
      */
     public function withoutHeader($name)
     {
-        // TODO: Implement withoutHeader() method.
+        return $this->getMessage()->withoutHeader($name);
     }
 
     /**
@@ -309,7 +325,7 @@ class Response implements PsrResponseInterface
      */
     public function getBody()
     {
-        // TODO: Implement getBody() method.
+        return $this->getMessage()->getBody();
     }
 
     /**
@@ -327,20 +343,8 @@ class Response implements PsrResponseInterface
      */
     public function withBody(StreamInterface $body)
     {
-
-    }
-
-    /**
-     * Gets the response status code.
-     *
-     * The status code is a 3-digit integer result code of the server's attempt
-     * to understand and satisfy the request.
-     *
-     * @return int Status code.
-     */
-    public function getStatusCode()
-    {
-        return $this->_http_status_code;
+        $this->getMessage()->withBody($body);
+        return $this;
     }
 
     /**
@@ -365,12 +369,13 @@ class Response implements PsrResponseInterface
      */
     public function withStatus($code, $reasonPhrase = '')
     {
-        if (100 > $code || 1000 < $code) {
-            throw new \InvalidArgumentException('invalid arg code:' , $code);
+        if (100 > $code || 1000 < $code || !isset(self::$_http_status_codes[$code])) {
+            throw new InvalidArgumentException('invalid arg code:' , $code);
         }
 
-        $this->_http_status_code = $code;
-        $this->_reason_phrase = $reasonPhrase;
+        $this->_http_status_code = (int) $code;
+        $this->_reason_phrase = self::$_http_status_codes[$code];
+
         return $this;
     }
 
@@ -389,6 +394,6 @@ class Response implements PsrResponseInterface
      */
     public function getReasonPhrase()
     {
-        return $this->_reason_phrase;
+        return self::$_http_status_codes[$this->_http_status_code];
     }
 }
