@@ -13,4 +13,9 @@ class Ini implements WriterInterface
 	{
 		
 	}
+
+    public function write()
+    {
+        // TODO: Implement write() method.
+    }
 }

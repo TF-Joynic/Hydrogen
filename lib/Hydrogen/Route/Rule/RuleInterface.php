@@ -6,7 +6,11 @@ interface RuleInterface
 {
     /**
      * @param $path
-     * @return array
+     * @return boolean|array
      */
-    public function apply($path);
+    public function apply(&$path);
+
+    public function fmtRuleStr($ruleStr);
+
+    public function isTerminable();
 }

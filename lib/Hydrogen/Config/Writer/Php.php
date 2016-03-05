@@ -2,17 +2,8 @@
 
 namespace Hydrogen\Config\Writer;
 
-class Yaml implements WriterInterface
+class Php implements WriterInterface
 {
-	public function __construct()
-	{
-		// code
-	}
-
-	public function read()
-	{
-		
-	}
 
     public function write()
     {

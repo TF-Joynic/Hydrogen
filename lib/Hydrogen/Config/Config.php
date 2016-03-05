@@ -2,9 +2,6 @@
 
 namespace Hydrogen\Config;
 
-use Hydrogen\Config\Exception\ConfigFileMergeFailedException;
-use Hydrogen\Config\Reader\ReaderFactory;
-use Hydrogen\Config\Exception\ConfigArrMergeFailedException;
 use Hydrogen\Config\Exception\ReaderClassNotDefinedException;
 use Hydrogen\Config\Exception\FileNotFoundException;
 use Hydrogen\Config\Reader\ReaderInterface;

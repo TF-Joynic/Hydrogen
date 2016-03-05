@@ -44,7 +44,10 @@ class Message implements MessageInterface
             || isset($_SERVER['SERVER_SIGNATURE'])
             && false !== stripos($_SERVER['SERVER_SIGNATURE'], 'apache')) {
 
-            $headers = apache_request_headers();
+            $apache_headers = apache_request_headers();
+            foreach ($apache_headers as $header => $value) {
+                $headers[$this->sleepHeaderName($header)] = $value;
+            }
 
         } else {
             foreach ($_SERVER as $server_key => $server_value) {
@@ -59,14 +62,19 @@ class Message implements MessageInterface
         $this->_headers = $headers;
     }
 
-    private function getHttpHeaders($line = false)
+    private function getHttpHeaders($line = true)
     {
-        $headers = $this->_headers;
+        $line_headers = $this->_headers;
+        $headers = array();
+        foreach ($line_headers as $line_header => $value) {
+            $headers[$this->wakeupHeaderName($line_header)] = $value;
+        }
 
         if (!$line)
             foreach ($headers as $k => &$v)
                 $v = explode(',', $v);
 
+        pre($headers);exit;
         return $headers;
     }
 

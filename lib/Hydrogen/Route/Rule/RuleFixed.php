@@ -16,7 +16,11 @@ class RuleFixed extends AbstractRule
         $this->_ruleContext = $ruleContext;
     }
 
-    public function apply($path)
+    /**
+     * @param $path
+     * @return array|bool
+     */
+    public function apply(&$path)
     {
         if (!is_string($path) || 0 == strlen($path)) {
             throw new InvalidArgumentException('path must be type string and can not be empty!');

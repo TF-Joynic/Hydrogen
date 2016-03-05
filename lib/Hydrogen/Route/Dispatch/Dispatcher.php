@@ -65,7 +65,6 @@ class Dispatcher extends AbstractDispatcher
 
         $actPostFix = $EXEC->getActMethodPostfix();
         $actMethodName = $target_act . $actPostFix;
-//        pre(Autoloader::getInstance()->getNamespaces());exit;
 
         try {
             $this->executeAct($mvcCtrlClassName, $actMethodName);
@@ -144,6 +143,12 @@ class Dispatcher extends AbstractDispatcher
 
         $mvcCtrlInstance->withRequest($this->_request);
         $mvcCtrlInstance->withResponse($this->_response);
+
+        foreach ($this->_response->getHeaders() as $name => $values) {
+             echo $name . ": " . implode(", ", $values);
+         }
+
+        exit;
 
         $mvcCtrlInstance->$actMethodName();
     }

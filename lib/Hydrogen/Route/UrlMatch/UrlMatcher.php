@@ -7,7 +7,6 @@ use Hydrogen\Http\Request\ServerRequest as Request;
 use Hydrogen\Http\Response\Response;
 use Hydrogen\Application\Execute\Executor;
 use Hydrogen\Route\Rule\RuleInterface;
-use Hydrogen\Route\Rule\RuleParam;
 
 class UrlMatcher extends AbstractUrlMatcher
 {
@@ -35,7 +34,7 @@ class UrlMatcher extends AbstractUrlMatcher
     public function match(Request &$request, Response &$response)
     {
         $sanitizedPath = trim(preg_replace('/\/{2,}/', '/', $request->getUri()->getPath()));
-        $pathArr = explode('/', $sanitizedPath);
+//        echo $sanitizedPath;exit;
 
         $EXECUTOR = Executor::getInstance();
         $AVAILABLE_MODULES = $EXECUTOR->getAvailableModules();
@@ -45,10 +44,11 @@ class UrlMatcher extends AbstractUrlMatcher
 
         if ($this->_rules) {
             foreach ($this->_rules as $routeRule) {
+
                 if ($routeRule instanceof RuleInterface && $ruleContext = $routeRule->apply($sanitizedPath)) {
-                    $module = isset($ruleContext['module']) ? $ruleContext['module'] : $DEFAULT_MODULE;
-                    $ctrl = isset($ruleContext['ctrl']) ? $ruleContext['ctrl'] : $DEFAULT_CTRL;
-                    $act = isset($ruleContext['act']) ? $ruleContext['act'] : $DEFAULT_ACT;
+                    $module = isset($ruleContext['module']) && $ruleContext['module'] ? $ruleContext['module'] : $DEFAULT_MODULE;
+                    $ctrl = isset($ruleContext['ctrl']) && $ruleContext['ctrl'] ? $ruleContext['ctrl'] : $DEFAULT_CTRL;
+                    $act = isset($ruleContext['act']) && $ruleContext['act'] ? $ruleContext['act'] : $DEFAULT_ACT;
 
                     if (isset($ruleContext['param'])) {
                         if (!is_array($ruleContext['param'])) {
@@ -61,11 +61,22 @@ class UrlMatcher extends AbstractUrlMatcher
                     $request->setContextAttr('ctrl', ucfirst($ctrl));
                     $request->setContextAttr('act', $act);
 
-                    return true;
+                    if ($routeRule->isTerminable()) {
+                        return true;
+                    } else {
+//                        pre($ruleContext['header']);exit;
+                        // TODO 把上面这段逻辑抽到 routeRule 里面
+                        foreach ($ruleContext['header'] as $header_name => $header_value) {
+                            $response->withHeader($header_name, $header_value);
+                        }
+                        var_dump($response->getHeaders());exit;
+                    }
                 }
+
             }
         }
 
+        $pathArr = explode('/', $sanitizedPath);
         array_shift($pathArr);
         foreach ($pathArr as $k => $segment) {
             if (!$segment) {
@@ -115,6 +126,11 @@ class UrlMatcher extends AbstractUrlMatcher
         $request->setContextAttr('ctrl', $this->_ctrl);
         $request->setContextAttr('act', $this->_act);
         return true;
+    }
+
+    public static function extractMvcName($path)
+    {
+
     }
 
     /**
@@ -181,7 +197,7 @@ class UrlMatcher extends AbstractUrlMatcher
     }
 
     /**
-     * finally format empty module/ctrl/act name
+     * process default module/ctrl/act name
      *
      * @param $default_module
      * @param $default_ctrl

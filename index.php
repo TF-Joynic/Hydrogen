@@ -4,6 +4,7 @@ use Hydrogen\Debug\Variable;
 use Hydrogen\Route\Router;
 use Hydrogen\Route\Rule\RuleFixed;
 use Hydrogen\Route\Rule\RuleParam;
+use Hydrogen\Route\Rule\RulePostfix;
 
 if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
 	echo '<strong>Hello, SAE!</strong>';
@@ -37,7 +38,7 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
 
 	// include Framework constant
 	Hydrogen\Load\Loader::getInstance()
-		->import('lib/Hydrogen/Include/Http.php');
+		->import('lib/Hydrogen/Constant/Http.php');
 
     Hydrogen\Load\Loader::getInstance()
         ->import('lib/Hydrogen/Include/Functions.php');
@@ -93,8 +94,16 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
 //    Hydrogen\Load\Loader::getInstance()->import(APPLICATION_PATH.'/config/route.php');
 
 
-
     $router = Router::getInstance();
+
+    $router->addRule(new RulePostfix('.json', array(
+        'header' => array(
+            HTTP_HEADER_CONTENT_TYPE => 'application/json',
+        ),
+        'param' => array(
+            'type' => 'JSON',
+        ),
+    )));
 
     $router->addRule(new RuleFixed('/simple/master', array(
         'module' => '',
@@ -102,13 +111,14 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
         'act' => 'master'
     )));
 
-    $router->addRule(new RuleParam('/simple/:id', array(
+    /*$router->addRule(new RuleParam('/simple/:id', array(
         'ctrl' => 'branch',
         'act' => 'master',
         'param' => array(
             'cd' => 1
         )
-    )));
+    )));*/
+
 
 //    var_dump($router->_rules);exit;
 

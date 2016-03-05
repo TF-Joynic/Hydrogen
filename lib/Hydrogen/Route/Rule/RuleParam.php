@@ -21,9 +21,9 @@ class RuleParam extends AbstractRule
 
     /**
      * @param $path
-     * @return array
+     * @return bool|array
      */
-    public function apply($path)
+    public function apply(&$path)
     {
         list ($param_names, $rule_segments) = $this->extractFromRuleStr();
         if (empty($param_names)) {
@@ -49,6 +49,7 @@ class RuleParam extends AbstractRule
             }
 
             $this->_ruleContext['param'] = array_merge($this->_ruleContext['param'], $tmp_param);
+//            var_dump($this->_ruleContext['param']);exit;
             return $this->_ruleContext;
         }
 

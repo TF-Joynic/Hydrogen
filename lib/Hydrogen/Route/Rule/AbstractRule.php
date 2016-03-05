@@ -7,6 +7,7 @@ use Hydrogen\Route\Rule;
 abstract class AbstractRule implements RuleInterface
 {
 	protected $_ruleStr = '';
+    protected $_terminable= true;
 
     protected $_ruleContext = array();
 
@@ -15,5 +16,10 @@ abstract class AbstractRule implements RuleInterface
     public function fmtRuleStr($ruleStr)
     {
         return trim($ruleStr);
+    }
+
+    public function isTerminable()
+    {
+        return $this->_terminable;
     }
 }

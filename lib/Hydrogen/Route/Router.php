@@ -34,7 +34,12 @@ class Router
 
     public function addRule(RuleInterface $routeRule)
     {
-        $this->_rules[] = $routeRule;
+        if (!$routeRule->isTerminable()) {
+            array_unshift($this->_rules, $routeRule);
+        } else {
+            $this->_rules[] = $routeRule;
+        }
+
         return self::$_instance;
     }
 
