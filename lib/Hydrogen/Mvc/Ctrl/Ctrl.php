@@ -18,6 +18,12 @@ class Ctrl
      */
     private $_response = null;
 
+    /**
+     * render view template
+     * @var bool
+     */
+    private $_doRender = true;
+
     protected static $_plugins = array();
 
     public function __construct()
@@ -33,17 +39,12 @@ class Ctrl
      *
      * @return void
      */
-    public function fwd()
+    public function forward()
     {
 
     }
 
     public function redirect($href)
-    {
-        $this->rdt($href);
-    }
-
-    public function rdt($href)
     {
         header('Location:' . $href);
         exit;

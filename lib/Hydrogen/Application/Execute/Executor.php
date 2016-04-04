@@ -19,6 +19,7 @@ class Executor
     private $_actMethodPostfix = 'Act';
 
     private $_error_ctrl_name = 'Error';
+    private $_error_act_name = 'index';
 
     private $_modules = array();   // available modules
     private $_moduleDir = APPLICATION_PATH;
@@ -159,9 +160,19 @@ class Executor
         return $this;
     }
 
+    /**
+     * get error handle Ctrl name
+     *
+     * @return string
+     */
     public function getErrorCtrlName()
     {
         return $this->_error_ctrl_name;
+    }
+
+    public function getErrorActName()
+    {
+        return $this->_error_act_name;
     }
 
     /**

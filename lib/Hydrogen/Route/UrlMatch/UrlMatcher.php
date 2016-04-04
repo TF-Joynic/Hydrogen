@@ -34,7 +34,6 @@ class UrlMatcher extends AbstractUrlMatcher
     public function match(Request &$request, Response &$response)
     {
         $sanitizedPath = trim(preg_replace('/\/{2,}/', '/', $request->getUri()->getPath()));
-//        echo $sanitizedPath;exit;
 
         $EXECUTOR = Executor::getInstance();
         $AVAILABLE_MODULES = $EXECUTOR->getAvailableModules();
@@ -65,7 +64,7 @@ class UrlMatcher extends AbstractUrlMatcher
                         return true;
                     } else {
 //                        pre($ruleContext['header']);exit;
-                        // TODO 把上面这段逻辑抽到 routeRule 里面
+                        // TODO 把下面这段逻辑抽到 routeRule 里面
                         foreach ($ruleContext['header'] as $header_name => $header_value) {
                             $response->withHeader($header_name, $header_value);
                         }

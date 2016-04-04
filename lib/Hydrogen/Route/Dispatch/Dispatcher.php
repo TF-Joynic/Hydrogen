@@ -66,18 +66,21 @@ class Dispatcher extends AbstractDispatcher
         $actPostFix = $EXEC->getActMethodPostfix();
         $actMethodName = $target_act . $actPostFix;
 
+        $actReturn = null;
         try {
-            $this->executeAct($mvcCtrlClassName, $actMethodName);
+            $actReturn = $this->executeAct($mvcCtrlClassName, $actMethodName);
         } catch (DispatchException $e) {
 
-            // force to ErrorCtrl -> (indexAct)
-            $this->handleMvcError(str_replace($ctrlClassBaseName,
+            // force to ErrorCtrl -> (indexAct) beneath the same dir
+            $actReturn = $this->handleMvcError(str_replace($ctrlClassBaseName,
                 $EXEC->getErrorCtrlName().$EXEC->getCtrlClassPostfix(),
-                $mvcCtrlClassName), $EXEC->getDefaultAct().$actPostFix, $e);
-
+                $mvcCtrlClassName), $EXEC->getErrorActName().$actPostFix, $e);
 
         }
-//        $response = new Response();
+
+        /** ViewModel timing! */
+        // concrete body from $mvcCtrlInstance for RESPONSE
+        $this->_response->withBody();
 
         // attach 'em to ctrl
 //        $
@@ -95,6 +98,7 @@ class Dispatcher extends AbstractDispatcher
      * @param string $mvcErrorCtrlClassName
      * @param string $mvcErrorActName
      * @param DispatchException $e
+     * @return \Hydrogen\Mvc\ViewModel\ViewModel
      */
     public function handleMvcError($mvcErrorCtrlClassName, $mvcErrorActName, DispatchException $e)
     {
@@ -108,7 +112,8 @@ class Dispatcher extends AbstractDispatcher
             throw new DispatchException('Ctrl class: '.$mvcErrorCtrlClassName.' is not subclass of Ctrl', 404);
         }
 
-        if (!method_exists($mvcCtrlInstance, $mvcErrorActName)) {
+        $methodVar = array($mvcCtrlInstance, $mvcErrorActName);
+        if (!method_exists($mvcCtrlInstance, $mvcErrorActName) || !is_callable($methodVar, true)) {
             throw new RuntimeException('Error ctrl: ' . $mvcErrorCtrlClassName . ' has no act called: ' . $mvcErrorActName);
         }
 
@@ -116,7 +121,7 @@ class Dispatcher extends AbstractDispatcher
         $this->_response->withStatus($e->getCode());
         $mvcCtrlInstance->withResponse($this->_response);
 
-        $mvcCtrlInstance->$mvcErrorActName();
+        return $mvcCtrlInstance->$mvcErrorActName();
     }
 
     /**
@@ -135,22 +140,14 @@ class Dispatcher extends AbstractDispatcher
         if (! $mvcCtrlInstance instanceof Ctrl) {
             throw new DispatchException('Ctrl class: '.$mvcCtrlClassName.' is not subclass of Ctrl', 404);
         }
-
         $methodVar = array($mvcCtrlInstance, $actMethodName);
-        if (!method_exists($mvcCtrlInstance, $actMethodName) && is_callable($methodVar, true, $callable_name)) {
+        if (!method_exists($mvcCtrlInstance, $actMethodName) || !is_callable($methodVar, true, $callable_name)) {
             throw new DispatchException('ctrl: ' . $mvcCtrlClassName . ' has no act called: ' . $actMethodName, 404);
         }
 
-        $mvcCtrlInstance->withRequest($this->_request);
-        $mvcCtrlInstance->withResponse($this->_response);
+        $mvcCtrlInstance->withRequest($this->_request)->withResponse($this->_response);
 
-        foreach ($this->_response->getHeaders() as $name => $values) {
-             echo $name . ": " . implode(", ", $values);
-         }
-
-        exit;
-
-        $mvcCtrlInstance->$actMethodName();
+        return $mvcCtrlInstance->$actMethodName();
     }
 
     private function importFileByAbsPath($absPath)
