@@ -2,7 +2,7 @@
 
 namespace Hydrogen\Load;
 
-include __DIR__.'/AbstractAutoLoader.php';
+require __DIR__.'/AbstractAutoLoader.php';
 
 use Hydrogen\Load\AutoloadCallback;
 
@@ -27,6 +27,9 @@ class Autoloader extends AbstractAutoLoader
     public function attachNamespace($namespace, $dir, $prepend = false)
     {
         if ($namespace && is_string($namespace) && $dir && is_string($dir)) {
+
+            $dir = str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $dir);
+
             $attachment = array($namespace => $dir);
 
             $prepend ? array_unshift($this->_namespaces, $attachment)
@@ -62,7 +65,7 @@ class Autoloader extends AbstractAutoLoader
 
 		$callbackClassPath = $this->_getCallbackClassPath();
 
-        include $callbackClassPath.'/AbstractAutoloadCallback.php';
+        require $callbackClassPath.'/AbstractAutoloadCallback.php';
 
 		foreach ($callbackClassNames as $key => $callbackClassName) {
 

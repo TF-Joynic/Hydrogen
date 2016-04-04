@@ -10,11 +10,12 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
 	echo '<strong>Hello, SAE!</strong>';
 } else {
 
-	$base = $_SERVER['DOCUMENT_ROOT'];
-	$vendor_path = $base.'/vendor';
-	$lib_path = $base.'/lib';
-	$application_path = $base.'/application';
-	$global_config_path = $base.'/config';
+	$base = str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $_SERVER['DOCUMENT_ROOT'].'/');
+
+	$vendor_path = $base.'vendor';
+	$lib_path = $base.'lib';
+	$application_path = $base.'application';
+	$global_config_path = $base.'config';
 
     defined('APPLICATION_PATH') || define('APPLICATION_PATH', $application_path);
     defined('VENDOR_PATH') || define('VENDOR_PATH', $vendor_path);
@@ -23,7 +24,7 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
     defined('GLOBAL_CONFIG_PATH')
 	 || define('GLOBAL_CONFIG_PATH', $global_config_path);
 
-	include LIB_PATH.'/Hydrogen/Load/Autoloader.php';
+	require LIB_PATH.'/Hydrogen/Load/Autoloader.php';
 
 	$autoloader = Hydrogen\Load\Autoloader::getInstance();
 	$autoloader->attachCallback(
@@ -34,7 +35,7 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
     );
 
 	$autoloader->attachNamespace('application', APPLICATION_PATH);
-	$autoloader->attachNamespace('Psr', LIB_PATH.'/Psr', true);
+	$autoloader->attachNamespace('Psr', LIB_PATH.DIRECTORY_SEPARATOR.'Psr', true);
 
 	// include Framework constant
 	Hydrogen\Load\Loader::getInstance()
