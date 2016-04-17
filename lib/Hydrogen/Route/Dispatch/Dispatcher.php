@@ -51,7 +51,6 @@ class Dispatcher extends AbstractDispatcher
 
         $moduleInitFile = $moduleDir . '/Module' . $initFileNamePost;
         $this->importFileByAbsPath($moduleInitFile);
-//        pomvc();exit;
 
         $mvcInitFile = $moduleDir . '/' . $target_module . '/' . ucfirst($target_module) . $initFileNamePost;
         $this->importFileByAbsPath($mvcInitFile);
