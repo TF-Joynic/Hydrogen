@@ -2,10 +2,47 @@
 
 namespace Hydrogen\Http\Response;
 
+use Hydrogen\Http\Exception\InvalidArgumentException;
+use Hydrogen\Http\Exception\SeekFailedException;
 use Psr\Http\Message\StreamInterface;
 
 class Stream implements StreamInterface
 {
+    const MODE = 1;
+    const USE_INCLUDE_PATH = 2;
+    const CONTEXT = 3;
+
+    public static $_allowed_options = array(
+        self::MODE,
+        self::USE_INCLUDE_PATH,
+        self::CONTEXT
+    );
+
+    private $_stream = null;
+
+    public function __construct($from, $options = array())
+    {
+        if (is_resource($from)) {
+            $this->_stream = $from;
+        } elseif ($from && is_string($from)) {
+            $options = array_intersect_key(self::$_allowed_options, $options);
+
+            $mode = isset($options[self::MODE]) ? $options[self::MODE] : 'rb';
+
+            $use_include_path = isset($options[self::USE_INCLUDE_PATH])
+                ? $options[self::USE_INCLUDE_PATH] : false;
+
+            $context = isset($options[self::CONTEXT]) ? $options[self::CONTEXT] : null;
+
+            if (false !== $handle = fopen($from, $mode, $use_include_path, $context)) {
+                $this->_stream = $handle;
+            }
+        }
+
+        if (null === $this->_stream) {
+            throw new InvalidArgumentException('invalid args specified');
+        }
+    }
 
     /**
      * Reads all data from the stream into a string, from the beginning to end.
@@ -23,7 +60,7 @@ class Stream implements StreamInterface
      */
     public function __toString()
     {
-        // TODO: Implement __toString() method.
+
     }
 
     /**
@@ -76,7 +113,7 @@ class Stream implements StreamInterface
      */
     public function eof()
     {
-        // TODO: Implement eof() method.
+        return feof($this->_stream);
     }
 
     /**
@@ -86,7 +123,8 @@ class Stream implements StreamInterface
      */
     public function isSeekable()
     {
-        // TODO: Implement isSeekable() method.
+        $meta = stream_get_meta_data($this->_stream);
+        return $meta['seekable'];
     }
 
     /**
@@ -103,7 +141,9 @@ class Stream implements StreamInterface
      */
     public function seek($offset, $whence = SEEK_SET)
     {
-        // TODO: Implement seek() method.
+        if (-1 === fseek($this->_stream, $offset, $whence)) {
+            throw new SeekFailedException('failed when attempt to seek stream');
+        }
     }
 
     /**
