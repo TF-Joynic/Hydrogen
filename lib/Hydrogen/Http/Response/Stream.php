@@ -2,8 +2,8 @@
 
 namespace Hydrogen\Http\Response;
 
-use Hydrogen\Http\Exception\InvalidArgumentException;
-use Hydrogen\Http\Exception\SeekFailedException;
+use Hydrogen\Http\Exception\InstantiationException;
+use Hydrogen\Http\Exception\StreamManipulationException;
 use Psr\Http\Message\StreamInterface;
 
 class Stream implements StreamInterface
@@ -40,7 +40,7 @@ class Stream implements StreamInterface
         }
 
         if (null === $this->_stream) {
-            throw new InvalidArgumentException('invalid args specified');
+            throw new InstantiationException('invalid args specified');
         }
     }
 
@@ -70,7 +70,7 @@ class Stream implements StreamInterface
      */
     public function close()
     {
-        // TODO: Implement close() method.
+        null !== $this->_stream && fclose($this->_stream);
     }
 
     /**
@@ -82,7 +82,14 @@ class Stream implements StreamInterface
      */
     public function detach()
     {
-        // TODO: Implement detach() method.
+        if (null === $this->_stream) {
+            return null;
+        }
+
+        $resource = $this->_stream;
+        $this->_stream = null;
+
+        return $resource;
     }
 
     /**
@@ -92,7 +99,11 @@ class Stream implements StreamInterface
      */
     public function getSize()
     {
-        // TODO: Implement getSize() method.
+        if (null !== $this->_stream && (false !== $size = filesize($this->_stream))) {
+            return $size;
+        }
+
+        return null;
     }
 
     /**
@@ -103,7 +114,11 @@ class Stream implements StreamInterface
      */
     public function tell()
     {
-        // TODO: Implement tell() method.
+        if (null !== $this->_stream && (false !== $pos = ftell($this->_stream))) {
+            return $pos;
+        }
+
+        throw new StreamManipulationException('Failed to tell current stream position!');
     }
 
     /**
@@ -113,7 +128,7 @@ class Stream implements StreamInterface
      */
     public function eof()
     {
-        return feof($this->_stream);
+        return null === $this->_stream ? false : feof($this->_stream);
     }
 
     /**
@@ -123,6 +138,10 @@ class Stream implements StreamInterface
      */
     public function isSeekable()
     {
+        if (null !== $this->_stream) {
+            return false;
+        }
+
         $meta = stream_get_meta_data($this->_stream);
         return $meta['seekable'];
     }
@@ -141,8 +160,8 @@ class Stream implements StreamInterface
      */
     public function seek($offset, $whence = SEEK_SET)
     {
-        if (-1 === fseek($this->_stream, $offset, $whence)) {
-            throw new SeekFailedException('failed when attempt to seek stream');
+        if (null === $this->_stream || -1 === fseek($this->_stream, $offset, $whence)) {
+            throw new StreamManipulationException('Failed when attempt to seek stream');
         }
     }
 
@@ -158,7 +177,11 @@ class Stream implements StreamInterface
      */
     public function rewind()
     {
-        // TODO: Implement rewind() method.
+        if (null !== $this->_stream && $this->isSeekable()) {
+            $this->seek(0);
+        }
+
+        throw new StreamManipulationException('Failed when attempt to rewind(seek) stream');
     }
 
     /**
@@ -168,7 +191,7 @@ class Stream implements StreamInterface
      */
     public function isWritable()
     {
-        // TODO: Implement isWritable() method.
+        return null !== $this->_stream ? is_writable($this->_stream) : false;
     }
 
     /**
@@ -180,7 +203,11 @@ class Stream implements StreamInterface
      */
     public function write($string)
     {
-        // TODO: Implement write() method.
+        if (null !== $this->_stream && (false !== $len = fwrite($this->_stream, $string))) {
+            return $len;
+        }
+
+        throw new StreamManipulationException('Failed to write string to stream');
     }
 
     /**
@@ -190,7 +217,7 @@ class Stream implements StreamInterface
      */
     public function isReadable()
     {
-        // TODO: Implement isReadable() method.
+        return null !== $this->_stream ? is_readable($this->_stream) : false;
     }
 
     /**
@@ -205,7 +232,11 @@ class Stream implements StreamInterface
      */
     public function read($length)
     {
-        // TODO: Implement read() method.
+        if (null !== $this->_stream && (false !== $content = fread($this->_stream, $length))) {
+            return $content;
+        }
+
+        throw new StreamManipulationException('Failed to read data from the stream');
     }
 
     /**
@@ -217,7 +248,15 @@ class Stream implements StreamInterface
      */
     public function getContents()
     {
-        // TODO: Implement getContents() method.
+        $content = '';
+        while ($this->eof()) {
+            // 8KB max per reading
+            if (false !== $res = $this->read(8192)) {
+                $content .= $res;
+            }
+        }
+
+        return $content;
     }
 
     /**
@@ -234,6 +273,11 @@ class Stream implements StreamInterface
      */
     public function getMetadata($key = null)
     {
-        // TODO: Implement getMetadata() method.
+        if (null !== $this->_stream) {
+            return null;
+        }
+
+        $meta = stream_get_meta_data($this->_stream);
+        return null === $key ? $meta : (isset($meta[$key]) ? $meta[$key] : null);
     }
 }
