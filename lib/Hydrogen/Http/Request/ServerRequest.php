@@ -458,6 +458,16 @@ class ServerRequest implements ServerRequestInterface
         return $this;
     }
 
+    public function getMessage()
+    {
+        if (null !== $this->_message && $this->_message instanceof Message) {
+            return $this->_message;
+        }
+
+        $this->_message = new Message();
+        return $this->_message;
+    }
+
     /**
      * Retrieves the URI instance.
      *
@@ -469,7 +479,12 @@ class ServerRequest implements ServerRequestInterface
      */
     public function getUri()
     {
-        return $this->attrUri();
+        if (null !== $this->_uri && $this->_uri instanceof Uri) {
+            return $this->_uri;
+        }
+
+        $this->_uri = new Uri();
+        return $this->_uri;
     }
 
     /**
@@ -794,25 +809,5 @@ class ServerRequest implements ServerRequestInterface
         }
 
         return $this;
-    }
-
-    public function attrMessage()
-    {
-        if (null !== $this->_message && $this->_message instanceof Message) {
-            return $this->attrMessage();
-        }
-
-        $this->_message = new Message();
-        return $this->_message;
-    }
-
-    public function attrUri()
-    {
-        if (null !== $this->_uri && $this->_uri instanceof Uri) {
-            return $this->_uri;
-        }
-
-        $this->_uri = new Uri();
-        return $this->_uri;
     }
 }

@@ -60,7 +60,18 @@ class Stream implements StreamInterface
      */
     public function __toString()
     {
+        $string = '';
 
+        if (null !== $this->_stream) {
+            try {
+                $this->seek(0);
+                $string = $this->getContents();
+            } catch (StreamManipulationException $e) {
+                $string = '';
+            }
+        }
+
+        return $string;
     }
 
     /**
