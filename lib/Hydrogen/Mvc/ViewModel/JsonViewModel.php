@@ -2,6 +2,7 @@
 
 namespace Hydrogen\Mvc\ViewModel;
 
+use Hydrogen\Http\Request\ServerRequest;
 use Hydrogen\Http\Response\Stream;
 
 class JsonViewModel extends ViewModel
@@ -21,6 +22,13 @@ class JsonViewModel extends ViewModel
      */
     public function concreteBody()
     {
-        return new Stream();
+        $bodyStream = new Stream(Stream::DEFAULT_STREAM_WRAPPER, array(
+            Stream::MODE => 'w'
+        ));
+
+        $body = json_encode($this->_vars);
+        $bodyStream->write($body);
+
+        return $bodyStream;
     }
 }

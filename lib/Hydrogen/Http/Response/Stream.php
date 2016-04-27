@@ -8,6 +8,8 @@ use Psr\Http\Message\StreamInterface;
 
 class Stream implements StreamInterface
 {
+    const DEFAULT_STREAM_WRAPPER = 'php://temp';
+
     const MODE = 1;
     const USE_INCLUDE_PATH = 2;
     const CONTEXT = 3;
@@ -20,7 +22,7 @@ class Stream implements StreamInterface
 
     private $_stream = null;
 
-    public function __construct($from, $options = array())
+    public function __construct($from, $options = array(), $default_mem_use = 4194304)
     {
         if (is_resource($from)) {
             $this->_stream = $from;
@@ -33,6 +35,13 @@ class Stream implements StreamInterface
                 ? $options[self::USE_INCLUDE_PATH] : false;
 
             $context = isset($options[self::CONTEXT]) ? $options[self::CONTEXT] : null;
+
+            if ($default_mem_use && is_int($default_mem_use)
+                && false !== strpos($from, 'php://temp')) {
+
+                $from = $from.'/maxmemory:'.$default_mem_use;
+
+            }
 
             if (false !== $handle = fopen($from, $mode, $use_include_path, $context)) {
                 $this->_stream = $handle;
@@ -259,15 +268,11 @@ class Stream implements StreamInterface
      */
     public function getContents()
     {
-        $content = '';
-        while ($this->eof()) {
-            // 8KB max per reading
-            if (false !== $res = $this->read(8192)) {
-                $content .= $res;
-            }
+        if (null === $this->_stream) {
+            throw new StreamManipulationException('Invalid stream!');
         }
 
-        return $content;
+        return stream_get_contents($this->_stream);
     }
 
     /**
