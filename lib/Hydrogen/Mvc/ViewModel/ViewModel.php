@@ -15,11 +15,13 @@ abstract class ViewModel
 
     /**
      * concrete response header
+     *
+     * @return array
      */
     public function concreteHeader()
     {
         return array(
-            HTTP_HEADER_CONTENT_TYPE => 'application-json;charset=utf-8'
+            HTTP_HEADER_CONTENT_TYPE => 'text/html;charset=utf-8'
         );
     }
 
@@ -29,4 +31,6 @@ abstract class ViewModel
      * @return StreamInterface
      */
     public abstract function concreteBody();
+
+
 }

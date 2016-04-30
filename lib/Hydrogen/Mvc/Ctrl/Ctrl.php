@@ -24,7 +24,12 @@ class Ctrl
      */
     private $_doRender = true;
 
-    protected static $_plugins = array();
+    /**
+     * @var array of PluginInterface
+     */
+    private $_plugins = array();
+
+    private $_active_plugins = array();
 
     public function __construct()
     {
@@ -56,10 +61,11 @@ class Ctrl
     }
 
     /**
-     * hook, run before ctrl construct
+     * hook, run before ctrl act runs
      */
     public function preDispatch()
     {
+
     }
 
     /**
@@ -99,15 +105,53 @@ class Ctrl
         return $this->_response;
     }
 
-    public static function registerPlugin(PluginInterface $plugin)
+    public function registerPlugin(PluginInterface $plugin)
     {
-        self::$_plugins[] = $plugin;
-        return true;
+        $this->_plugins[] = $plugin;
+        return $this;
     }
 
-    public static function clearPlugin()
+    /**
+     * In case of re-activating the plugin(s), remove the plugin after it's been activated.
+     *
+     * @param bool|false $reverse
+     * @return PluginInterface
+     */
+    private function getNextPlugin($reverse = false)
     {
-        self::$_plugins = array();
-        return true;
+        $next = null;
+
+        if (!$reverse) {
+            $next = array_shift($this->_plugins);
+            null !== $next && array_unshift($this->_active_plugins, $next);
+        } else {
+            $next = array_shift($this->_active_plugins);
+        }
+
+        return $next;
+    }
+
+    public function activatePlugins()
+    {
+        while ($currentPlugin = $this->getNextPlugin()) {
+            $currentPlugin->activate();
+        }
+
+        return $this;
+    }
+
+    public function terminatePlugins()
+    {
+        while ($currentPlugin = $this->getNextPlugin(true)) {
+            $currentPlugin->activate();
+        }
+
+        return $this;
+    }
+
+    public function clearPlugin()
+    {
+        $this->_plugins = array();
+        return $this;
     }
 }

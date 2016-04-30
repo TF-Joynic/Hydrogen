@@ -26,7 +26,7 @@ final class Application
 	 * [bootstrap description]
 	 * @return void
 	 */
-	public function bootstrap()
+	private function bootstrap()
 	{
 		$bootstrap = new Base();
 
