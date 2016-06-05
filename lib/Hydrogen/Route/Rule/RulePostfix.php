@@ -2,7 +2,7 @@
 
 namespace Hydrogen\Route\Rule;
 
-use Hydrogen\Http\Exception\InvalidArgumentException;
+use Hydrogen\Route\Exception\InvalidArgumentException;
 
 class RulePostfix extends AbstractRule
 {

@@ -5,6 +5,7 @@ use Hydrogen\Route\Router;
 use Hydrogen\Route\Rule\RuleFixed;
 use Hydrogen\Route\Rule\RuleParam;
 use Hydrogen\Route\Rule\RulePostfix;
+use Hydrogen\Route\Rule\RuleClosure;
 
 if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
 	echo '<strong>Hello, SAE!</strong>';
@@ -94,10 +95,17 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
 
 //    Hydrogen\Load\Loader::getInstance()->import(APPLICATION_PATH.'/config/route.php');
 
-
     $router = Router::getInstance();
 
-    $router->addRule(new RulePostfix('.json', array(
+    $a = new RuleClosure();
+    $b = 12;
+    $a->addRule("/sd", function() use ($b) {
+        echo "asddd".$b;
+    });
+    $a->exe();
+    exit;
+
+    /*$router->addRule(new RulePostfix('.json', array(
         'header' => array(
             HTTP_HEADER_CONTENT_TYPE => 'application/json',
         ),
@@ -110,7 +118,7 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
         'module' => '',
         'ctrl' => 'branch',
         'act' => 'master'
-    )));
+    )));*/
 
     /*$router->addRule(new RuleParam('/simple/:id', array(
         'ctrl' => 'branch',
