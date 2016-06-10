@@ -19,7 +19,6 @@ final class Application
 	public function __construct()
 	{
         // init config etc.
-        
 	}
 
 	/**

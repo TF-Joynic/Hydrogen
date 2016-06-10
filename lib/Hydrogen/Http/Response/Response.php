@@ -5,14 +5,14 @@ namespace Hydrogen\Http\Response;
 use Hydrogen\Http\Exception\InvalidArgumentException;
 use Hydrogen\Http\Message;
 use Psr\Http\Message\MessageInterface;
-use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 use Hydrogen\Http\Response\cookie;
 
 /**
  * @property cookie $cookie return response cookie maniplation class
  */
-class Response implements PsrResponseInterface
+class Response implements ResponseInterface
 {
     private $_http_status_code = '';
 

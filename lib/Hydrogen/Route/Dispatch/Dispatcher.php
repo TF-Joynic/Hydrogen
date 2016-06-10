@@ -66,8 +66,10 @@ class Dispatcher extends AbstractDispatcher
         $actMethodName = $target_act . $actPostFix;
 
         $actViewModel = null;
+
         try {
             $actViewModel = $this->executeAct($mvcCtrlClassName, $actMethodName);
+
         } catch (DispatchException $e) {
 
             // force to ErrorCtrl -> (indexAct) beneath the same dir
@@ -77,18 +79,10 @@ class Dispatcher extends AbstractDispatcher
 
         }
 
-        /** ViewModel timing! */
-
-
-        // concrete body from $mvcCtrlInstance for RESPONSE
-        $this->_response->withBody($actViewModel->concreteBody());
-
-
 
         // plugin init
 
         // Dispatch
-
 
         // plugin terminate
     }
@@ -119,8 +113,6 @@ class Dispatcher extends AbstractDispatcher
         $mvcCtrlInstance->withRequest($this->_request);
         $this->_response->withStatus($e->getCode());
         $mvcCtrlInstance->withResponse($this->_response);
-
-
 
         return $mvcCtrlInstance->$mvcErrorActName();
     }

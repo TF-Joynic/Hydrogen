@@ -97,6 +97,7 @@ $MIME_TYPEs = array(
 if (!function_exists('getMIMEheader')) {
     function getMIMEheader($content_postfix) {
         global $MIME_TYPEs;
+        $content_postfix = ltrim($content_postfix, '.');
         return isset($MIME_TYPEs[$content_postfix]) ? $MIME_TYPEs[$content_postfix] : null;
     }
 }

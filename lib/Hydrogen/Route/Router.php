@@ -6,6 +6,8 @@ use Hydrogen\Debug\Variable;
 use Hydrogen\Http\Request\ServerRequest as Request;
 use Hydrogen\Http\Response\Response;
 use Hydrogen\Load\Loader;
+use Hydrogen\Route\Exception\InvalidRuleCallbackException;
+use Hydrogen\Route\Exception\UrlMatchFailedException;
 use Hydrogen\Route\Rule\RuleInterface;
 use Hydrogen\Route\UrlMatch\UrlMatcher;
 use Hydrogen\Route\Exception\DispatchException;
@@ -32,8 +34,14 @@ class Router
 		return self::$_instance;
 	}
 
-    public function addRule(RuleInterface $routeRule)
+    public function addRule(RuleInterface $routeRule, \Closure $callback)
     {
+        if (false !== $callbackClosure = $callback->bindTo($routeRule, $routeRule)) {
+            $routeRule->setCallback($callbackClosure);
+        } else {
+            throw new InvalidRuleCallbackException('invalid callback closure specified!');
+        }
+
         if (!$routeRule->isTerminable()) {
             array_unshift($this->_rules, $routeRule);
         } else {
@@ -52,9 +60,15 @@ class Router
 
         $request = new Request();
         $response = new Response();
-        if (false === $matchResult = $urlMatcher->match($request, $response)) {
-        	// match failed
-        	throw new DispatchException('can not match url: '.$_SERVER['REQUEST_URI'].', review your typo!');
+
+        try {
+            $matchResult= $urlMatcher->match($request, $response);
+        } catch (\Exception $e) {
+            throw new UrlMatchFailedException($e->getMessage() . '-- can not match url: '.$_SERVER['REQUEST_URI']);
+        }
+
+        if (true !== $matchResult) {
+            throw new UrlMatchFailedException('url match failed!');
         }
 
         // dispatch now

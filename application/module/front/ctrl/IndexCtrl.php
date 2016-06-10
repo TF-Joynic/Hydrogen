@@ -5,6 +5,8 @@
 namespace application\module\front\ctrl;
 
 use Hydrogen\Mvc\Ctrl\Ctrl;
+use Hydrogen\Mvc\ViewModel\JsonViewModel;
+use Hydrogen\Mvc\ViewModel\TplViewModel;
 
 class IndexCtrl extends Ctrl
 {
@@ -12,15 +14,12 @@ class IndexCtrl extends Ctrl
 	{
         $request = $this->getRequest();
         $response = $this->getResponse();
+
         var_dump($request);
-
-        var_dump($response);
         if ($request->isHead()) {
-
             $headerAccept = $request->getHeader(HTTP_HEADER_ACCEPT);
-
         }
-        file_put_contents('D:/log/request_method.log', 'HEAD' . PHP_EOL, FILE_APPEND);
-		echo 'front index';
+
+        return new JsonViewModel(array("a" => 1));
 	}
 }

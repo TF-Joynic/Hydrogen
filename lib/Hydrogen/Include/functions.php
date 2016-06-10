@@ -79,20 +79,6 @@ if (!function_exists('HydrogenLog')) {
     }
 }
 
-if (!function_exists('get_variable_name')) {
-    function get_variable_name(&$var, $scope = NULL) {
-        if (NULL == $scope) {
-            $scope = $GLOBALS;
-        }
-
-        $tmp  = $var;
-        $var   = "tmp_exists_" . mt_rand();
-        $name = array_search($var, $scope, TRUE);
-        $var   = $tmp;
-        return $name;
-    }
-}
-
 if (!function_exists('pomvc')) {
     function pomvc() {
         global $module, $ctrl, $act;
