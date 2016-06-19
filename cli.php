@@ -9,11 +9,10 @@ ini_set('memory_limit', '170M');
 if (!function_exists('DOPRINT')) {
     function DOPRINT($str, $withDate = false) {
         $date = $withDate ? '['.date('Y-m-d H:i:s O').']' : '';
-        $tpl = '# '.$date.' %s '.PHP_EOL;
+        $tpl = $date.' %s '.PHP_EOL;
 
         if (is_array($str)) {
             if (!$str) {
-                echo '-'.PHP_EOL;
                 return;
             }
 
@@ -21,19 +20,17 @@ if (!function_exists('DOPRINT')) {
                 if (is_array($line)) {
                     DOPRINT($line, $withDate);
                 } else {
-                    echo sprintf($tpl, $line);
+                    print sprintf($tpl, $line);
                 }
             }
         } else {
-            echo sprintf($tpl, $str);
+            print sprintf($tpl, $str);
         }
     }
 }
 
 $argc --;
-var_dump($argc);
 array_shift($argv);
-var_dump($argv);
 
 $base = __DIR__;
 $vendor_path = $base.'/vendor';
@@ -50,18 +47,20 @@ defined('GLOBAL_CONFIG_PATH')
 
 defined('NAMESPACE_SEPARATOR') || define('NAMESPACE_SEPARATOR', '\\');
 
-include LIB_PATH.'/Hydrogen/Load/Autoloader.php';
+require LIB_PATH.'/Hydrogen/Load/Autoloader.php';
 
 $autoloader = Hydrogen\Load\Autoloader::getInstance();
-$autoloader->attachNamespace('application', $base);
+$autoloader->attachNamespace('application', $base.DIRECTORY_SEPARATOR.'application');
 $autoloader->attachCallback(
     array(
         Hydrogen\Load\Autoloader::CALLBACK_NS2PATH
     )
 );
 
+Hydrogen\Load\Loader::getInstance()->import(LIB_PATH.'/Hydrogen/Include/Functions.php');
 
-static $_command_separatar = '::', $_baseNamespace = 'application\\console', $_cslPostFix = 'Csl', $_actionPostFix = 'Act';
+static $_command_separatar = '::', $_baseNamespace = 'application\\console',
+$_cslPostFix = 'Csl', $_actionPostFix = 'Act';
 
 global $consoleHelper;
 
@@ -102,6 +101,8 @@ if ($pathArr) {
 
     $i = 0;
     while ($tmp = array_pop($pathArr)) {
+        $tmp = ucfirst($tmp);
+
         if (0 == $i) {
             $action = $tmp;
         } elseif (1 == $i) {
@@ -114,22 +115,23 @@ if ($pathArr) {
     }
 }
 
-echo $module.'::'.$class.'::'.$action.PHP_EOL;
+print 'COMMAND: '.$module.'::'.$class.'::'.$action.PHP_EOL;
 
 // route! start:
 $className = $_baseNamespace.NAMESPACE_SEPARATOR
-    .trim($module.NAMESPACE_SEPARATOR.$class.$_cslPostFix.NAMESPACE_SEPARATOR, NAMESPACE_SEPARATOR);
+    .trim($module.NAMESPACE_SEPARATOR.$class.$_cslPostFix, NAMESPACE_SEPARATOR);
 
-echo 'app_path: '.APPLICATION_PATH.PHP_EOL;
-echo 'className: '.$className.PHP_EOL;
+/*echo 'app_path: '.APPLICATION_PATH.PHP_EOL;
+echo 'className: '.$className.PHP_EOL;*/
 
 if (!class_exists($className, true)) {
     DOPRINT('Could not find the command script file');
-    DOPRINT('  Existing command class: ');
+    DOPRINT('  Existing command class: '. $className.'.php');
     exit(1);
 }
 
 $EXE = new $className;
+
 ## method
 $expectedMethodName = $action.$_actionPostFix;
 if (!method_exists($EXE, $expectedMethodName)) {
@@ -153,13 +155,7 @@ if (!method_exists($EXE, $expectedMethodName)) {
 ## arguments
 ## -args Terry,1223,false
 $requireMethodArgs = array();
-/*
-foreach () {
 
-}
-if () {
-
-}*/
 $consoleHelper = instantiateConsoleHelper();
 $callableParams = $consoleHelper->extractCallableParams($argv);
 call_user_func_array(array($EXE, $expectedMethodName), $callableParams);
@@ -179,7 +175,6 @@ foreach ($methodList as $method) {
         $method->getName();
 
 }*/
-
 
 exit;
 

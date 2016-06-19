@@ -60,6 +60,11 @@ class Loader
      */
     public function checkLoadingPermission($path)
     {
+        // class or file beneath vendor  is always has permission to include
+        if (0 === strpos($path, VENDOR_PATH)) {
+            return true;
+        }
+
         $pathInfo = pathinfo($path);
 
         $debug_backtrace = debug_backtrace();
