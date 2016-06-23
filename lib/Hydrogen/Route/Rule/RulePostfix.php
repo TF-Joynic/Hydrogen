@@ -2,12 +2,15 @@
 
 namespace Hydrogen\Route\Rule;
 
-use Hydrogen\Http\Exception\InvalidArgumentException;
+use Hydrogen\Http\Request\ServerRequest as Request;
+use Hydrogen\Http\Response\Response;
+use Hydrogen\Load\Loader;
+use Hydrogen\Route\Exception\InvalidArgumentException;
 
 class RulePostfix extends AbstractRule
 {
 
-    public function __construct($ruleStr, array $ruleContext)
+    public function __construct($ruleStr)
     {
         if (!is_string($ruleStr) || 0 == strlen($postfix = ltrim($ruleStr, '.'))) {
             throw new InvalidArgumentException('Route Rule[postfix]: invalid rule string!');
@@ -15,16 +18,17 @@ class RulePostfix extends AbstractRule
 
         $this->_terminable = false;
         $this->_ruleStr = $postfix;
-        $this->_ruleContext = $ruleContext;
     }
 
     /**
      * $path: user/profile.json
      *
      * @param $path
-     * @return array
+     * @param Request $request
+     * @param Response $response
+     * @return bool|\Closure
      */
-    public function apply(&$path)
+    public function apply(&$path, Request &$request, Response &$response)
     {
         if (false !== $postfixPos = strrpos($path, '.')) {
             $realPath = substr($path, 0, $postfixPos);
@@ -32,7 +36,14 @@ class RulePostfix extends AbstractRule
 
             if ($postfix == $this->_ruleStr) {
                 $path = $realPath;
-                return $this->_ruleContext;
+
+                Loader::getInstance()->import("lib/Hydrogen/Http/Response/MIME.php");
+                // automatically setup Content-type
+                if (null !== $content_type = getMIMEheader($postfix)) {
+                    $response->withHeader(HTTP_HEADER_CONTENT_TYPE, $content_type);
+                }
+
+                $this->performCallback();
             }
         }
 

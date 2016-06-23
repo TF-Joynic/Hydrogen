@@ -65,30 +65,24 @@ class Dispatcher extends AbstractDispatcher
         $actPostFix = $EXEC->getActMethodPostfix();
         $actMethodName = $target_act . $actPostFix;
 
-        $actReturn = null;
+        $actViewModel = null;
+
         try {
-            $actReturn = $this->executeAct($mvcCtrlClassName, $actMethodName);
+            $actViewModel = $this->executeAct($mvcCtrlClassName, $actMethodName);
+
         } catch (DispatchException $e) {
 
             // force to ErrorCtrl -> (indexAct) beneath the same dir
-            $actReturn = $this->handleMvcError(str_replace($ctrlClassBaseName,
+            $actViewModel = $this->handleMvcError(str_replace($ctrlClassBaseName,
                 $EXEC->getErrorCtrlName().$EXEC->getCtrlClassPostfix(),
                 $mvcCtrlClassName), $EXEC->getErrorActName().$actPostFix, $e);
 
         }
 
-        /** ViewModel timing! */
-        // concrete body from $mvcCtrlInstance for RESPONSE
-        $this->_response->withBody();
-
-        // attach 'em to ctrl
-//        $
 
         // plugin init
-//		$
 
         // Dispatch
-
 
         // plugin terminate
     }
@@ -139,15 +133,56 @@ class Dispatcher extends AbstractDispatcher
         if (! $mvcCtrlInstance instanceof Ctrl) {
             throw new DispatchException('Ctrl class: '.$mvcCtrlClassName.' is not subclass of Ctrl', 404);
         }
+
+        // predispatch
+        $mvcCtrlInstance->preDispatch();
+
         $methodVar = array($mvcCtrlInstance, $actMethodName);
         if (!method_exists($mvcCtrlInstance, $actMethodName) || !is_callable($methodVar, true, $callable_name)) {
             throw new DispatchException('ctrl: ' . $mvcCtrlClassName . ' has no act called: ' . $actMethodName, 404);
         }
 
-        $mvcCtrlInstance->withRequest($this->_request)->withResponse($this->_response);
+        $mvcCtrlInstance->withRequest($this->_request);
 
+        // init
+        $mvcCtrlInstance->init();
+
+        // plugin
+        $mvcCtrlInstance->activatePlugins();
+
+        $viewModel = $this->invokeCtrlAct($mvcCtrlInstance, $actMethodName);
+
+        // http header(s)
+        foreach ($viewModel->concreteHeader() as $header_name => $header_value) {
+            $this->_response->withHeader($header_name, $header_value);
+        }
+
+        // http body
+        $this->_response->withBody($viewModel->concreteBody());
+
+        // postDispatch
+        $mvcCtrlInstance->postDispatch();
+    }
+
+    /**
+     * @param $mvcCtrlInstance
+     * @param $actMethodName
+     * @return \Hydrogen\Mvc\ViewModel\ViewModel
+     */
+    private function invokeCtrlAct($mvcCtrlInstance, $actMethodName)
+    {
         return $mvcCtrlInstance->$actMethodName();
     }
+
+    /*private function beforeActHooks()
+    {
+
+    }
+
+    private function afterActHooks()
+    {
+
+    }*/
 
     private function importFileByAbsPath($absPath)
     {

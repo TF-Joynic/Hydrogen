@@ -60,6 +60,11 @@ class Loader
      */
     public function checkLoadingPermission($path)
     {
+        // class or file beneath vendor  is always has permission to include
+        if (0 === strpos($path, VENDOR_PATH)) {
+            return true;
+        }
+
         $pathInfo = pathinfo($path);
 
         $debug_backtrace = debug_backtrace();
@@ -93,24 +98,20 @@ class Loader
         return true;
     }
 
-    /**
-     * include file manually
-     *
-     * @param  string $filePath
-     * @return bool
-     * @throws Exception\FileUnaccessibleException
-     * @throws \Exception
-     */
-    public function import($filePath)
+    public function getAbsPath($filePath)
     {
         if (!$filePath || !is_string($filePath)) {
             return false;
         }
 
+        if (file_exists($filePath)) {
+            return $filePath;
+        }
+
         $filePath = trim(str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $filePath));
 
         if (!defined('APPLICATION_PATH') || !defined('VENDOR_PATH')
-         || !defined('LIB_PATH')) {
+            || !defined('LIB_PATH')) {
 
             throw new \Exception('*_PATH constant is not defined completely');
 
@@ -125,8 +126,8 @@ class Loader
         foreach ($search as $key => $value) {
 
             if (0 === strpos($filePath, $value)
-             && $filePath = substr_replace($filePath, 
-                constant(strtoupper($value).'_PATH'), 0, strlen($value))) {
+                && $filePath = substr_replace($filePath,
+                    constant(strtoupper($value).'_PATH'), 0, strlen($value))) {
 
                 break;
 
@@ -134,7 +135,21 @@ class Loader
 
         }
 
-        return self::_load($filePath);
+        return $filePath;
+    }
+
+
+    /**
+     * include file manually
+     *
+     * @param  string $filePath
+     * @return bool
+     * @throws Exception\FileUnaccessibleException
+     * @throws \Exception
+     */
+    public function import($filePath)
+    {
+        return self::_load($this->getAbsPath($filePath));
     }
 
     private function __clone()

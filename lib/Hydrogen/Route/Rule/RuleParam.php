@@ -2,6 +2,8 @@
 
 namespace Hydrogen\Route\Rule;
 
+use Hydrogen\Http\Request\ServerRequest as Request;
+use Hydrogen\Http\Response\Response;
 use Hydrogen\Http\Exception\InvalidArgumentException;
 
 class RuleParam extends AbstractRule
@@ -9,21 +11,22 @@ class RuleParam extends AbstractRule
     CONST RULE_PARAM_PREFIX = ':';
     CONST SEGMENT_DELIMITER = '/';
 
-    public function __construct($ruleStr, array $ruleContext)
+    public function __construct($ruleStr)
     {
         if (!is_string($ruleStr) || false === strpos($ruleStr, '/'.self::RULE_PARAM_PREFIX)) {
             throw new InvalidArgumentException('Route Rule[param] must have #:{segment}# specified! Example: /user/:id');
         }
 
         $this->_ruleStr = $this->fmtRuleStr($ruleStr);
-        $this->_ruleContext = $ruleContext;
     }
 
     /**
      * @param $path
-     * @return bool|array
+     * @param Request $request
+     * @param Response $response
+     * @return \Closure|bool
      */
-    public function apply(&$path)
+    public function apply(&$path, Request &$request, Response &$response)
     {
         list ($param_names, $rule_segments) = $this->extractFromRuleStr();
         if (empty($param_names)) {
@@ -35,12 +38,12 @@ class RuleParam extends AbstractRule
         array_shift($rule_segments);
         array_shift($path_segments);
 
-        $tmp_param = array();
+        $contextParams = array();
         if (count($rule_segments) == count($path_segments)) {
             foreach ($rule_segments as $k => $v) {
                 if (false !== strpos($v, self::RULE_PARAM_PREFIX)) {
                     $param_name = array_shift($param_names);
-                    $tmp_param[$param_name] = $path_segments[$k];
+                    $contextParams[$param_name] = $path_segments[$k];
                 } elseif ($v === $path_segments[$k]) {
                     continue;
                 } else {
@@ -48,9 +51,9 @@ class RuleParam extends AbstractRule
                 }
             }
 
-            $this->_ruleContext['param'] = array_merge($this->_ruleContext['param'], $tmp_param);
-//            var_dump($this->_ruleContext['param']);exit;
-            return $this->_ruleContext;
+            $request->withAttributes($contextParams);
+            $this->performCallback($request, $response);
+            return true;
         }
 
         return false;

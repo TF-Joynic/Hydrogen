@@ -5,6 +5,7 @@ use Hydrogen\Route\Router;
 use Hydrogen\Route\Rule\RuleFixed;
 use Hydrogen\Route\Rule\RuleParam;
 use Hydrogen\Route\Rule\RulePostfix;
+use Hydrogen\Route\Rule\RuleClosure;
 
 if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
 	echo '<strong>Hello, SAE!</strong>';
@@ -23,6 +24,10 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
 
     defined('GLOBAL_CONFIG_PATH')
 	 || define('GLOBAL_CONFIG_PATH', $global_config_path);
+
+    defined('MODULE') || define('MODULE', 'module');
+    defined('CTRL') || define('CTRL', 'ctrl');
+    defined('ACT') || define('ACT', 'act');
 
 	require LIB_PATH.'/Hydrogen/Load/Autoloader.php';
 
@@ -62,42 +67,12 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
         .DIRECTORY_SEPARATOR.DIRECTORY_SEPARATOR
         .'database.ini');
 
-	// Variable::dump($CONFIG->get('application', 'general', 'application_name', 'cdHyd'));
-//	Variable::dump($CONFIG->dump(), true);
-
-    /*$mysql = new Hydrogen\Db\Relational\PDO\Mysql('app_joynic');
-	$result = $mysql->query('select * from sms')->fetchAll(\PDO::FETCH_ASSOC);*/
-
-//	var_dump($result);
-
-
-//    $mysql->get();
-
-	/*$curl = new Hydrogen\Http\Request\Curl('http://www.baidu.com/');
-	var_dump($curl);exit;*/
-
-	/*$filter = new Hydrogen\Http\Filter\Filter();
-	var_dump($filter->init());exit;*/
-
-/*	$cookie2 = new Hydrogen\Http\Cookie\Cookie('kyo', 'Benimaru Nikaido');
-	$cookie2->expire = $_SERVER['REQUEST_TIME'] + 344;
-
-	$response = new Hydrogen\Http\Response\Response();
-	$cookies = array(
-		$cookie,
-		$cookie2
-	);
-	$response->cookie->add($cookies);
-	exit;*/
     $EXECUTOR->setModuleDir(APPLICATION_PATH.'/module');
     $EXECUTOR->setAvailableModules(array('admin'));
 
-//    Hydrogen\Load\Loader::getInstance()->import(APPLICATION_PATH.'/config/route.php');
+    require(Hydrogen\Load\Loader::getInstance()->getAbsPath(APPLICATION_PATH.'/config/route.php'));
 
-
-    $router = Router::getInstance();
-
-    $router->addRule(new RulePostfix('.json', array(
+    /*$router->addRule(new RulePostfix('.json', array(
         'header' => array(
             HTTP_HEADER_CONTENT_TYPE => 'application/json',
         ),
@@ -110,7 +85,7 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
         'module' => '',
         'ctrl' => 'branch',
         'act' => 'master'
-    )));
+    )));*/
 
     /*$router->addRule(new RuleParam('/simple/:id', array(
         'ctrl' => 'branch',

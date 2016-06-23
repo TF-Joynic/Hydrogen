@@ -19,14 +19,13 @@ final class Application
 	public function __construct()
 	{
         // init config etc.
-        
 	}
 
 	/**
 	 * [bootstrap description]
 	 * @return void
 	 */
-	public function bootstrap()
+	private function bootstrap()
 	{
 		$bootstrap = new Base();
 

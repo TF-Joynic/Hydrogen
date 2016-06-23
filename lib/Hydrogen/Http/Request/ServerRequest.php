@@ -100,20 +100,12 @@ class ServerRequest implements ServerRequestInterface
         }
     }
 
-    public function getParam($name, $default_value = null)
+    public function getAttributeInt($name, $default_value = null)
     {
-
-        return isset($this->_GET[$name]) ? $this->_sanitize($this->_GET[$name]) :
-            (isset($this->_POST[$name]) ? $this->_sanitize($this->_POST[$name]) : $default_value);
-
+        return intval($this->getAttributeRaw($name, $default_value));
     }
 
-    public function getParamInt($name, $default_value = null)
-    {
-        return intval($this->getParamRaw($name, $default_value));
-    }
-
-    public function getParamRaw($name, $default_value = null)
+    public function getAttributeRaw($name, $default_value = null)
     {
 
         return isset($this->_GET[$name]) ? $this->_GET[$name] :
@@ -131,9 +123,9 @@ class ServerRequest implements ServerRequestInterface
         foreach ($params as $index => $default_value) {
             if (is_int($index)) {
                 // the default_value is index actually
-                $fields[$default_value] = $this->getParam($default_value);
+                $fields[$default_value] = $this->getAttribute($default_value);
             } else {
-                $fields[$index] = $this->getParam($index, $default_value);
+                $fields[$index] = $this->getAttribute($index, $default_value);
             }
         }
 
@@ -142,7 +134,7 @@ class ServerRequest implements ServerRequestInterface
 
     public function getHeader($name)
     {
-        return $this->attrMessage()->getHeader($name);
+        return $this->getMessage()->getHeader($name);
     }
 
     public function setContextAttr($name, $value)
@@ -458,6 +450,16 @@ class ServerRequest implements ServerRequestInterface
         return $this;
     }
 
+    public function getMessage()
+    {
+        if (null !== $this->_message && $this->_message instanceof Message) {
+            return $this->_message;
+        }
+
+        $this->_message = new Message();
+        return $this->_message;
+    }
+
     /**
      * Retrieves the URI instance.
      *
@@ -469,7 +471,12 @@ class ServerRequest implements ServerRequestInterface
      */
     public function getUri()
     {
-        return $this->attrUri();
+        if (null !== $this->_uri && $this->_uri instanceof Uri) {
+            return $this->_uri;
+        }
+
+        $this->_uri = new Uri();
+        return $this->_uri;
     }
 
     /**
@@ -709,7 +716,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function getAttributes()
     {
-        return $this->getParams(array());
+        return array_merge($this->_GET, $this->_POST, $this->_param);
     }
 
     /**
@@ -729,7 +736,9 @@ class ServerRequest implements ServerRequestInterface
      */
     public function getAttribute($name, $default = null)
     {
-        return $this->getParam($name, $default);
+        return isset($this->_GET[$name]) ? $this->_sanitize($this->_GET[$name]) :
+            (isset($this->_POST[$name]) ? $this->_sanitize($this->_POST[$name])
+                : (isset($this->_param[$name]) ? $this->_sanitize($this->_param[$name]) : $default));
     }
 
     /**
@@ -794,25 +803,5 @@ class ServerRequest implements ServerRequestInterface
         }
 
         return $this;
-    }
-
-    public function attrMessage()
-    {
-        if (null !== $this->_message && $this->_message instanceof Message) {
-            return $this->attrMessage();
-        }
-
-        $this->_message = new Message();
-        return $this->_message;
-    }
-
-    public function attrUri()
-    {
-        if (null !== $this->_uri && $this->_uri instanceof Uri) {
-            return $this->_uri;
-        }
-
-        $this->_uri = new Uri();
-        return $this->_uri;
     }
 }

@@ -12,7 +12,7 @@ $MIME_TYPEs = array(
     'doc'=>'application/msword',
     'exe'=>'application/octet-stream',
     'rar'=>'application/octet-stream',
-    'js'=>'javascr墨pt/js',
+    'js'=>'javascript/js',
     'css'=>'text/css',
     'hqx'=>'application/mac-binhex40',
     'bin'=>'application/octet-stream',
@@ -97,6 +97,7 @@ $MIME_TYPEs = array(
 if (!function_exists('getMIMEheader')) {
     function getMIMEheader($content_postfix) {
         global $MIME_TYPEs;
+        $content_postfix = ltrim($content_postfix, '.');
         return isset($MIME_TYPEs[$content_postfix]) ? $MIME_TYPEs[$content_postfix] : null;
     }
 }

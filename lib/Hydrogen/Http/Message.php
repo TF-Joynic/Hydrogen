@@ -19,10 +19,10 @@ class Message implements MessageInterface
      */
     private $_headers = array();
 
-    public function __construct()
-    {
-        $http_version = '1.1';
+    private $_body = null;
 
+    public function __construct($http_version = '1.1')
+    {
         if (isset($_SERVER['SERVER_PROTOCOL'])) {  // server side
             $http_version = preg_replace('[^(\d|\.)]', '', $_SERVER['SERVER_PROTOCOL']);
 
@@ -74,7 +74,6 @@ class Message implements MessageInterface
             foreach ($headers as $k => &$v)
                 $v = explode(',', $v);
 
-        pre($headers);exit;
         return $headers;
     }
 
@@ -139,7 +138,7 @@ class Message implements MessageInterface
      */
     public function getHeaders()
     {
-        $this->getHttpHeaders();
+        $this->getHttpHeaders(false);
     }
 
     /**
@@ -152,6 +151,7 @@ class Message implements MessageInterface
      */
     public function hasHeader($name)
     {
+        $name = $this->sleepHeaderName($name);
         return isset($this->_headers[$name]) ? true : false;
     }
 
@@ -338,7 +338,7 @@ class Message implements MessageInterface
      */
     public function getBody()
     {
-        // TODO: Implement getBody() method.
+        return $this->_body;
     }
 
     /**
@@ -356,6 +356,7 @@ class Message implements MessageInterface
      */
     public function withBody(StreamInterface $body)
     {
-        // TODO: Implement withBody() method.
+        $this->_body = $body;
+        return $this;
     }
 }

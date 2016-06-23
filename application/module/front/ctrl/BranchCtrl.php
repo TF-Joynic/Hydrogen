@@ -9,6 +9,7 @@ class BranchCtrl extends Ctrl
 {
     public function masterAct()
     {
+//        var_dump('==='.$this->getRequest()->getAttribute("cd"));
         Variable::dump($this->getRequest()->getParams());exit;
     }
 }

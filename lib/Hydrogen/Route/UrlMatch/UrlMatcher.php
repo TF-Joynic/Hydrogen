@@ -3,9 +3,12 @@
 namespace Hydrogen\Route\UrlMatch;
 
 use Hydrogen\Debug\Variable;
+use Hydrogen\Exception;
 use Hydrogen\Http\Request\ServerRequest as Request;
 use Hydrogen\Http\Response\Response;
 use Hydrogen\Application\Execute\Executor;
+use Hydrogen\Route\Exception\DispatchException;
+use Hydrogen\Route\Exception\UrlMatchFailedException;
 use Hydrogen\Route\Rule\RuleInterface;
 
 class UrlMatcher extends AbstractUrlMatcher
@@ -44,32 +47,18 @@ class UrlMatcher extends AbstractUrlMatcher
         if ($this->_rules) {
             foreach ($this->_rules as $routeRule) {
 
-                if ($routeRule instanceof RuleInterface && $ruleContext = $routeRule->apply($sanitizedPath)) {
-                    $module = isset($ruleContext['module']) && $ruleContext['module'] ? $ruleContext['module'] : $DEFAULT_MODULE;
-                    $ctrl = isset($ruleContext['ctrl']) && $ruleContext['ctrl'] ? $ruleContext['ctrl'] : $DEFAULT_CTRL;
-                    $act = isset($ruleContext['act']) && $ruleContext['act'] ? $ruleContext['act'] : $DEFAULT_ACT;
-
-                    if (isset($ruleContext['param'])) {
-                        if (!is_array($ruleContext['param'])) {
-                            $ruleContext['param'] = array($ruleContext['param']);
-                        }
-                        $request->withAttributes($ruleContext['param']);
-                    }
-
-                    $request->setContextAttr('module', $module);
-                    $request->setContextAttr('ctrl', ucfirst($ctrl));
-                    $request->setContextAttr('act', $act);
+                if ($routeRule instanceof RuleInterface
+                    && (false !== $ruleCallback = $routeRule->apply($sanitizedPath, $request, $response))) {
 
                     if ($routeRule->isTerminable()) {
+                        $this->tailing($DEFAULT_MODULE, $DEFAULT_CTRL, $DEFAULT_ACT);
+
+                        $request->setContextAttr('module', $this->_module);
+                        $request->setContextAttr('ctrl', $this->_ctrl);
+                        $request->setContextAttr('act', $this->_act);
                         return true;
-                    } else {
-//                        pre($ruleContext['header']);exit;
-                        // TODO 把下面这段逻辑抽到 routeRule 里面
-                        foreach ($ruleContext['header'] as $header_name => $header_value) {
-                            $response->withHeader($header_name, $header_value);
-                        }
-                        var_dump($response->getHeaders());exit;
                     }
+
                 }
 
             }
