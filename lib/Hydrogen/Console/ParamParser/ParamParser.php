@@ -8,7 +8,7 @@ namespace Hydrogen\Console\ParamParser;
  */
 class ParammeterParser
 {
-    public function __construct($argc, $argv)
+    public function __construct($argv)
     {
 
     }

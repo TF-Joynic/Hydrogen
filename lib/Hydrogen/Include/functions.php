@@ -55,9 +55,9 @@ if (!function_exists('isDev')) {
 }
 
 if (!function_exists('pre') && !isPro()) {
-    function pre($var) {
-        echo "<pre>";
-        print_r($var);
-        echo "</pre>";
-    }
+}
+function pre($var) {
+    echo "<pre>";
+    print_r($var);
+    echo "</pre>";
 }
