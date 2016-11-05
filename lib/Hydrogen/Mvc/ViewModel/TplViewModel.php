@@ -6,9 +6,9 @@ use Psr\Http\Message\StreamInterface;
 
 class TplViewModel extends ViewModel
 {
-    public function __construct()
+    public function __construct($vars, $tplName = '')
     {
-
+        parent::__construct($vars, $tplName);
     }
 
     /**
@@ -19,6 +19,7 @@ class TplViewModel extends ViewModel
     public function concreteBody()
     {
         // TODO: Implement concreteBody() method.
+
     }
 
 

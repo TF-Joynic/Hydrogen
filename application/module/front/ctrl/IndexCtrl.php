@@ -20,6 +20,11 @@ class IndexCtrl extends Ctrl
             $headerAccept = $request->getHeader(HTTP_HEADER_ACCEPT);
         }
 
+        $view = new \stdClass();
+        $view->name = 'Andy';
+        $view->age = 12;
+        return new TplViewModel($view);
+
         return new JsonViewModel(array("a" => 1));
 	}
 }

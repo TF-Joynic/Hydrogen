@@ -22,6 +22,9 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
     defined('VENDOR_PATH') || define('VENDOR_PATH', $vendor_path);
     defined('LIB_PATH') || define('LIB_PATH', $lib_path);
 
+    defined('COMPILE_PATH') || define('COMPILE_PATH',
+        APPLICATION_PATH.DIRECTORY_SEPARATOR.'data'.DIRECTORY_SEPARATOR.'compile');
+
     defined('GLOBAL_CONFIG_PATH')
 	 || define('GLOBAL_CONFIG_PATH', $global_config_path);
 

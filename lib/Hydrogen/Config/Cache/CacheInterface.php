@@ -11,15 +11,15 @@ interface CacheInterface
 	 */
 	public static function dependentExtensions();
 
-	/**
-	 * add one key to the cache storage, 
-	 * will return false if the key already exists
-	 * 
-	 * @param string  $key 
-	 * @param mixed  $var 
-	 * @param integer $ttl
-	 * @return boolean
-	 */
+    /**
+     * add one key to the cache storage,
+     * will return false if the key already exists
+     *
+     * @param string $key
+     * @param mixed $var
+     * @param integer $ttl
+     * @return bool
+     */
 	public static function add(string $key, $var, $ttl = 0);
 
 	/**

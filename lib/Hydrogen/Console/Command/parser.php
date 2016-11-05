@@ -23,7 +23,7 @@ class parser
 
     public static function extractInstructionNames($cmdStr)
     {
-        $instructions = [
+        /*$instructions = [
             Command::MODULE => '',
             Command::CSL => '',
             Command::ACT => ''
@@ -31,11 +31,8 @@ class parser
 
         if (!$cmdStr) {
             return $instructions;
-        }
+        }*/
 
-        if (1) {
-
-        }
 
     }
 
