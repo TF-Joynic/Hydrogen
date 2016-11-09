@@ -61,3 +61,7 @@ if (!function_exists('pre') && !isPro()) {
         echo "</pre>";
     }
 }
+
+defined('SCOPE_APPICATION') || define('SCOPE_APPICATION', 'application');
+defined('SCOPE_DATABASE') || define('SCOPE_DATABASE', 'database');
+defined('SCOPE_MEMCACHE') || define('SCOPE_MEMCACHE', 'memcache');

@@ -9,170 +9,134 @@ use Hydrogen\Mvc\Ctrl\Plugin\PluginInterface;
 
 class Executor
 {
-    private static $_instance = null;
+    private static $_default_module = 'front';
+    private static $_default_ctrl = 'Index';
+    private static $_default_act = 'index';
 
-    private $_default_module = 'front';
-    private $_default_ctrl = 'Index';
-    private $_default_act = 'index';
+    private static $_ctrlClassPostfix = 'Ctrl';
+    private static $_actMethodPostfix = 'Act';
 
-    private $_ctrlClassPostfix = 'Ctrl';
-    private $_actMethodPostfix = 'Act';
+    private static $_error_ctrl_name = 'Error';
+    private static $_error_act_name = 'index';
 
-    private $_error_ctrl_name = 'Error';
-    private $_error_act_name = 'index';
+    private static $_modules = array();   // enabled modules
+    private static $_moduleDir = APPLICATION_PATH;
+    private static $_applicationConfigDir = 'config';
 
-    private $_modules = array();   // available modules
-    private $_moduleDir = APPLICATION_PATH;
-    private $_applicationConfigDir = 'config';
+    private static $_module_init_file = 'Init.php';
 
-    private $_module_init_file = 'Init.php';
-
-    private function __construct()
-    {
-        // $config = new Config();
-    }
-
-    public static function getInstance()
-    {
-        if (null == self::$_instance) {
-            self::$_instance = new self();
-        }
-
-        return self::$_instance;
-    }
-
-    public function setAvailableModules($modules)
+    public static function setEnabledModules($modules)
     {
         if (!is_array($modules)) {
             $modules = array($modules);
         }
 
-        $this->_modules = $modules;
-
-        return $this;
+        self::$_modules = $modules;
     }
 
-    public function getAvailableModules()
+    public static function getEnabledModules()
     {
-        return $this->_modules;
+        return self::$_modules;
     }
 
-    public function setModuleDir($dir)
+    public static function setModuleDir($dir)
     {
         if (is_dir($dir))
-            $this->_moduleDir = $dir;
-
-        return $this;
+            self::$_moduleDir = $dir;
     }
 
-    public function getModuleDir()
+    public static function getModuleDir()
     {
-        return $this->_moduleDir;
+        return self::$_moduleDir;
     }
 
-    public function setApplicationConfigDir($dir)
+    public static function setApplicationConfigDir($dir)
     {
         if (is_dir($dir))
-            $this->_applicationConfigDir = $dir;
-
-        return $this;
+            self::$_applicationConfigDir = $dir;
     }
 
-    public function getApplicationConfigDir()
+    public static function getApplicationConfigDir()
     {
-        return $this->_applicationConfigDir;
+        return self::$_applicationConfigDir;
     }
 
-    public function setDefaultModule($module)
+    public static function setDefaultModule($module)
     {
         if ($module && is_string($module)) {
-            $this->_default_module = $module;
+            self::$_default_module = $module;
         }
-
-        return $this;
     }
 
-    public function getDefaultModule()
+    public static function getDefaultModule()
     {
-        return $this->_default_module;
+        return self::$_default_module;
     }
 
-    public function getDefaultCtrl()
+    public static function getDefaultCtrl()
     {
-        return $this->_default_ctrl;
+        return self::$_default_ctrl;
     }
 
-    public function getDefaultAct()
+    public static function getDefaultAct()
     {
-        return $this->_default_act;
+        return self::$_default_act;
     }
 
-    public function getCtrlClassPostfix()
+    public static function getCtrlClassPostfix()
     {
-        return $this->_ctrlClassPostfix;
+        return self::$_ctrlClassPostfix;
     }
 
-    public function setCtrlClassPostfix($postfix = 'Ctrl')
+    public static function setCtrlClassPostfix($postfix = 'Ctrl')
     {
-        if (0 < strlen($postfix) && $postfix != $this->_ctrlClassPostfix) {
-            $this->_ctrlClassPostfix = $postfix;
+        if (0 < strlen($postfix) && $postfix != self::$_ctrlClassPostfix) {
+            self::$_ctrlClassPostfix = $postfix;
         }
-
-        return $this;
     }
 
-    public function getActMethodPostfix()
+    public static function getActMethodPostfix()
     {
-        return $this->_actMethodPostfix;
+        return self::$_actMethodPostfix;
     }
 
-    public function setActMethodPostfix($postfix = 'Act')
+    public static function setActMethodPostfix($postfix = 'Act')
     {
-        if (0 < strlen($postfix) && $postfix != $this->_actMethodPostfix) {
-            $this->_actMethodPostfix = $postfix;
+        if (0 < strlen($postfix) && $postfix != self::$_actMethodPostfix) {
+            self::$_actMethodPostfix = $postfix;
         }
-
-        return $this;
     }
 
-    public function setModuleInitFileName($filename)
+    public static function setModuleInitFileName($filename)
     {
-        $this->_module_init_file = $filename;
-        return $this;
+        self::$_module_init_file = $filename;
     }
 
-    public function getModuleInitFileName()
+    public static function getModuleInitFileName()
     {
-        return $this->_module_init_file;
+        return self::$_module_init_file;
     }
 
-    public function setNamespaceDir($namespace, $dir, $prepend = false)
+    public static function setNamespaceDir($namespace, $dir, $prepend = false)
     {
         return Autoloader::getInstance()->attachNamespace($namespace, $dir, $prepend);
     }
 
-    public function setErrorCtrlName($ctrl_name)
+    public static function setErrorCtrlName($ctrl_name)
     {
         if (is_string($ctrl_name) && 0 < strlen($ctrl_name)) {
-            $this->_error_ctrl_name = $ctrl_name;
+            self::$_error_ctrl_name = $ctrl_name;
         }
-
-        return $this;
     }
 
-    /**
-     * get error handle Ctrl name
-     *
-     * @return string
-     */
-    public function getErrorCtrlName()
+    public static function getErrorCtrlName()
     {
-        return $this->_error_ctrl_name;
+        return self::$_error_ctrl_name;
     }
 
-    public function getErrorActName()
+    public static function getErrorActName()
     {
-        return $this->_error_act_name;
+        return self::$_error_act_name;
     }
 
     /**
@@ -182,7 +146,7 @@ class Executor
      * @param PluginInterface $plugin
      * @return mixed
      */
-    public function registerPlugin(Ctrl $ctrl, PluginInterface $plugin)
+    public static function registerPlugin(Ctrl $ctrl, PluginInterface $plugin)
     {
         if (class_exists($ctrl) || !method_exists($ctrl, 'registerPlugin')) {
             return false;
@@ -191,7 +155,7 @@ class Executor
         return call_user_func_array(array($ctrl, 'registerPlugin'), array($plugin));
     }
 
-    public function clearPlugin(Ctrl $ctrl)
+    public static function clearPlugin(Ctrl $ctrl)
     {
         if (class_exists($ctrl) || !method_exists($ctrl, 'clearPlugin')) {
             return false;
@@ -200,6 +164,4 @@ class Executor
         return call_user_func_array(array($ctrl, 'clearPlugin'), array());
     }
 
-	private function __clone()
-	{}
 }

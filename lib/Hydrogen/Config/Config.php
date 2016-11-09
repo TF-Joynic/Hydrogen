@@ -226,6 +226,26 @@ class Config
 		 : array();
 		 
 	}
+
+	public static function setScopeArr($scopeArr)
+	{
+		if (!$scopeArr) {
+			return ;
+		}
+
+		if (!is_array($scopeArr)) {
+			if (is_string($scopeArr)) {
+				$scopeArr = array($scopeArr);
+			}
+		} else {
+			$scopeArr = array_values($scopeArr);
+			$scopeArr = array_filter($scopeArr, function ($val) {
+				return is_string($val) ? true : false;
+			});
+		}
+
+
+	}
 	
 	public function dump()
 	{

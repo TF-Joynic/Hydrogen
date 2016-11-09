@@ -6,11 +6,11 @@ use Hydrogen\Route\Rule\RuleFixed;
 use Hydrogen\Route\Rule\RuleParam;
 use Hydrogen\Route\Rule\RulePostfix;
 use Hydrogen\Route\Rule\RuleClosure;
+use Hydrogen\Application\Execute\Executor;
 
 if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
 	echo '<strong>Hello, SAE!</strong>';
 } else {
-
 	$base = str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $_SERVER['DOCUMENT_ROOT'].'/');
 
 	$vendor_path = $base.'vendor';
@@ -50,26 +50,24 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
         ->import('lib/Hydrogen/Include/Functions.php');
 
 	// config
-	$EXECUTOR = Hydrogen\Application\Execute\Executor::getInstance();
 
 	$CONFIG = Hydrogen\Config\Config::getInstance();
 	$CONFIG->mergeConfigFile(APPLICATION_PATH.
-		DIRECTORY_SEPARATOR.$EXECUTOR->getApplicationConfigDir()
+		DIRECTORY_SEPARATOR.Executor::getApplicationConfigDir()
 		.DIRECTORY_SEPARATOR.'application.ini');
 
 	$CONFIG->mergeConfigFile(APPLICATION_PATH.
-		DIRECTORY_SEPARATOR.$EXECUTOR->getApplicationConfigDir()
+		DIRECTORY_SEPARATOR.Executor::getApplicationConfigDir()
 		.DIRECTORY_SEPARATOR.ENV.DIRECTORY_SEPARATOR
 		.'application.ini');
 
     $CONFIG->mergeConfigFile(APPLICATION_PATH.
-        DIRECTORY_SEPARATOR.$EXECUTOR->getApplicationConfigDir()
+        DIRECTORY_SEPARATOR.Executor::getApplicationConfigDir()
         .DIRECTORY_SEPARATOR.DIRECTORY_SEPARATOR
         .'database.ini');
 
-    $EXECUTOR->setModuleDir(APPLICATION_PATH.'/module');
-    $EXECUTOR->setAvailableModules(array('admin'));
-
+    Executor::setModuleDir(APPLICATION_PATH.DIRECTORY_SEPARATOR.$CONFIG->get(SCOPE_APPICATION, 'application', '_module_dir'));
+    Executor::setEnabledModules($CONFIG->get(SCOPE_APPICATION, 'application', '_enabled_modules'));
     require(Hydrogen\Load\Loader::getInstance()->getAbsPath(APPLICATION_PATH.'/config/route.php'));
 
     /*$router->addRule(new RulePostfix('.json', array(

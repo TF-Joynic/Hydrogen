@@ -1,11 +1,11 @@
 <?php
 
-\Hydrogen\Load\Loader::getInstance()->import('application/module/ModuleInit.php');
+use Hydrogen\Application\Execute\Executor;
 
-$EXE = \Hydrogen\Application\Execute\Executor::getInstance();
+\Hydrogen\Load\Loader::getInstance()->import('application/module/ModuleInit.php');
 
 $baseModuleNS = 'application\\module\\front';
 
 foreach (array('ctrl') as $registry) {
-    $EXE->setNamespaceDir($baseModuleNS.'\\'.$registry, APPLICATION_PATH.'/module/front/'.$registry, true);
+    Executor::setNamespaceDir($baseModuleNS.'\\'.$registry, APPLICATION_PATH.'/module/front/'.$registry, true);
 }
