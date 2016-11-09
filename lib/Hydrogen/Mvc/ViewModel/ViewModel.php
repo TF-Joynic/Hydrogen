@@ -7,10 +7,12 @@ use Hydrogen\Http\Response\Response;
 abstract class ViewModel
 {
     protected $_vars = null;
+    protected $_tpl = null;
 
-    public function __construct($vars)
+    public function __construct($vars, $tplName = '')
     {
         $this->_vars = $vars;
+        $this->_tpl = $tplName;
     }
 
     /**
