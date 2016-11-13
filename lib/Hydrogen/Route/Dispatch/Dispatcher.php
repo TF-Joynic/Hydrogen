@@ -43,11 +43,10 @@ class Dispatcher extends AbstractDispatcher
         }
 
         // firstly we must confirm the ctrl is reachable
-        $EXEC = Executor::getInstance();
-        $moduleDir = $EXEC->getModuleDir();
+        $moduleDir = Executor::getModuleDir();
 
         $moduleDir = rtrim($moduleDir, '/\\');
-        $initFileNamePost = $EXEC->getModuleInitFileName();
+        $initFileNamePost = Executor::getModuleInitFileName();
 
         $moduleInitFile = $moduleDir . '/Module' . $initFileNamePost;
         $this->importFileByAbsPath($moduleInitFile);
@@ -58,11 +57,11 @@ class Dispatcher extends AbstractDispatcher
 
         $tmp = $moduleBaseNamespace ? $moduleBaseNamespace .'\\' : '';
 
-        $ctrlClassBaseName = ($target_ctrl) . $EXEC->getCtrlClassPostfix();
+        $ctrlClassBaseName = ($target_ctrl) . Executor::getCtrlClassPostfix();
         $mvcCtrlClassName = 'application\\'.$tmp.$target_module
             . '\\ctrl\\' . $ctrlClassBaseName;
 
-        $actPostFix = $EXEC->getActMethodPostfix();
+        $actPostFix = Executor::getActMethodPostfix();
         $actMethodName = $target_act . $actPostFix;
 
         $actViewModel = null;
@@ -74,8 +73,8 @@ class Dispatcher extends AbstractDispatcher
 
             // force to ErrorCtrl -> (indexAct) beneath the same dir
             $actViewModel = $this->handleMvcError(str_replace($ctrlClassBaseName,
-                $EXEC->getErrorCtrlName().$EXEC->getCtrlClassPostfix(),
-                $mvcCtrlClassName), $EXEC->getErrorActName().$actPostFix, $e);
+                Executor::getErrorCtrlName().Executor::getCtrlClassPostfix(),
+                $mvcCtrlClassName), Executor::getErrorActName().$actPostFix, $e);
 
         }
 
