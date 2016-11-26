@@ -2,6 +2,7 @@
 
 namespace Hydrogen\Mvc\ViewModel;
 
+use Hydrogen\Http\Response\Stream;
 use Psr\Http\Message\StreamInterface;
 
 class TplViewModel extends ViewModel
@@ -18,8 +19,23 @@ class TplViewModel extends ViewModel
      */
     public function concreteBody()
     {
-        // TODO: Implement concreteBody() method.
+        $bodyStream = new Stream(Stream::DEFAULT_STREAM_WRAPPER, array(
+            Stream::MODE => 'w'
+        ));
 
+        $body =<<< HTML
+<html>
+    <head>
+        <title>Voodoo</title>
+    </head>
+    <body>
+        <h4>Vooodoo</h4>
+    </body>
+</html>
+HTML;
+
+        $bodyStream->write($body);
+        return $bodyStream;
     }
 
 

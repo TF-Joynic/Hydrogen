@@ -4,6 +4,7 @@
  */
 namespace application\module\front\ctrl;
 
+use Hydrogen\Load\Loader;
 use Hydrogen\Mvc\Ctrl\Ctrl;
 use Hydrogen\Mvc\ViewModel\JsonViewModel;
 use Hydrogen\Mvc\ViewModel\TplViewModel;
@@ -15,7 +16,8 @@ class IndexCtrl extends Ctrl
         $request = $this->getRequest();
         $response = $this->getResponse();
 
-        var_dump($request);
+        $loadedFiles = Loader::getInstance()->getLoadedFile();
+
         if ($request->isHead()) {
             $headerAccept = $request->getHeader(HTTP_HEADER_ACCEPT);
         }

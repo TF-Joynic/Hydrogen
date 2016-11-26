@@ -38,12 +38,12 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
 	$autoloader->attachCallback(
         array(
             Hydrogen\Load\Autoloader::CALLBACK_NS2PATH,
-            Hydrogen\Load\Autoloader::CALLBACK_COMPOSER
+            Hydrogen\Load\Autoloader::CALLBACK_COMPOSER,
         )
     );
 
-	$autoloader->attachNamespace('application', APPLICATION_PATH);
-	$autoloader->attachNamespace('Psr', LIB_PATH.DIRECTORY_SEPARATOR.'Psr', true);
+    $autoloader->attachNamespace('Psr', LIB_PATH.DIRECTORY_SEPARATOR.'Psr', true);
+    $autoloader->attachNamespace('application', APPLICATION_PATH);
 
 	// include Framework constant
 	Hydrogen\Load\Loader::getInstance()
@@ -52,6 +52,7 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
     Hydrogen\Load\Loader::getInstance()
         ->import('lib/Hydrogen/Include/Functions.php');
 
+//    pre($autoloader->getRegisteredCallbacks());exit;
 	// config
 
 	$CONFIG = Hydrogen\Config\Config::getInstance();

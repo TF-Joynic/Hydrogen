@@ -2,13 +2,13 @@
 
 namespace Hydrogen\Config\Cache;
 
-use Hydrogen\Config\Exception;
+use Hydrogen\Config\Exception\CacheStorageClassNotDefinedException;
+use Hydrogen\Config\Exception\CacheStorageNotSupported;
 
 class cacheFactory
 {
 	public static function factory($cacheType)
 	{
-		$cacheCls = '';
 		if (!is_string($cacheType) || empty($cacheType)) {
 
 			throw new \UnexpectedValueException(

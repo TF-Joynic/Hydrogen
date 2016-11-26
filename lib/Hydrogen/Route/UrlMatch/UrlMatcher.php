@@ -38,11 +38,10 @@ class UrlMatcher extends AbstractUrlMatcher
     {
         $sanitizedPath = trim(preg_replace('/\/{2,}/', '/', $request->getUri()->getPath()));
 
-        $EXECUTOR = Executor::getInstance();
-        $AVAILABLE_MODULES = $EXECUTOR->getAvailableModules();
-        $DEFAULT_MODULE = $EXECUTOR->getDefaultModule();
-        $DEFAULT_CTRL = $EXECUTOR->getDefaultCtrl();
-        $DEFAULT_ACT = $EXECUTOR->getDefaultAct();
+        $AVAILABLE_MODULES = Executor::getEnabledModules();
+        $DEFAULT_MODULE = Executor::getDefaultModule();
+        $DEFAULT_CTRL = Executor::getDefaultCtrl();
+        $DEFAULT_ACT = Executor::getDefaultAct();
 
         if ($this->_rules) {
             foreach ($this->_rules as $routeRule) {
