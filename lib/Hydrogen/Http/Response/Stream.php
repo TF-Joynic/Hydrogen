@@ -42,7 +42,7 @@ class Stream implements StreamInterface
                 $from = $from.'/maxmemory:'.$default_mem_use;
 
             }
-            
+
             $handle = $context ? fopen($from, $mode, $use_include_path, $context) :  fopen($from, $mode, $use_include_path);
             if (false !== $handle) {
                 $this->_stream = $handle;

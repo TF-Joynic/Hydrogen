@@ -141,23 +141,26 @@ class Dispatcher extends AbstractDispatcher
             throw new DispatchException('ctrl: ' . $mvcCtrlClassName . ' has no act called: ' . $actMethodName, 404);
         }
 
+        // plugin
+        $mvcCtrlInstance->activatePlugins();
+
         $mvcCtrlInstance->withRequest($this->_request);
 
         // init
         $mvcCtrlInstance->init();
 
-        // plugin
-        $mvcCtrlInstance->activatePlugins();
-
         $viewModel = $this->invokeCtrlAct($mvcCtrlInstance, $actMethodName);
 
         // http header(s)
-        foreach ($viewModel->concreteHeader() as $header_name => $header_value) {
-            $this->_response->withHeader($header_name, $header_value);
+        foreach ($viewModel->concreteHeader() as $headerName => $headerValue) {
+            $this->_response->withHeader($headerName, $headerValue);
         }
 
         // http body
         $this->_response->withBody($viewModel->concreteBody());
+
+        // plugin
+        $mvcCtrlInstance->terminatePlugins();
 
         // postDispatch
         $mvcCtrlInstance->postDispatch();
@@ -171,6 +174,13 @@ class Dispatcher extends AbstractDispatcher
     private function invokeCtrlAct($mvcCtrlInstance, $actMethodName)
     {
         return $mvcCtrlInstance->$actMethodName();
+    }
+
+    private function performResponse()
+    {
+        if (true) {
+            #
+        }
     }
 
     /*private function beforeActHooks()

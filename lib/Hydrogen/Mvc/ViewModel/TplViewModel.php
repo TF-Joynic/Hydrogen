@@ -23,7 +23,7 @@ class TplViewModel extends ViewModel
             Stream::MODE => 'w'
         ));
 
-        $body =<<< HTML
+        $body =<<<HTML
 <html>
     <head>
         <title>Voodoo</title>

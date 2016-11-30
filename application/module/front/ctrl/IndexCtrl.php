@@ -11,21 +11,23 @@ use Hydrogen\Mvc\ViewModel\TplViewModel;
 
 class IndexCtrl extends Ctrl
 {
+    private $_layout = 'main';
+
 	public function indexAct()
 	{
         $request = $this->getRequest();
         $response = $this->getResponse();
 
-        $loadedFiles = Loader::getInstance()->getLoadedFile();
-
         if ($request->isHead()) {
             $headerAccept = $request->getHeader(HTTP_HEADER_ACCEPT);
         }
 
-        $view = new \stdClass();
-        $view->name = 'Andy';
-        $view->age = 12;
-        return new TplViewModel($view);
+        $ss =  112 /  0;
+
+        $var = new \stdClass();
+        $var->name = 'Andy';
+        $var->age = 12;
+        return new TplViewModel($var);
 
         return new JsonViewModel(array("a" => 1));
 	}
