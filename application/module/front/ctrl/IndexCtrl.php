@@ -22,11 +22,11 @@ class IndexCtrl extends Ctrl
             $headerAccept = $request->getHeader(HTTP_HEADER_ACCEPT);
         }
 
-        $ss =  112 /  0;
-
         $var = new \stdClass();
         $var->name = 'Andy';
         $var->age = 12;
+
+        $response->withHeader("ccd", "name");
         return new TplViewModel($var);
 
         return new JsonViewModel(array("a" => 1));

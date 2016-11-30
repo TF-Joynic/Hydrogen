@@ -20,21 +20,20 @@ class Stream implements StreamInterface
         self::CONTEXT
     );
 
-    private $_stream = null;
+    public $_stream = null;
 
     public function __construct($from, $options = array(), $default_mem_use = 4194304)
     {
         if (is_resource($from)) {
             $this->_stream = $from;
         } elseif ($from && is_string($from)) {
-            $options = array_intersect_key(self::$_allowed_options, $options);
+            $restrict = array_intersect(self::$_allowed_options, array_keys($options));
+            $mode = in_array(self::MODE, $restrict) ? $options[self::MODE] : 'rb';
 
-            $mode = isset($options[self::MODE]) ? $options[self::MODE] : 'rb';
-
-            $use_include_path = isset($options[self::USE_INCLUDE_PATH])
+            $use_include_path = in_array(self::MODE, $restrict) && isset($options[self::USE_INCLUDE_PATH])
                 ? $options[self::USE_INCLUDE_PATH] : false;
 
-            $context = isset($options[self::CONTEXT]) ? $options[self::CONTEXT] : null;
+            $context = in_array(self::MODE, $restrict) && isset($options[self::CONTEXT]) ? $options[self::CONTEXT] : null;
 
             if ($default_mem_use && is_int($default_mem_use)
                 && false !== strpos($from, 'php://temp')) {

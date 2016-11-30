@@ -138,7 +138,7 @@ class Message implements MessageInterface
      */
     public function getHeaders()
     {
-        $this->getHttpHeaders(false);
+        return $this->getHttpHeaders(true);
     }
 
     /**
@@ -187,7 +187,7 @@ class Message implements MessageInterface
      */
     private function wakeupHeaderName($name)
     {
-        $name = str_replace(' ', '-', ucwords(str_replace(
+        $name = str_replace(' ', '-', (str_replace(
             array(self::HTTP_HEADER_PREFIX, '_'), array('', ' '), $name)));
 
         return $name;
@@ -195,7 +195,7 @@ class Message implements MessageInterface
 
     private function sleepHeaderName($name)
     {
-        $name = strtoupper(str_replace(array(' ', '-'), '_', $name));
+        $name = (str_replace(array(' ', '-'), '_', $name));
 
         return self::HTTP_HEADER_PREFIX.$name;
     }

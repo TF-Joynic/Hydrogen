@@ -29,12 +29,12 @@ class TplViewModel extends ViewModel
         <title>Voodoo</title>
     </head>
     <body>
-        <h4>Vooodoo</h4>
+        <h1>Vooodoo</h1>
     </body>
 </html>
 HTML;
 
-        $bodyStream->write($body);
+        $len = $bodyStream->write($body);
         return $bodyStream;
     }
 

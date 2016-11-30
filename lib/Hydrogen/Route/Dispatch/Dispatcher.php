@@ -145,25 +145,39 @@ class Dispatcher extends AbstractDispatcher
         $mvcCtrlInstance->activatePlugins();
 
         $mvcCtrlInstance->withRequest($this->_request);
+        $mvcCtrlInstance->withResponse($this->_response);
 
         // init
         $mvcCtrlInstance->init();
 
         $viewModel = $this->invokeCtrlAct($mvcCtrlInstance, $actMethodName);
 
+        $mvcCtrlInstanceResp = $mvcCtrlInstance->getResponse();
+
         // http header(s)
         foreach ($viewModel->concreteHeader() as $headerName => $headerValue) {
-            $this->_response->withHeader($headerName, $headerValue);
+            $mvcCtrlInstanceResp->withHeader($headerName, $headerValue);
         }
 
+//        var_dump($mvcCtrlInstanceResp);
+        /*pre($mvcCtrlInstanceResp->getMessage());
+        */
+        /*pre($mvcCtrlInstanceResp->getHeaders());
+        exit;*/
+
+        $b = $viewModel->concreteBody();
+//        var_dump();exit;
         // http body
-        $this->_response->withBody($viewModel->concreteBody());
+        $mvcCtrlInstanceResp->withBody($b);
 
         // plugin
         $mvcCtrlInstance->terminatePlugins();
 
         // postDispatch
         $mvcCtrlInstance->postDispatch();
+
+        // response http body!
+        $this->performResponse($mvcCtrlInstanceResp);
     }
 
     /**
@@ -171,16 +185,29 @@ class Dispatcher extends AbstractDispatcher
      * @param $actMethodName
      * @return \Hydrogen\Mvc\ViewModel\ViewModel
      */
-    private function invokeCtrlAct($mvcCtrlInstance, $actMethodName)
+    private function invokeCtrlAct(&$mvcCtrlInstance, $actMethodName)
     {
         return $mvcCtrlInstance->$actMethodName();
     }
 
-    private function performResponse()
+    /**
+     * @param $response Response
+     */
+    private function performResponse(&$response)
     {
         if (true) {
-            #
+            ob_start();
+            /*pre($response->getHeaders());exit;*/
+            foreach ($response->getHeaders() as $headerName => $headerValue) {
+                header(sprintf('%s: %s', $headerName, $headerValue), false);
+            }
+
+            $responseBody = $response->getBody();
+            echo $responseBody->__toString();
+            $responseBody->close();
+            ob_end_flush();
         }
+
     }
 
     /*private function beforeActHooks()
