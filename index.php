@@ -1,5 +1,6 @@
 <?php
 
+use Hydrogen\Load\Loader;
 use Hydrogen\Debug\Variable;
 use Hydrogen\Route\Router;
 use Hydrogen\Route\Rule\RuleFixed;
@@ -46,10 +47,10 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
     $autoloader->attachNamespace('application', APPLICATION_PATH);
 
 	// include Framework constant
-	Hydrogen\Load\Loader::getInstance()
+	Loader::getInstance()
 		->import('lib/Hydrogen/Constant/Http.php');
 
-    Hydrogen\Load\Loader::getInstance()
+    Loader::getInstance()
         ->import('lib/Hydrogen/Include/Functions.php');
 
 //    pre($autoloader->getRegisteredCallbacks());exit;
@@ -72,7 +73,7 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
 
     Executor::setModuleDir(APPLICATION_PATH.DIRECTORY_SEPARATOR.$CONFIG->get(SCOPE_APPICATION, 'application', '_module_dir'));
     Executor::setEnabledModules($CONFIG->get(SCOPE_APPICATION, 'application', '_enabled_modules'));
-    require(Hydrogen\Load\Loader::getInstance()->getAbsPath(APPLICATION_PATH.'/config/route.php'));
+    require(Loader::getInstance()->getAbsPath(APPLICATION_PATH.'/config/route.php'));
 
     /*$router->addRule(new RulePostfix('.json', array(
         'header' => array(

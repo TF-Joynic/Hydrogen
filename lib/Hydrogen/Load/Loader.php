@@ -36,9 +36,10 @@ class Loader
         return $this->_loadedFile;
     }
 
-    public function _load($path)
+    public function _load($path, $force = false)
     {
-        if ($this->checkLoadingPermission($path) && (false !== $realPath = stream_resolve_include_path($path))) {
+        if (($force || $this->checkLoadingPermission($path)) && (false !== $realPath = stream_resolve_include_path($path))) {
+
             if (in_array($realPath, $this->_loadedFile)) {
                 return true;
             }
@@ -143,13 +144,13 @@ class Loader
      * include file manually
      *
      * @param  string $filePath
+     * @param bool $force
      * @return bool
-     * @throws Exception\FileUnaccessibleException
      * @throws \Exception
      */
-    public function import($filePath)
+    public function import($filePath, $force = false)
     {
-        return self::_load($this->getAbsPath($filePath));
+        return self::_load($this->getAbsPath($filePath), $force);
     }
 
     private function __clone()

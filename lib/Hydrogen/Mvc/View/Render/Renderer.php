@@ -2,6 +2,9 @@
 
 namespace Hydrogen\Mvc\View\Render;
 
+use Hydrogen\Application\Execute\Executor;
+use Hydrogen\Exception;
+use Hydrogen\Mvc\View\Exception\InvalidCompilePathException;
 use Hydrogen\Mvc\View\Exception\InvalidTemplateFileException;
 
 /**
@@ -26,8 +29,9 @@ class Renderer
             throw new InvalidTemplateFileException('Tpl file is invalid: ' . $this->_tplFilePath);
         }
 
-        if ($cached = $this->hasCacheFile($this->_tplFilePath)) {
-            return $this->readFromCache($cached);
+        list($hasCached, $cacheFilePath) = $this->hasCacheFile($this->_tplFilePath);
+        if ($hasCached) {
+            return $cacheFilePath;
         }
 
         // read in line
@@ -39,17 +43,27 @@ class Renderer
 
         }
 
+        $compileFileHandle = fopen($cacheFilePath, 'wb');
+        if (!$compileFileHandle) {
+
+            throw new InvalidCompilePathException('Could not access compile file: '
+                . $this->_tplFilePath . ', probably caused by no access permission!');
+
+        }
+
         while (!feof($handle)) {
-            $line = fgetc($handle);
+            $line = fgets($handle);
             if (false != strpos($line, '{$')) {
                 $line = $this->parseLine($line);
             }
 
-            // write into cacheFile
-
+            // write into output buffer
+            fwrite($compileFileHandle, $line);
         }
+        fclose($compileFileHandle);
         fclose($handle);
-
+//        file_put_contents('/Users/xiaolei/Documents/hy.log',$cacheFilePath );
+        return $cacheFilePath;
     }
 
     private function readFromCache($cachedFilePath)
@@ -74,12 +88,16 @@ class Renderer
     private function hasCacheFile($filePath)
     {
         $cacheFileName = $this->getCacheFileName($filePath);
-        $cacheFilePath = COMPILE_PATH.DIRECTORY_SEPARATOR.$cacheFileName;
-        if (false !== $cacheFileName && file_exists($cacheFilePath)) {
-            return $cacheFilePath;
+        if (!is_dir(COMPILE_PATH)) {
+            throw new InvalidCompilePathException('compile dir: '.COMPILE_PATH.' is invalid, make sure it do exist!');
         }
 
-        return false;
+        $cacheFilePath = COMPILE_PATH.DIRECTORY_SEPARATOR.$cacheFileName;
+        if (false !== $cacheFileName && file_exists($cacheFilePath)) {
+            return array(true, $cacheFilePath);
+        }
+
+        return array(false, $cacheFilePath);
     }
 
     /**
@@ -99,6 +117,14 @@ class Renderer
 
             return '';
         }, $line);
+    }
+
+    /**
+     * extract var array to PHP symbol table
+     */
+    public function extractVars()
+    {
+        extract($this->_vars);
     }
 
 }

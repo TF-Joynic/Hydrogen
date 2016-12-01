@@ -2,3 +2,4 @@
 *.iml
 tools/
 tools/license/
+application/data

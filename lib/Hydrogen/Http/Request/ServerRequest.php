@@ -67,7 +67,7 @@ class ServerRequest implements ServerRequestInterface
 
     public function getQueryInt($name, $default_value = 0)
     {
-        return intval(isset($this->_GET[$name]) ? $this->_GET[$name] : $default_value);
+        return isset($this->_GET[$name]) ? intval($this->_GET[$name]) : $default_value;
     }
 
     public function getQueryRaw($name, $default_value = null)
@@ -82,7 +82,7 @@ class ServerRequest implements ServerRequestInterface
 
     public function getPostInt($name, $default_value = 0)
     {
-        return intval(isset($this->_POST[$name]) ? $this->_POST[$name] : $default_value);
+        return isset($this->_POST[$name]) ? intval($this->_POST[$name]) : $default_value;
     }
 
     public function getPostRaw($name, $default_value = null)
@@ -195,7 +195,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function getProtocolVersion()
     {
-        return $this->attrMessage()->getProtocolVersion();
+        return $this->getMessage()->getProtocolVersion();
     }
 
     /**
@@ -213,7 +213,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function withProtocolVersion($version)
     {
-        $this->attrMessage()->withProtocolVersion($version);
+        $this->getMessage()->withProtocolVersion($version);
         return $this;
     }
 
@@ -244,7 +244,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function getHeaders()
     {
-        return $this->attrMessage()->getHeaders();
+        return $this->getMessage()->getHeaders();
     }
 
     /**
@@ -257,7 +257,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function hasHeader($name)
     {
-        return $this->attrMessage()->hasHeader($name);
+        return $this->getMessage()->hasHeader($name);
     }
 
     /**
@@ -281,7 +281,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function getHeaderLine($name)
     {
-        return $this->attrMessage()->getHeaderLine($name);
+        return $this->getMessage()->getHeaderLine($name);
     }
 
     /**
@@ -301,7 +301,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function withHeader($name, $value)
     {
-        $this->attrMessage()->withHeader($name, $value);
+        $this->getMessage()->withHeader($name, $value);
         return $this;
     }
 
@@ -323,7 +323,8 @@ class ServerRequest implements ServerRequestInterface
      */
     public function withAddedHeader($name, $value)
     {
-        $this->attrMessage()->withAddedHeader($name, $value);
+        $this->getMessage()->withAddedHeader($name, $value);
+        return $this;
     }
 
     /**
@@ -340,7 +341,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function withoutHeader($name)
     {
-        $this->attrMessage()->withoutHeader($name);
+        $this->getMessage()->withoutHeader($name);
         return $this;
     }
 
@@ -568,7 +569,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function withCookieParams(array $cookies)
     {
-        $this->_COOKIE = array_merge($this->_COOKIE, $cookies);
+        $this->_COOKIE = $cookies + $this->_COOKIE;
         return $this;
     }
 
@@ -613,7 +614,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function withQueryParams(array $query)
     {
-        $this->_GET = array_merge($this->_GET, $query);
+        $this->_GET = $query + $this->_GET;
         return $this;
     }
 
@@ -716,7 +717,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function getAttributes()
     {
-        return array_merge($this->_GET, $this->_POST, $this->_param);
+        return $this->_GET + $this->_POST + $this->_param;
     }
 
     /**

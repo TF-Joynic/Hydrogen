@@ -6,6 +6,7 @@ namespace application\module\front\ctrl;
 
 use Hydrogen\Load\Loader;
 use Hydrogen\Mvc\Ctrl\Ctrl;
+use Hydrogen\Mvc\View;
 use Hydrogen\Mvc\ViewModel\JsonViewModel;
 use Hydrogen\Mvc\ViewModel\TplViewModel;
 
@@ -27,8 +28,11 @@ class IndexCtrl extends Ctrl
         $var->age = 12;
 
         $response->withHeader("ccd", "name");
-        return new TplViewModel($var);
-
-        return new JsonViewModel(array("a" => 1));
+//        return new TplViewModel($var);
+        $view = $this->render('account/par', ['c' => 'dddd'], true);
+//        echo "111<br />";
+//        var_dump($view);exit;
+//        return new JsonViewModel(array("a" => 1));
+        return null;
 	}
 }

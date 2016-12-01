@@ -2,27 +2,31 @@
 
 namespace Hydrogen\Mvc\Ctrl;
 
+use Hydrogen\Application\Execute\Executor;
 use Hydrogen\Http\Request\ServerRequest as Request;
 use Hydrogen\Http\Response\Response as Response;
 use Hydrogen\Mvc\Ctrl\Plugin\PluginInterface;
+use Hydrogen\Mvc\View\View;
 
 class Ctrl
 {
     /**
      * @var Request|null
      */
-    private $_request = null;
+    protected $_request = null;
 
     /**
      * @var Response|null
      */
-    private $_response = null;
+    protected $_response = null;
 
     /**
      * render view template
      * @var bool
      */
-    private $_doRender = true;
+    protected $_doRender = true;
+
+    private $_view = null;
 
     /**
      * @var array of PluginInterface
@@ -77,6 +81,37 @@ class Ctrl
 
     public function preRender()
     {
+    }
+
+    public function render($tpl, $vars, $output = false)
+    {
+        if (null == $this->_view) {
+            $absTplPath = $this->getAbsTplFilePath($tpl);
+            $this->_view = new View($absTplPath, $vars);
+        }
+
+        return $this->_view->render($output);
+    }
+
+    /**
+     * @param $tpl 'account/login'
+     * @return bool|string
+     */
+    private function getAbsTplFilePath($tpl)
+    {
+        if (0 == strlen($tpl)) {
+            return false;
+        }
+
+        $module = $this->_request->getContextAttr(MODULE);
+
+        $templatePath = implode(DIRECTORY_SEPARATOR, array_filter(array(
+            Executor::getModuleDir(),
+            $module,
+            Executor::getTemplateDir()
+        )));
+
+        return $templatePath.DIRECTORY_SEPARATOR.$tpl.'.'.Executor::getTemplatePostfix();
     }
 
     public function postRender()

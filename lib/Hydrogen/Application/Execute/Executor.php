@@ -22,6 +22,9 @@ class Executor
     private static $_modules = array();   // enabled modules
     private static $_moduleDir = APPLICATION_PATH;
     private static $_applicationConfigDir = 'config';
+    private static $_templateDir = 'view';
+
+    private static $_templatePostfix = 'phtml';
 
     private static $_module_init_file = 'Init.php';
 
@@ -60,6 +63,18 @@ class Executor
     {
         return self::$_applicationConfigDir;
     }
+
+    public static function getTemplateDir()
+    {
+        return self::$_templateDir;
+    }
+
+    public static function setTemplateDir($templateDir)
+    {
+        self::$_templateDir = $templateDir;
+    }
+
+
 
     public static function setDefaultModule($module)
     {
@@ -162,6 +177,22 @@ class Executor
         }
 
         return call_user_func_array(array($ctrl, 'clearPlugin'), array());
+    }
+
+    /**
+     * @return string
+     */
+    public static function getTemplatePostfix()
+    {
+        return self::$_templatePostfix;
+    }
+
+    /**
+     * @param string $templatePostfix
+     */
+    public static function setTemplatePostfix($templatePostfix)
+    {
+        self::$_templatePostfix = $templatePostfix;
     }
 
 }

@@ -6,7 +6,7 @@ use Hydrogen\Load\Autoloader;
 
 class Composer extends AbstractAutoloadCallback
 {
-    public function autoLoad($class_name)
+    public static function autoLoad($class_name)
     {
         $class_name = str_replace(self::NAMESPACE_SEPARATOR, DIRECTORY_SEPARATOR, $class_name);
 

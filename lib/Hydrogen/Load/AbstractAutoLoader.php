@@ -54,9 +54,9 @@ abstract class AbstractAutoLoader
                 foreach ($ns_dir as $ns => $dir) {
                     $dir = rtrim($dir, '/\\');
 
-                    /*if ('Psr' == $ns) {
+                    /*if (false !== strpos($classPath, 'Executor')) {
                         pre($ns);
-                        pre($classPath);
+                        pre($classPath);exit;
                     }*/
 
                     if (0 === strpos($classPath, str_replace('\\', DIRECTORY_SEPARATOR, $ns))) {

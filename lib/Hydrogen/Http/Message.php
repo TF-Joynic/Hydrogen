@@ -299,7 +299,7 @@ class Message implements MessageInterface
 
         if ($append) {
             if (isset($headers[$name])) {
-                    $this->_headers[$name] = $this->_headers[$name].','.$append;
+                $this->_headers[$name] = $this->_headers[$name].','.$append;
             } else {
                 $this->_headers[$name] = $append;
             }

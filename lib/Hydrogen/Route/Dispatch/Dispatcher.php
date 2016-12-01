@@ -34,9 +34,9 @@ class Dispatcher extends AbstractDispatcher
      */
     public function dispatch()
     {
-        $target_module = $this->_request->getContextAttr('module');
-        $target_ctrl = $this->_request->getContextAttr('ctrl');
-        $target_act = $this->_request->getContextAttr('act');
+        $target_module = $this->_request->getContextAttr(MODULE);
+        $target_ctrl = $this->_request->getContextAttr(CTRL);
+        $target_act = $this->_request->getContextAttr(ACT);
 
         if (!$target_module || !$target_act || !$target_ctrl) {
             return false;
@@ -159,16 +159,8 @@ class Dispatcher extends AbstractDispatcher
             $mvcCtrlInstanceResp->withHeader($headerName, $headerValue);
         }
 
-//        var_dump($mvcCtrlInstanceResp);
-        /*pre($mvcCtrlInstanceResp->getMessage());
-        */
-        /*pre($mvcCtrlInstanceResp->getHeaders());
-        exit;*/
-
-        $b = $viewModel->concreteBody();
-//        var_dump();exit;
         // http body
-        $mvcCtrlInstanceResp->withBody($b);
+        $mvcCtrlInstanceResp->withBody($viewModel->concreteBody());
 
         // plugin
         $mvcCtrlInstance->terminatePlugins();
