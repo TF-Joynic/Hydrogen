@@ -3,3 +3,4 @@
 tools/
 tools/license/
 application/data/compile/*.phtml
+application/data/compile/*.tpl.php

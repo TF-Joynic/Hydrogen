@@ -51,27 +51,7 @@ class View
         if (!file_exists($this->_tpl)) throw new InvalidTemplateFileException('file '.$this->_tpl.' do not exist!');
 
         $renderer = new Renderer($this->_tpl, $this->_vars);
-        $phpTemplate = $renderer->parseTpl();
-//        var_dump($phpTemplate);exit;
-
-        extract($this->_vars);
-        include($phpTemplate);
-
-        if ($output) {
-
-        }
-
-        /*;
-        include($phpTemplate);*/
-
-        /*if ($output) {
-            $outputContent = ob_get_clean();
-            var_dump("outC::".$outputContent);exit;
-        } else {
-            ob_end_flush();
-        }
-
-        return $outputContent;*/
+        return $renderer->render($output);
     }
 
 }

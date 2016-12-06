@@ -25,14 +25,12 @@ class IndexCtrl extends Ctrl
 
         $var = new \stdClass();
         $var->name = 'Andy';
-        $var->age = 12;
+        $var->c = 12;
 
         $response->withHeader("ccd", "name");
-//        return new TplViewModel($var);
-        $view = $this->render('account/par', ['c' => 'dddd'], true);
-//        echo "111<br />";
-//        var_dump($view);exit;
-//        return new JsonViewModel(array("a" => 1));
+        $view = $this->render('account/par', $var, true);
+
+        var_dump($view);exit;
         return null;
 	}
 }
