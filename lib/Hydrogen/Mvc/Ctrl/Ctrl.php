@@ -11,6 +11,11 @@ use Hydrogen\Mvc\View\View;
 class Ctrl
 {
     /**
+     * @var string
+     */
+    protected $_layout = null;
+
+    /**
      * @var Request|null
      */
     protected $_request = null;
@@ -81,20 +86,21 @@ class Ctrl
 
     public function preRender()
     {
+
     }
 
-    public function render($tpl, $vars, $output = false)
+    public function render($tpl, $vars, $output = false, $enableLayout = false)
     {
         if (null == $this->_view) {
             $absTplPath = $this->getAbsTplFilePath($tpl);
-            $this->_view = new View($absTplPath, $vars);
+            $this->_view = new View($absTplPath, $vars, $enableLayout ? $this->getAbsTplFilePath($this->_layout) : null);
         }
 
         return $this->_view->render($output);
     }
 
     /**
-     * @param $tpl 'account/login'
+     * @param $tpl
      * @return bool|string
      */
     private function getAbsTplFilePath($tpl)

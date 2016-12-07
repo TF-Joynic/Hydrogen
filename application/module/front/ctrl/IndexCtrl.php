@@ -12,7 +12,7 @@ use Hydrogen\Mvc\ViewModel\TplViewModel;
 
 class IndexCtrl extends Ctrl
 {
-    private $_layout = 'main';
+    protected $_layout = 'main';
 
 	public function indexAct()
 	{

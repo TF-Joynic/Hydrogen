@@ -5,7 +5,7 @@ namespace Hydrogen\Mvc\View;
 use Hydrogen\Http\Exception\InvalidArgumentException;
 use Hydrogen\Load\Loader;
 use Hydrogen\Mvc\View\Exception\InvalidTemplateFileException;
-use Hydrogen\Mvc\View\Render\Renderer;
+use Hydrogen\Mvc\View\Render\Sushi\Renderer;
 
 class View
 {
@@ -17,10 +17,6 @@ class View
 
 	public function __construct($tpl, $vars, $layout = null)
 	{
-        if (is_object($tpl)) {
-            $tpl = $tpl.'';
-        }
-
         if (!is_string($tpl)) {
             throw new InvalidArgumentException('invalid argument $tpl');
         }
@@ -50,8 +46,9 @@ class View
 
         if (!file_exists($this->_tpl)) throw new InvalidTemplateFileException('file '.$this->_tpl.' do not exist!');
 
-        $renderer = new Renderer($this->_tpl, $this->_vars);
-        return $renderer->render($output);
+        $renderer = new Renderer();
+        $renderer->setCompileDir(COMPILE_PATH);
+        return $renderer->render($this->_tpl, $this->_vars, $output);
     }
 
 }

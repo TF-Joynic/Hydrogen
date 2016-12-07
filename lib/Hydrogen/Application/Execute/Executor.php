@@ -26,6 +26,8 @@ class Executor
 
     private static $_templatePostfix = 'phtml';
 
+    private static $_viewRenderer = '';
+
     private static $_module_init_file = 'Init.php';
 
     public static function setEnabledModules($modules)
