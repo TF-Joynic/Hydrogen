@@ -1,11 +1,7 @@
 <?php
 
-namespace Hydrogen\Mvc\View\Render\Sushi;
+namespace Sushi;
 
-use Hydrogen\Application\Execute\Executor;
-use Hydrogen\Exception;
-use Hydrogen\Mvc\View\Exception\InvalidCompilePathException;
-use Hydrogen\Mvc\View\Exception\InvalidTemplateFileException;
 use Hydrogen\Mvc\View\Render\RendererInterface;
 
 /**

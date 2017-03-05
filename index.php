@@ -73,7 +73,11 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
 
     Executor::setModuleDir(APPLICATION_PATH.DIRECTORY_SEPARATOR.$CONFIG->get(SCOPE_APPICATION, 'application', '_module_dir'));
     Executor::setEnabledModules($CONFIG->get(SCOPE_APPICATION, 'application', '_enabled_modules'));
+
+    Executor::setTemplatePostfix("tpl");
+
     require(Loader::getInstance()->getAbsPath(APPLICATION_PATH.'/config/route.php'));
+
 
     /*$router->addRule(new RulePostfix('.json', array(
         'header' => array(

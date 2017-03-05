@@ -2,7 +2,7 @@
 
 namespace Hydrogen\Mvc\View\Render\Sushi\Syntax;
 
-interface SyntaxInterface
+class Expression
 {
-    public function compileMap();
+
 }
