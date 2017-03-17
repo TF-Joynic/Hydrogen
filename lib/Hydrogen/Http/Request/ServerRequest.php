@@ -113,7 +113,7 @@ class ServerRequest implements ServerRequestInterface
 
     }
 
-    public function getParams(array $params = array())
+    /*public function getParams(array $params = array())
     {
         if (!$params) {
             return array_merge($this->_GET, $this->_POST, $this->_param);
@@ -130,7 +130,7 @@ class ServerRequest implements ServerRequestInterface
         }
 
         return $fields;
-    }
+    }*/
 
     public function getHeader($name)
     {

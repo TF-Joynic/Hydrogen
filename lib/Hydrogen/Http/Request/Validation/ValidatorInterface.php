@@ -2,9 +2,9 @@
 
 namespace Hydrogen\Http\Request\Validation;
 
-use Hydrogen\Http\Request\Request;
+use Psr\Http\Message\RequestInterface;
 
 interface ValidatorInterface
 {
-	public function validate(Request $request);
+	public function validate(RequestInterface $request);
 }

@@ -40,6 +40,11 @@ class Ctrl
 
     private $_active_plugins = array();
 
+    /**
+     * @var \Hydrogen\Http\Filter\FilterChain|array
+     */
+    private $_filterChain = null;
+
     public function __construct()
     {
     }
@@ -195,4 +200,6 @@ class Ctrl
         $this->_plugins = array();
         return $this;
     }
+
+//    public function
 }

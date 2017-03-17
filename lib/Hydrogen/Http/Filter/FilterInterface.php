@@ -2,12 +2,20 @@
 
 namespace Hydrogen\Http\Filter;
 
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+
 interface FilterInterface
 {
 	public function init();
 
-	public function doFilter(Hydrogen\Http\Request $request, 
-		Hydrogen\Http\Response $response, Filter\FilterChain $filterChain);
+    /**
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
+     * @param FilterChainInterface $filterChain
+     * @return mixed
+     */
+    public function doFilter(RequestInterface $request, ResponseInterface $response, FilterChainInterface $filterChain);
 
 	public function destroy();
 }

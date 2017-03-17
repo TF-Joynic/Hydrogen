@@ -4,26 +4,26 @@ namespace Hydrogen\Route\Dispatch;
 
 use Hydrogen\Load\Loader;
 use Hydrogen\Mvc\Ctrl\Ctrl;
-use Hydrogen\Http\Response\Response;
 use Hydrogen\Application\Execute\Executor;
-use Hydrogen\Http\Request\ServerRequest as Request;
 use Hydrogen\Route\Exception\RuntimeException;
 use Hydrogen\Route\Exception\DispatchException;
 use Hydrogen\Load\Exception\LoadFailedException;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class Dispatcher extends AbstractDispatcher
 {
     /**
-     * @var Request
+     * @var RequestInterface
      */
     private $_request;
 
     /**
-     * @var Response
+     * @var ResponseInterface
      */
     private $_response;
 
-    public function __construct(Request $request, Response $response)
+    public function __construct(RequestInterface $request, ResponseInterface $response)
     {
         $this->_request = $request;
         $this->_response = $response;
@@ -77,7 +77,6 @@ class Dispatcher extends AbstractDispatcher
                 $mvcCtrlClassName), Executor::getErrorActName().$actPostFix, $e);
 
         }
-
 
         // plugin init
 
@@ -144,6 +143,12 @@ class Dispatcher extends AbstractDispatcher
         // plugin
         $mvcCtrlInstance->activatePlugins();
 
+        // filter
+        
+
+        // interceptor
+
+
         $mvcCtrlInstance->withRequest($this->_request);
         $mvcCtrlInstance->withResponse($this->_response);
 
@@ -183,7 +188,7 @@ class Dispatcher extends AbstractDispatcher
     }
 
     /**
-     * @param $response Response
+     * @param ResponseInterface $response
      */
     private function performResponse(&$response)
     {

@@ -1,21 +1,19 @@
 <?php
 
-namespace Hydrogen\Http\Filter;
+namespace application\module\front\filter;
 
-// use Hydrogen\Http\Filter;
-
+use Hydrogen\Http\Filter\FilterChainInterface;
+use Hydrogen\Http\Filter\FilterInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class Filter implements FilterInterface
+class XssFilter implements FilterInterface
 {
-	public function __construct()
-	{}
 
-	public function init()
-	{
-		return new FilterChain();
-	}
+    public function init()
+    {
+        // TODO: Implement init() method.
+    }
 
     /**
      * @param RequestInterface $request
@@ -25,17 +23,11 @@ class Filter implements FilterInterface
      */
     public function doFilter(RequestInterface $request, ResponseInterface $response, FilterChainInterface $filterChain)
     {
-
+        // TODO: Implement doFilter() method.
     }
 
-	public function destroy()
-	{
-
-	}
-
-	public function __destruct()
-	{
-        $this->destroy();
-	}
-
+    public function destroy()
+    {
+        // TODO: Implement destroy() method.
+    }
 }

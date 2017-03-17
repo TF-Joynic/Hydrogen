@@ -6,6 +6,7 @@
 namespace Hydrogen\Http\Request;
 
 use Hydrogen\Http\Message;
+use Hydrogen\Http\Uri;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
@@ -352,7 +353,7 @@ class ClientRequest implements RequestInterface
     public function attrMessage()
     {
         if (null !== $this->_message && $this->_message instanceof Message) {
-            return $this->attrMessage();
+            return $this->_message;
         }
 
         $this->_message = new Message();

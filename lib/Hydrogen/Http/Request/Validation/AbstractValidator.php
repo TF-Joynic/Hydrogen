@@ -2,14 +2,14 @@
 
 namespace Hydrogen\Http\Request\Validation;
 
-use Hydrogen\Http\Request\Request;
+use Psr\Http\Message\RequestInterface;
 
 abstract class AbstractValidator implements ValidatorInterface
 {
 	protected $_errors = array();
 	protected $_vars = array();
 	
-	public abstract function validate(Request $request);
+	public abstract function validate(RequestInterface $request);
 	
 	public function sanitize($value)
 	{
