@@ -3,13 +3,11 @@
 namespace Hydrogen\Route\UrlMatch;
 
 use Hydrogen\Debug\Variable;
-use Hydrogen\Exception;
-use Hydrogen\Http\Request\ServerRequest as Request;
-use Hydrogen\Http\Response\Response;
 use Hydrogen\Application\Execute\Executor;
-use Hydrogen\Route\Exception\DispatchException;
-use Hydrogen\Route\Exception\UrlMatchFailedException;
 use Hydrogen\Route\Rule\RuleInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
+
 
 class UrlMatcher extends AbstractUrlMatcher
 {
@@ -30,11 +28,11 @@ class UrlMatcher extends AbstractUrlMatcher
     /**
      * match and extact module, ctrl and act
      *
-     * @param Request $request
-     * @param Response $response
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
      * @return boolean
      */
-    public function match(Request &$request, Response &$response)
+    public function match(ServerRequestInterface &$request, ResponseInterface &$response)
     {
         $sanitizedPath = trim(preg_replace('/\/{2,}/', '/', $request->getUri()->getPath()));
 

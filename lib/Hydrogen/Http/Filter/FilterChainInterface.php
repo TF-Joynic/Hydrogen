@@ -5,7 +5,7 @@ namespace Hydrogen\Http\Filter;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-interface FilterChainInterface extends \Iterator
+interface FilterChainInterface
 {
-    function doFilter(RequestInterface $request, ResponseInterface $response);
+    public function doFilter(RequestInterface $request, ResponseInterface $response);
 }

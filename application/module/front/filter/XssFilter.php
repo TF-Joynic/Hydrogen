@@ -12,7 +12,7 @@ class XssFilter implements FilterInterface
 
     public function init()
     {
-        // TODO: Implement init() method.
+        
     }
 
     /**
@@ -23,7 +23,38 @@ class XssFilter implements FilterInterface
      */
     public function doFilter(RequestInterface $request, ResponseInterface $response, FilterChainInterface $filterChain)
     {
-        // TODO: Implement doFilter() method.
+        if (null != $request) {
+            echo "filtered xss<br />";
+        }
+
+        $filterChain->doFilter($request, $response);
+    }
+
+    private function escape($str)
+    {
+        if (!get_magic_quotes_gpc()) {
+            $str = addslashes($str);
+        }
+
+        $str = htmlspecialchars($str, ENT_QUOTES);
+        return $str;
+    }
+
+    protected function _sanitize($str)
+    {
+        if (is_string($str)) {
+            if (0 == strlen($str)) {
+                return $str;
+            }
+
+            $str = $this->escape($str);
+        } elseif (is_array($str)) {
+            foreach ($str as &$v) {
+                $v = $this->_sanitize($v);
+            }
+        }
+
+        return $str;
     }
 
     public function destroy()

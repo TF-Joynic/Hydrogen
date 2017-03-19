@@ -5,6 +5,8 @@ namespace Hydrogen\Route\Rule;
 use Hydrogen\Http\Request\ServerRequest as Request;
 use Hydrogen\Http\Response\Response;
 use Hydrogen\Http\Exception\InvalidArgumentException;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 class RuleFixed extends AbstractRule
 {
@@ -19,11 +21,11 @@ class RuleFixed extends AbstractRule
 
     /**
      * @param $path
-     * @param Request $request
-     * @param Response $response
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
      * @return \Closure|bool
      */
-    public function apply(&$path, Request &$request, Response &$response)
+    public function apply(&$path, RequestInterface &$request, ResponseInterface &$response)
     {
         if (!is_string($path) || 0 == strlen($path)) {
             throw new InvalidArgumentException('path must be type string and can not be empty!');

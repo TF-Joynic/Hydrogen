@@ -9,6 +9,10 @@ use Psr\Http\Message\StreamInterface;
 use Hydrogen\Http\Uri;
 use Psr\Http\Message\UriInterface;
 
+/**
+ * Class ServerRequest
+ * @package Hydrogen\Http\Request
+ */
 class ServerRequest implements ServerRequestInterface
 {
     const SERVER_HTTP_HEADER_PREFIX = 'HTTP_';

@@ -6,6 +6,8 @@ use Hydrogen\Http\Request\ServerRequest as Request;
 use Hydrogen\Http\Response\Response;
 use Hydrogen\Load\Loader;
 use Hydrogen\Route\Exception\InvalidArgumentException;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 class RulePostfix extends AbstractRule
 {
@@ -24,11 +26,11 @@ class RulePostfix extends AbstractRule
      * $path: user/profile.json
      *
      * @param $path
-     * @param Request $request
-     * @param Response $response
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
      * @return bool|\Closure
      */
-    public function apply(&$path, Request &$request, Response &$response)
+    public function apply(&$path, ServerRequestInterface &$request, ResponseInterface &$response)
     {
         if (false !== $postfixPos = strrpos($path, '.')) {
             $realPath = substr($path, 0, $postfixPos);
