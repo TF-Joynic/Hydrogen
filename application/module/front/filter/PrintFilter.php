@@ -22,7 +22,7 @@ class PrintFilter implements FilterInterface
      * @param FilterChainInterface $filterChain
      * @return mixed
      */
-    public function doFilter(RequestInterface $request, ResponseInterface $response, FilterChainInterface $filterChain)
+    public function doFilter(RequestInterface &$request, ResponseInterface &$response, FilterChainInterface $filterChain)
     {
         if (1) {
             echo "print";

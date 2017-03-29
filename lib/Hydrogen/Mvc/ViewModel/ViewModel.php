@@ -6,6 +6,10 @@ use Hydrogen\Http\Response\Response;
 
 abstract class ViewModel
 {
+    protected $_headers = array(
+        HTTP_HEADER_CONTENT_TYPE => 'text/html;charset=utf-8'
+    );
+
     protected $_vars = null;
     protected $_tpl = null;
 
@@ -15,6 +19,11 @@ abstract class ViewModel
         $this->_tpl = $tplName;
     }
 
+    public function setHeader($name, $value)
+    {
+
+    }
+
     /**
      * concrete response header
      *
@@ -22,9 +31,7 @@ abstract class ViewModel
      */
     public function concreteHeader()
     {
-        return array(
-            HTTP_HEADER_CONTENT_TYPE => 'text/html;charset=utf-8'
-        );
+        return$this->_headers;
     }
 
     /**

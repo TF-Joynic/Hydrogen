@@ -22,9 +22,8 @@ class IndexCtrl extends Ctrl
         $request = $this->getRequest();
         $response = $this->getResponse();
 
-        echo "Filer<br />";
+        echo "Filter Test<br />";
         $filter = new XssFilter();
-
         $filter2 = new PrintFilter();
 
         $chain = new PassThroughFilterChain();
