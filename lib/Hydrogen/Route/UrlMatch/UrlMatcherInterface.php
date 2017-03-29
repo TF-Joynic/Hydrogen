@@ -2,15 +2,15 @@
 
 namespace Hydrogen\Route\UrlMatch;
 
-use Hydrogen\Http\Request\ServerRequest;
-use Hydrogen\Http\Response\Response;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ResponseInterface;
 
 interface UrlMatcherInterface
 {
     /**
-     * @param ServerRequest $request
-     * @param Response $response
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
      * @return mixed
      */
-    public function match(ServerRequest &$request, Response &$response);
+    public function match(ServerRequestInterface &$request, ResponseInterface &$response);
 }

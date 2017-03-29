@@ -8,13 +8,13 @@ use Hydrogen\Application\Execute\Executor;
 use Hydrogen\Route\Exception\RuntimeException;
 use Hydrogen\Route\Exception\DispatchException;
 use Hydrogen\Load\Exception\LoadFailedException;
-use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class Dispatcher extends AbstractDispatcher
 {
     /**
-     * @var RequestInterface
+     * @var ServerRequestInterface
      */
     private $_request;
 
@@ -23,7 +23,7 @@ class Dispatcher extends AbstractDispatcher
      */
     private $_response;
 
-    public function __construct(RequestInterface $request, ResponseInterface $response)
+    public function __construct(ServerRequestInterface $request, ResponseInterface $response)
     {
         $this->_request = $request;
         $this->_response = $response;
@@ -78,11 +78,6 @@ class Dispatcher extends AbstractDispatcher
 
         }
 
-        // plugin init
-
-        // Dispatch
-
-        // plugin terminate
     }
 
     /**
@@ -132,7 +127,7 @@ class Dispatcher extends AbstractDispatcher
             throw new DispatchException('Ctrl class: '.$mvcCtrlClassName.' is not subclass of Ctrl', 404);
         }
 
-        // predispatch
+        // preDispatch
         $mvcCtrlInstance->preDispatch();
 
         $methodVar = array($mvcCtrlInstance, $actMethodName);
@@ -144,7 +139,7 @@ class Dispatcher extends AbstractDispatcher
         $mvcCtrlInstance->activatePlugins();
 
         // filter
-        
+
 
         // interceptor
 

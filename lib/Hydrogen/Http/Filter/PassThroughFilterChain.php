@@ -3,12 +3,18 @@
 namespace Hydrogen\Http\Filter;
 
 
-use Hydrogen\Http\Exception\InstantiationException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
-class PassThroughFilterChain implements FilterChainInterface
+class PassThroughFilterChain implements FilterChainInterface, \Iterator
 {
+    private $_pos = 0;
+
+    /**
+     * @var array| FilterInterface
+     */
+    private $_filters = array();
+
     /**
      * @var FilterInterface
      */
@@ -17,27 +23,28 @@ class PassThroughFilterChain implements FilterChainInterface
     /**
      * @var FilterChainInterface
      */
-    private $_filterChain;
 
-    public function __construct(FilterInterface $filter, FilterChainInterface $filterChain)
+    public function addFilter(FilterInterface $filter)
     {
-        if (null == $filter || null == $filterChain) {
-            throw new InstantiationException('construct args can not be null!');
-        }
+        $this->_filters[] = $filter;
+    }
 
-        $this->_filter = $filter;
-        $this->_filterChain = $filterChain;
+    public function doFilter(RequestInterface $request, ResponseInterface $response)
+    {
+        $filter = $this->current();
+        $this->next();
+        $this->valid() && ($filter->doFilter($request, $response, $this));
     }
 
     /**
      * Return the current element
      * @link http://php.net/manual/en/iterator.current.php
-     * @return mixed Can return any type.
+     * @return FilterInterface
      * @since 5.0.0
      */
     public function current()
     {
-        return $this->_filter;
+        return $this->_filters[$this->_pos];
     }
 
     /**
@@ -48,7 +55,7 @@ class PassThroughFilterChain implements FilterChainInterface
      */
     public function next()
     {
-        // TODO: Implement next() method.
+        ++ $this->_pos;
     }
 
     /**
@@ -59,7 +66,7 @@ class PassThroughFilterChain implements FilterChainInterface
      */
     public function key()
     {
-        // TODO: Implement key() method.
+        return $this->_pos;
     }
 
     /**
@@ -71,7 +78,8 @@ class PassThroughFilterChain implements FilterChainInterface
      */
     public function valid()
     {
-        // TODO: Implement valid() method.
+        $current = $this->current();
+        return null != $current && $current instanceof FilterInterface;
     }
 
     /**
@@ -82,11 +90,6 @@ class PassThroughFilterChain implements FilterChainInterface
      */
     public function rewind()
     {
-        // TODO: Implement rewind() method.
-    }
-
-    function doFilter(RequestInterface $request, ResponseInterface $response)
-    {
-        // TODO: Implement doFilter() method.
+        $this->_pos = 0;
     }
 }

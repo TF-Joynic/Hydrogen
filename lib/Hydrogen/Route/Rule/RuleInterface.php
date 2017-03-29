@@ -2,8 +2,9 @@
 
 namespace Hydrogen\Route\Rule;
 
-use Hydrogen\Http\Request\ServerRequest as Request;
-use Hydrogen\Http\Response\Response;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 interface RuleInterface
 {
@@ -18,11 +19,11 @@ interface RuleInterface
 
     /**
      * @param $path
-     * @param Request $request
-     * @param Response $response
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
      * @return bool|\Closure
      */
-    public function apply(&$path, Request &$request, Response &$response);
+    public function apply(&$path, ServerRequestInterface &$request, ResponseInterface &$response);
 
     public function fmtRuleStr($ruleStr);
 

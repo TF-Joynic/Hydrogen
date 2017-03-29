@@ -62,7 +62,7 @@ class Router
         $response = new Response();
 
         try {
-            $matchResult= $urlMatcher->match($request, $response);
+            $matchResult = $urlMatcher->match($request, $response);
         } catch (\Exception $e) {
             throw new UrlMatchFailedException($e->getMessage() . '-- can not match url: '.$_SERVER['REQUEST_URI']);
         }

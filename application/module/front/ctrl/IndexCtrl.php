@@ -4,6 +4,9 @@
  */
 namespace application\module\front\ctrl;
 
+use application\module\front\filter\PrintFilter;
+use application\module\front\filter\XssFilter;
+use Hydrogen\Http\Filter\PassThroughFilterChain;
 use Hydrogen\Load\Loader;
 use Hydrogen\Mvc\Ctrl\Ctrl;
 use Hydrogen\Mvc\View;
@@ -18,6 +21,19 @@ class IndexCtrl extends Ctrl
 	{
         $request = $this->getRequest();
         $response = $this->getResponse();
+
+        echo "Filer<br />";
+        $filter = new XssFilter();
+
+        $filter2 = new PrintFilter();
+
+        $chain = new PassThroughFilterChain();
+        $chain->addFilter($filter);
+        $chain->addFilter($filter2);
+
+        $chain->doFilter($request, $response);
+        exit();
+
 
         if ($request->isHead()) {
             $headerAccept = $request->getHeader(HTTP_HEADER_ACCEPT);
