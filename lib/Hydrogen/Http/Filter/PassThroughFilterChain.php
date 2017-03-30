@@ -29,7 +29,7 @@ class PassThroughFilterChain implements FilterChainInterface, \Iterator
         $this->_filters[] = $filter;
     }
 
-    public function doFilter(RequestInterface $request, ResponseInterface $response)
+    public function doFilter(RequestInterface &$request, ResponseInterface &$response)
     {
         $filter = $this->current();
         if ($this->valid()) {
