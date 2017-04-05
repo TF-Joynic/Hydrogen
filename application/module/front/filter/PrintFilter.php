@@ -16,6 +16,9 @@ class PrintFilter implements FilterInterface
         // TODO: Implement init() method.
     }
 
+    public function getId()
+    {}
+
     /**
      * @param RequestInterface $request
      * @param ResponseInterface $response

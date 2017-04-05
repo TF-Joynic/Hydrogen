@@ -18,4 +18,5 @@ class Str
 	 {
 		return strrchr($haystack, $needle) === $needle;
 	 }
+
 }

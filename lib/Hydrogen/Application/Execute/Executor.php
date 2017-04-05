@@ -30,6 +30,9 @@ class Executor
 
     private static $_module_init_file = 'Init.php';
 
+    // common filters
+    private static $_filters = array();
+
     public static function setEnabledModules($modules)
     {
         if (!is_array($modules)) {
@@ -197,4 +200,20 @@ class Executor
         self::$_templatePostfix = $templatePostfix;
     }
 
+    /**
+     * [
+     *  Chain::class => $chainObj
+     * ]
+     *
+     * @param $filterCtxArr array
+     */
+    public static function setFilters($filterCtxArr)
+    {
+        self::$_filters = $filterCtxArr;
+    }
+
+    public static function getFilters()
+    {
+        return self::$_filters;
+    }
 }

@@ -15,6 +15,11 @@ class XssFilter implements FilterInterface
         
     }
 
+    public function getId()
+    {
+        return static::class;
+    }
+
     /**
      * @param RequestInterface $request
      * @param ResponseInterface $response

@@ -5,6 +5,7 @@
 namespace application\module\front\ctrl;
 
 use application\module\front\filter\PrintFilter;
+use application\module\front\filter\WebSecurityFilterChain;
 use application\module\front\filter\XssFilter;
 use Hydrogen\Http\Filter\PassThroughFilterChain;
 use Hydrogen\Load\Loader;
@@ -17,6 +18,23 @@ class IndexCtrl extends Ctrl
 {
     protected $_layout = 'main';
 
+    /**
+     * init operations
+     */
+    public function init()
+    {
+
+    }
+
+    public function filters()
+    {
+        return array(
+            WebSecurityFilterChain::class => array(
+                'getOnly + index',
+            ),
+        );
+    }
+
 	public function indexAct()
 	{
         $request = $this->getRequest();
@@ -27,6 +45,15 @@ class IndexCtrl extends Ctrl
         $filter2 = new PrintFilter();
 
         $chain = new PassThroughFilterChain();
+
+        $chainWebSe = new WebSecurityFilterChain();
+        echo WebSecurityFilterChain::class;exit;
+        echo $chainWebSe->getId();exit;
+
+        echo $chain->getId();
+        echo "<br />";
+        echo PassThroughFilterChain::class;exit;
+
         $chain->addFilter($filter);
         $chain->addFilter($filter2);
 

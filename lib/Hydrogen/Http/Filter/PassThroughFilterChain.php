@@ -15,14 +15,10 @@ class PassThroughFilterChain implements FilterChainInterface, \Iterator
      */
     private $_filters = array();
 
-    /**
-     * @var FilterInterface
-     */
-    private $_filter;
-
-    /**
-     * @var FilterChainInterface
-     */
+    public function getId()
+    {
+        return static::class;
+    }
 
     public function addFilter(FilterInterface $filter)
     {

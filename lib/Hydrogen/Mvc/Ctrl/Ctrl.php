@@ -3,6 +3,7 @@
 namespace Hydrogen\Mvc\Ctrl;
 
 use Hydrogen\Application\Execute\Executor;
+use Hydrogen\Http\Filter\FilterChainInterface;
 use Hydrogen\Http\Request\ServerRequest as Request;
 use Hydrogen\Http\Response\Response as Response;
 use Hydrogen\Mvc\Ctrl\Plugin\PluginInterface;
@@ -41,9 +42,9 @@ class Ctrl
     private $_active_plugins = array();
 
     /**
-     * @var \Hydrogen\Http\Filter\FilterChain|array
+     * @var \Hydrogen\Http\Filter\FilterChainInterface|array
      */
-    private $_filterChain = null;
+    private $_filterChain = array();
 
     public function __construct()
     {
@@ -70,6 +71,11 @@ class Ctrl
     }
 
     public function getUrl()
+    {
+
+    }
+
+    public function getAbsUrl()
     {
 
     }
@@ -201,5 +207,8 @@ class Ctrl
         return $this;
     }
 
-//    public function
+    public function filters()
+    {
+        return array();
+    }
 }

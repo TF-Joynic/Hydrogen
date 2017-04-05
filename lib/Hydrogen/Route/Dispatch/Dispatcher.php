@@ -139,7 +139,7 @@ class Dispatcher extends AbstractDispatcher
         $mvcCtrlInstance->activatePlugins();
 
         // filter
-
+        
 
         // interceptor
 

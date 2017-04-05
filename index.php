@@ -1,5 +1,6 @@
 <?php
 
+use application\module\front\filter\WebSecurityFilterChain;
 use Hydrogen\Load\Loader;
 use Hydrogen\Debug\Variable;
 use Hydrogen\Route\Router;
@@ -78,32 +79,12 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
 
     require(Loader::getInstance()->getAbsPath(APPLICATION_PATH.'/config/route.php'));
 
-
-    /*$router->addRule(new RulePostfix('.json', array(
-        'header' => array(
-            HTTP_HEADER_CONTENT_TYPE => 'application/json',
-        ),
-        'param' => array(
-            'type' => 'JSON',
-        ),
-    )));
-
-    $router->addRule(new RuleFixed('/simple/master', array(
-        'module' => '',
-        'ctrl' => 'branch',
-        'act' => 'master'
-    )));*/
-
-    /*$router->addRule(new RuleParam('/simple/:id', array(
-        'ctrl' => 'branch',
-        'act' => 'master',
-        'param' => array(
-            'cd' => 1
-        )
-    )));*/
-
-
-//    var_dump($router->_rules);exit;
+    // Executor filters
+    $webSecurityFilterChain = new WebSecurityFilterChain();
+    $commonFilters = array(
+        WebSecurityFilterChain::class => $webSecurityFilterChain
+    );
+    Executor::setFilters($commonFilters);
 
 	$application = new Hydrogen\Application\Application();
 	$application->run();
