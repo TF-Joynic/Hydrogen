@@ -21,6 +21,8 @@ class ServerRequest implements ServerRequestInterface
     private $_context_attr = array();
 
     private $_request_method = '';
+    private $_predefined_request_methods = [];
+
     private $_request_target = '';
 
     private $_SERVER = [];
@@ -41,27 +43,60 @@ class ServerRequest implements ServerRequestInterface
         $this->_request_method = isset($_SERVER['REQUEST_METHOD'])
             ? strtoupper($_SERVER['REQUEST_METHOD']) : '';
 
+        // Reflect RequestMethod Constants
+        $reflectionClass = new \ReflectionClass(RequestMethod::class);
+        $requestMethods = $reflectionClass->getConstants();
+        $this->_predefined_request_methods = $requestMethods;
+
         $this->_request_target = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';
     }
 
-    public function isHead()
+    /**
+     * @return int
+     */
+    private function getMethodBitwise()
     {
-        return 'HEAD' == $this->getMethod();
+        return $this->_predefined_request_methods[$this->_request_method];
+    }
+
+    public function isGet()
+    {
+        return 0 != RequestMethod::GET & $this->getMethodBitwise();
     }
 
     public function isPost()
     {
-        return 'POST' == $this->getMethod();
+        return 0 != RequestMethod::POST & $this->getMethodBitwise();
+    }
+
+    public function isPut()
+    {
+        return 0 != RequestMethod::PUT & $this->getMethodBitwise();
+    }
+
+    public function isPatch()
+    {
+        return 0 != RequestMethod::PATCH & $this->getMethodBitwise();
+    }
+
+    public function isDelete()
+    {
+        return 0 != RequestMethod::DELETE & $this->getMethodBitwise();
+    }
+
+    public function isHead()
+    {
+        return 0 != RequestMethod::HEAD & $this->getMethodBitwise();
+    }
+
+    public function isOptions()
+    {
+        return 0 != RequestMethod::OPTIONS & $this->getMethodBitwise();
     }
 
     public function isAjax()
     {
         return 'XMLHttpRequest' == $_SERVER['HTTP_X_REQUESTED_WITH'];
-    }
-
-    public function isPut()
-    {
-        return 'PUT' == $this->getMethod();
     }
 
     public function getQuery($name, $default_value = null)

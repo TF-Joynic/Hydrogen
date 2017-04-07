@@ -8,6 +8,7 @@ use application\module\front\filter\PrintFilter;
 use application\module\front\filter\WebSecurityFilterChain;
 use application\module\front\filter\XssFilter;
 use Hydrogen\Http\Filter\PassThroughFilterChain;
+use Hydrogen\Http\Request\RequestMethod;
 use Hydrogen\Load\Loader;
 use Hydrogen\Mvc\Ctrl\Ctrl;
 use Hydrogen\Mvc\View;
@@ -30,13 +31,15 @@ class IndexCtrl extends Ctrl
     {
         return array(
             WebSecurityFilterChain::class => array(
-                'getOnly + index',
+                "index" => RequestMethod::GET | RequestMethod::DELETE
             ),
         );
     }
 
 	public function indexAct()
 	{
+        var_dump(RequestMethod::GET);exit;
+
         $request = $this->getRequest();
         $response = $this->getResponse();
 
