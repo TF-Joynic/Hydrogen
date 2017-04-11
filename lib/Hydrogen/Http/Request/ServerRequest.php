@@ -515,7 +515,7 @@ class ServerRequest implements ServerRequestInterface
             return $this->_uri;
         }
 
-        $this->_uri = new Uri();
+        $this->_uri = new Uri($this);
         return $this->_uri;
     }
 

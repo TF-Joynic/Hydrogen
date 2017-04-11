@@ -7,6 +7,7 @@ namespace application\module\front\ctrl;
 use application\module\front\filter\PrintFilter;
 use application\module\front\filter\WebSecurityFilterChain;
 use application\module\front\filter\XssFilter;
+use Hydrogen\Debug\Variable;
 use Hydrogen\Http\Filter\PassThroughFilterChain;
 use Hydrogen\Http\Request\RequestMethod;
 use Hydrogen\Load\Loader;
@@ -38,6 +39,8 @@ class IndexCtrl extends Ctrl
 
 	public function indexAct()
 	{
+        Variable::dump($_SERVER);exit;
+
         var_dump(RequestMethod::GET);exit;
 
         $request = $this->getRequest();
