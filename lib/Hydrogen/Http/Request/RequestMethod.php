@@ -32,5 +32,6 @@ class RequestMethod
     // 1 << 6
     const OPTIONS = 64;
 
-
+    //  (1 << 7) - 1
+    const ALL = 127;
 }

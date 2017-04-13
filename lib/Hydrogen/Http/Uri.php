@@ -448,6 +448,6 @@ class Uri implements UriInterface
     {
         $newInstance = new self($this->_request);
 
-        
+
     }
 }

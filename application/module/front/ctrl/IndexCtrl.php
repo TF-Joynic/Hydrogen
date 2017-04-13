@@ -15,8 +15,9 @@ use Hydrogen\Mvc\Ctrl\Ctrl;
 use Hydrogen\Mvc\View;
 use Hydrogen\Mvc\ViewModel\JsonViewModel;
 use Hydrogen\Mvc\ViewModel\TplViewModel;
+use application\module\front\interceptor\AuthenticationInterceptor;
 
-class IndexCtrl extends Ctrl
+class IndexCtrl extends FrontCtrl
 {
     protected $_layout = 'main';
 
@@ -32,8 +33,18 @@ class IndexCtrl extends Ctrl
     {
         return array(
             WebSecurityFilterChain::class => array(
-                "index" => RequestMethod::GET | RequestMethod::DELETE
+                'index' => RequestMethod::ALL ^ RequestMethod::HEAD
             ),
+        );
+    }
+
+    public function interceptors()
+    {
+        return array(
+            AuthenticationInterceptor::class => array(
+                'index' => false,
+                'about',
+            )
         );
     }
 
@@ -81,4 +92,9 @@ class IndexCtrl extends Ctrl
         var_dump($view);exit;
         return null;
 	}
+
+    public function aboutAct()
+    {
+
+    }
 }
