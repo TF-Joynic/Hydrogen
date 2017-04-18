@@ -1,23 +1,23 @@
 <?php
 
-namespace Hydrogen\Application\Execute;
+namespace Hydrogen\Application;
 
 use Hydrogen\Config\Config;
 use Hydrogen\Mvc\Ctrl\Ctrl;
 use Hydrogen\Load\Autoloader;
 use Hydrogen\Mvc\Ctrl\Plugin\PluginInterface;
 
-class Executor
+class ApplicationContext
 {
-    private static $_default_module = 'front';
-    private static $_default_ctrl = 'Index';
-    private static $_default_act = 'index';
+    private static $_defaultModule = 'front';
+    private static $_defaultCtrl = 'Index';
+    private static $_defaultAct = 'index';
 
     private static $_ctrlClassPostfix = 'Ctrl';
     private static $_actMethodPostfix = 'Act';
 
-    private static $_error_ctrl_name = 'Error';
-    private static $_error_act_name = 'index';
+    private static $_errorCtrl = 'Error';
+    private static $_errorAct = 'index';
 
     private static $_modules = array();   // enabled modules
     private static $_moduleDir = APPLICATION_PATH;
@@ -28,7 +28,7 @@ class Executor
 
     private static $_viewRenderer = '';
 
-    private static $_module_init_file = 'Init.php';
+    private static $_moduleInitFile = 'Init.php';
 
     // common filters
     private static $_filters = array();
@@ -80,27 +80,26 @@ class Executor
     }
 
 
-
     public static function setDefaultModule($module)
     {
         if ($module && is_string($module)) {
-            self::$_default_module = $module;
+            self::$_defaultModule = $module;
         }
     }
 
     public static function getDefaultModule()
     {
-        return self::$_default_module;
+        return self::$_defaultModule;
     }
 
     public static function getDefaultCtrl()
     {
-        return self::$_default_ctrl;
+        return self::$_defaultCtrl;
     }
 
     public static function getDefaultAct()
     {
-        return self::$_default_act;
+        return self::$_defaultAct;
     }
 
     public static function getCtrlClassPostfix()
@@ -129,12 +128,12 @@ class Executor
 
     public static function setModuleInitFileName($filename)
     {
-        self::$_module_init_file = $filename;
+        self::$_moduleInitFile = $filename;
     }
 
     public static function getModuleInitFileName()
     {
-        return self::$_module_init_file;
+        return self::$_moduleInitFile;
     }
 
     public static function setNamespaceDir($namespace, $dir, $prepend = false)
@@ -142,21 +141,21 @@ class Executor
         return Autoloader::getInstance()->attachNamespace($namespace, $dir, $prepend);
     }
 
-    public static function setErrorCtrlName($ctrl_name)
+    public static function setErrorCtrl($ctrl_name)
     {
         if (is_string($ctrl_name) && 0 < strlen($ctrl_name)) {
-            self::$_error_ctrl_name = $ctrl_name;
+            self::$_errorCtrl = $ctrl_name;
         }
     }
 
-    public static function getErrorCtrlName()
+    public static function getErrorCtrl()
     {
-        return self::$_error_ctrl_name;
+        return self::$_errorCtrl;
     }
 
-    public static function getErrorActName()
+    public static function getErrorAct()
     {
-        return self::$_error_act_name;
+        return self::$_errorAct;
     }
 
     /**

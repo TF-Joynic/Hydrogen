@@ -4,7 +4,7 @@ namespace Hydrogen\Route\Dispatch;
 
 use Hydrogen\Load\Loader;
 use Hydrogen\Mvc\Ctrl\Ctrl;
-use Hydrogen\Application\Execute\Executor;
+use Hydrogen\Application\ApplicationContext;
 use Hydrogen\Route\Exception\RuntimeException;
 use Hydrogen\Route\Exception\DispatchException;
 use Hydrogen\Load\Exception\LoadFailedException;
@@ -43,10 +43,10 @@ class Dispatcher extends AbstractDispatcher
         }
 
         // firstly we must confirm the ctrl is reachable
-        $moduleDir = Executor::getModuleDir();
+        $moduleDir = ApplicationContext::getModuleDir();
 
         $moduleDir = rtrim($moduleDir, '/\\');
-        $initFileNamePost = Executor::getModuleInitFileName();
+        $initFileNamePost = ApplicationContext::getModuleInitFileName();
 
         $moduleInitFile = $moduleDir . '/Module' . $initFileNamePost;
         $this->importFileByAbsPath($moduleInitFile);
@@ -57,24 +57,24 @@ class Dispatcher extends AbstractDispatcher
 
         $tmp = $moduleBaseNamespace ? $moduleBaseNamespace .'\\' : '';
 
-        $ctrlClassBaseName = ($target_ctrl) . Executor::getCtrlClassPostfix();
+        $ctrlClassBaseName = ($target_ctrl) . ApplicationContext::getCtrlClassPostfix();
         $mvcCtrlClassName = 'application\\'.$tmp.$target_module
             . '\\ctrl\\' . $ctrlClassBaseName;
 
-        $actPostFix = Executor::getActMethodPostfix();
+        $actPostFix = ApplicationContext::getActMethodPostfix();
         $actMethodName = $target_act . $actPostFix;
 
         $actViewModel = null;
 
         try {
-            $actViewModel = $this->executeAct($mvcCtrlClassName, $actMethodName);
+            $this->executeAct($mvcCtrlClassName, $actMethodName);
 
         } catch (DispatchException $e) {
 
             // force to ErrorCtrl -> (indexAct) beneath the same dir
             $actViewModel = $this->handleMvcError(str_replace($ctrlClassBaseName,
-                Executor::getErrorCtrlName().Executor::getCtrlClassPostfix(),
-                $mvcCtrlClassName), Executor::getErrorActName().$actPostFix, $e);
+                ApplicationContext::getErrorCtrl().ApplicationContext::getCtrlClassPostfix(),
+                $mvcCtrlClassName), ApplicationContext::getErrorAct().$actPostFix, $e);
 
         }
 
@@ -100,7 +100,7 @@ class Dispatcher extends AbstractDispatcher
 
         $methodVar = array($mvcCtrlInstance, $mvcErrorActName);
         if (!method_exists($mvcCtrlInstance, $mvcErrorActName) || !is_callable($methodVar, true)) {
-            throw new RuntimeException('Error ctrl: ' . $mvcErrorCtrlClassName . ' has no act called: ' . $mvcErrorActName);
+            throw new DispatchException('Error ctrl: ' . $mvcErrorCtrlClassName . ' has no act called: ' . $mvcErrorActName, 404);
         }
 
         $mvcCtrlInstance->withRequest($this->_request);
