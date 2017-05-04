@@ -10,6 +10,7 @@ class Autoloader extends AbstractAutoLoader
 {
 	CONST CALLBACK_NS2PATH = 'Namespace2path';
     CONST CALLBACK_COMPOSER = 'Composer';
+    CONST CALLBACK_THRIFTCLIENT = 'ThriftClient';
 
 	public static $_instance = null;
 

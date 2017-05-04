@@ -30,6 +30,6 @@ class Act
 
     public function render()
     {
-        
+
     }
 }

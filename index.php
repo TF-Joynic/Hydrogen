@@ -41,6 +41,7 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
         array(
             Hydrogen\Load\Autoloader::CALLBACK_NS2PATH,
             Hydrogen\Load\Autoloader::CALLBACK_COMPOSER,
+            Hydrogen\Load\Autoloader::CALLBACK_THRIFTCLIENT
         )
     );
 
