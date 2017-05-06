@@ -3,7 +3,7 @@
 	
 	"Constraint is liberity."
 
-## Easy to use, Flexible, Powerful and Convenient for Developers
+## VISION: Easy to use, Flexible, Powerful and Convenient for Developers
 
 >Author: Terrance Fung
 
