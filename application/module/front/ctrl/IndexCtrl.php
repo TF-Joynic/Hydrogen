@@ -22,6 +22,8 @@ class IndexCtrl extends Ctrl
         $request = $this->getRequest();
         $response = $this->getResponse();
 
+        echo "index";
+
         echo "Filer<br />";
         $filter = new XssFilter();
 

@@ -2,7 +2,7 @@
 
 namespace HydrogenTest\Http\Request;
 
-use Hydrogen\Http\Request\Curl;
+use Hydrogen\Http\Request\Client\Curl;
 
 class CurlTest extends \PHPUnit_Framework_TestCase
 {
@@ -10,9 +10,8 @@ class CurlTest extends \PHPUnit_Framework_TestCase
     {
         $curl = new Curl('www.hydrogen.local');
         $curl->setOpt('RETURNTRANSFER', 1);
-        $curl->setOpt('CUSTOMREQUEST', 'HEAD');
         $result = $curl->exec();
-//        $this->assertStringStartsWith("<!DOCTYPE html", $result);
-        $this->assertTrue(1==1);
+
+        $this->assertStringStartsWith('index', $result);
     }
 }
