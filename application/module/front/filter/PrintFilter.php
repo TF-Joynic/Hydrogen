@@ -16,13 +16,16 @@ class PrintFilter implements FilterInterface
         // TODO: Implement init() method.
     }
 
+    public function getId()
+    {}
+
     /**
      * @param RequestInterface $request
      * @param ResponseInterface $response
      * @param FilterChainInterface $filterChain
      * @return mixed
      */
-    public function doFilter(RequestInterface $request, ResponseInterface $response, FilterChainInterface $filterChain)
+    public function doFilter(RequestInterface &$request, ResponseInterface &$response, FilterChainInterface $filterChain)
     {
         if (1) {
             echo "print";

@@ -15,13 +15,18 @@ class XssFilter implements FilterInterface
         
     }
 
+    public function getId()
+    {
+        return static::class;
+    }
+
     /**
      * @param RequestInterface $request
      * @param ResponseInterface $response
      * @param FilterChainInterface $filterChain
      * @return mixed
      */
-    public function doFilter(RequestInterface $request, ResponseInterface $response, FilterChainInterface $filterChain)
+    public function doFilter(RequestInterface &$request, ResponseInterface &$response, FilterChainInterface $filterChain)
     {
         if (null != $request) {
             echo "filtered xss<br />";

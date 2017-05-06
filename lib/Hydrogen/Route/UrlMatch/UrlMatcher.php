@@ -3,7 +3,7 @@
 namespace Hydrogen\Route\UrlMatch;
 
 use Hydrogen\Debug\Variable;
-use Hydrogen\Application\Execute\Executor;
+use Hydrogen\Application\ApplicationContext;
 use Hydrogen\Route\Rule\RuleInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -36,10 +36,10 @@ class UrlMatcher extends AbstractUrlMatcher
     {
         $sanitizedPath = trim(preg_replace('/\/{2,}/', '/', $request->getUri()->getPath()));
 
-        $AVAILABLE_MODULES = Executor::getEnabledModules();
-        $DEFAULT_MODULE = Executor::getDefaultModule();
-        $DEFAULT_CTRL = Executor::getDefaultCtrl();
-        $DEFAULT_ACT = Executor::getDefaultAct();
+        $AVAILABLE_MODULES = ApplicationContext::getEnabledModules();
+        $DEFAULT_MODULE = ApplicationContext::getDefaultModule();
+        $DEFAULT_CTRL = ApplicationContext::getDefaultCtrl();
+        $DEFAULT_ACT = ApplicationContext::getDefaultAct();
 
         if ($this->_rules) {
             foreach ($this->_rules as $routeRule) {

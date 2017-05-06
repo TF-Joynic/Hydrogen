@@ -147,7 +147,7 @@ class Curl
 		$fullUrl = $this->_url;
 
         $params = null;
-		if (HTTP_METH_GET == $this->_request_method) {
+		if ('GET' == $this->_request_method) {
 			$fullUrl .= '?'.http_build_query($params);
 		}
 

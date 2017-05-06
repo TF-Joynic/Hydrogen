@@ -1,5 +1,6 @@
 <?php
 
+use application\module\front\filter\WebSecurityFilterChain;
 use Hydrogen\Load\Loader;
 use Hydrogen\Debug\Variable;
 use Hydrogen\Route\Router;
@@ -7,7 +8,7 @@ use Hydrogen\Route\Rule\RuleFixed;
 use Hydrogen\Route\Rule\RuleParam;
 use Hydrogen\Route\Rule\RulePostfix;
 use Hydrogen\Route\Rule\RuleClosure;
-use Hydrogen\Application\Execute\Executor;
+use Hydrogen\Application\ApplicationContext;
 
 if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
 	echo '<strong>Hello, SAE!</strong>';
@@ -40,6 +41,7 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
         array(
             Hydrogen\Load\Autoloader::CALLBACK_NS2PATH,
             Hydrogen\Load\Autoloader::CALLBACK_COMPOSER,
+            Hydrogen\Load\Autoloader::CALLBACK_THRIFTCLIENT
         )
     );
 
@@ -58,52 +60,32 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
 
 	$CONFIG = Hydrogen\Config\Config::getInstance();
 	$CONFIG->mergeConfigFile(APPLICATION_PATH.
-		DIRECTORY_SEPARATOR.Executor::getApplicationConfigDir()
+		DIRECTORY_SEPARATOR.ApplicationContext::getApplicationConfigDir()
 		.DIRECTORY_SEPARATOR.'application.ini');
 
 	$CONFIG->mergeConfigFile(APPLICATION_PATH.
-		DIRECTORY_SEPARATOR.Executor::getApplicationConfigDir()
+		DIRECTORY_SEPARATOR.ApplicationContext::getApplicationConfigDir()
 		.DIRECTORY_SEPARATOR.ENV.DIRECTORY_SEPARATOR
 		.'application.ini');
 
     $CONFIG->mergeConfigFile(APPLICATION_PATH.
-        DIRECTORY_SEPARATOR.Executor::getApplicationConfigDir()
+        DIRECTORY_SEPARATOR.ApplicationContext::getApplicationConfigDir()
         .DIRECTORY_SEPARATOR.DIRECTORY_SEPARATOR
         .'database.ini');
 
-    Executor::setModuleDir(APPLICATION_PATH.DIRECTORY_SEPARATOR.$CONFIG->get(SCOPE_APPICATION, 'application', '_module_dir'));
-    Executor::setEnabledModules($CONFIG->get(SCOPE_APPICATION, 'application', '_enabled_modules'));
+    ApplicationContext::setModuleDir(APPLICATION_PATH.DIRECTORY_SEPARATOR.$CONFIG->get(SCOPE_APPICATION, 'application', '_module_dir'));
+    ApplicationContext::setEnabledModules($CONFIG->get(SCOPE_APPICATION, 'application', '_enabled_modules'));
 
-    Executor::setTemplatePostfix("tpl");
+    ApplicationContext::setTemplatePostfix("tpl");
 
     require(Loader::getInstance()->getAbsPath(APPLICATION_PATH.'/config/route.php'));
 
-
-    /*$router->addRule(new RulePostfix('.json', array(
-        'header' => array(
-            HTTP_HEADER_CONTENT_TYPE => 'application/json',
-        ),
-        'param' => array(
-            'type' => 'JSON',
-        ),
-    )));
-
-    $router->addRule(new RuleFixed('/simple/master', array(
-        'module' => '',
-        'ctrl' => 'branch',
-        'act' => 'master'
-    )));*/
-
-    /*$router->addRule(new RuleParam('/simple/:id', array(
-        'ctrl' => 'branch',
-        'act' => 'master',
-        'param' => array(
-            'cd' => 1
-        )
-    )));*/
-
-
-//    var_dump($router->_rules);exit;
+    // Executor filters
+    $webSecurityFilterChain = new WebSecurityFilterChain();
+    $commonFilters = array(
+        WebSecurityFilterChain::class => $webSecurityFilterChain
+    );
+    ApplicationContext::setFilters($commonFilters);
 
 	$application = new Hydrogen\Application\Application();
 	$application->run();

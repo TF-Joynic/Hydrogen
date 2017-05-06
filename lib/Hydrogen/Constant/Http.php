@@ -3,13 +3,6 @@
 /**
  * Request Method(s)
  */
-defined('HTTP_METH_GET') || define('HTTP_METH_GET', 'GET');
-defined('HTTP_METH_POST') || define('HTTP_METH_POST', 'POST');
-defined('HTTP_METH_PUT') || define('HTTP_METH_PUT', 'PUT');
-defined('HTTP_METH_DELETE') || define('HTTP_METH_DELETE', 'DELETE');
-defined('HTTP_METH_PATCH') || define('HTTP_METH_PATCH', 'PATCH');
-defined('HTTP_METH_HEAD') || define('HTTP_METH_HEAD', 'HEAD');
-defined('HTTP_METH_OPTIONS') || define('HTTP_METH_OPTIONS', 'OPTIONS');
 
 // regard XML_HTTP_REQUEST as AJAX from the name
 defined('HTTP_METH_AJAX') || define('HTTP_METH_AJAX', 'AJAX');

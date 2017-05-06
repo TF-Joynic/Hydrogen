@@ -2,11 +2,14 @@
 
 namespace Hydrogen\Mvc\Ctrl;
 
-use Hydrogen\Application\Execute\Executor;
+use Hydrogen\Application\ApplicationContext;
+use Hydrogen\Http\Filter\FilterChainInterface;
 use Hydrogen\Http\Request\ServerRequest as Request;
 use Hydrogen\Http\Response\Response as Response;
 use Hydrogen\Mvc\Ctrl\Plugin\PluginInterface;
 use Hydrogen\Mvc\View\View;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 class Ctrl
 {
@@ -41,9 +44,9 @@ class Ctrl
     private $_active_plugins = array();
 
     /**
-     * @var \Hydrogen\Http\Filter\FilterChain|array
+     * @var \Hydrogen\Http\Filter\FilterChainInterface|array
      */
-    private $_filterChain = null;
+    private $_filterChain = array();
 
     public function __construct()
     {
@@ -70,6 +73,11 @@ class Ctrl
     }
 
     public function getUrl()
+    {
+
+    }
+
+    public function getAbsUrl()
     {
 
     }
@@ -117,19 +125,19 @@ class Ctrl
         $module = $this->_request->getContextAttr(MODULE);
 
         $templatePath = implode(DIRECTORY_SEPARATOR, array_filter(array(
-            Executor::getModuleDir(),
+            ApplicationContext::getModuleDir(),
             $module,
-            Executor::getTemplateDir()
+            ApplicationContext::getTemplateDir()
         )));
 
-        return $templatePath.DIRECTORY_SEPARATOR.$tpl.'.'.Executor::getTemplatePostfix();
+        return $templatePath.DIRECTORY_SEPARATOR.$tpl.'.'.ApplicationContext::getTemplatePostfix();
     }
 
     public function postRender()
     {
     }
 
-    public function withRequest(Request $request)
+    public function withRequest(ServerRequestInterface $request)
     {
         $this->_request = $request;
         return $this;
@@ -140,7 +148,7 @@ class Ctrl
         return $this->_request;
     }
 
-    public function withResponse(Response $response)
+    public function withResponse(ResponseInterface $response)
     {
         $this->_response = $response;
         return $this;
@@ -201,5 +209,8 @@ class Ctrl
         return $this;
     }
 
-//    public function
+    public function filters()
+    {
+        return array();
+    }
 }

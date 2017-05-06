@@ -19,8 +19,10 @@ class ErrorCtrl extends Ctrl
         echo "<h2>Error occured</h2>";
         echo "<h3><span>{$response->getStatusCode()}</span></h3>";
 
-        echo "Module: <b>{$request->getContextAttr('module')}</b> ->
-         Ctrl: <b>{$request->getContextAttr('ctrl')}</b> -> Act: <b>{$request->getContextAttr('act')}</b> not found!";
+        echo "Module: <font color=\"blue\">{$request->getContextAttr('module')}</font> <br />
+         Ctrl: <font color=\"blue\">{$request->getContextAttr('ctrl')}</font> <br />
+         Act: <font color=\"blue\">{$request->getContextAttr('act')}</font> <br />
+         not found!";
 
         header("Content-type:text/html;charset=utf-8");
 

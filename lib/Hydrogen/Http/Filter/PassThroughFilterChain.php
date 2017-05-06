@@ -15,25 +15,25 @@ class PassThroughFilterChain implements FilterChainInterface, \Iterator
      */
     private $_filters = array();
 
-    /**
-     * @var FilterInterface
-     */
-    private $_filter;
-
-    /**
-     * @var FilterChainInterface
-     */
+    public function getId()
+    {
+        return static::class;
+    }
 
     public function addFilter(FilterInterface $filter)
     {
         $this->_filters[] = $filter;
     }
 
-    public function doFilter(RequestInterface $request, ResponseInterface $response)
+    public function doFilter(RequestInterface &$request, ResponseInterface &$response)
     {
         $filter = $this->current();
-        $this->next();
-        $this->valid() && ($filter->doFilter($request, $response, $this));
+        if ($this->valid()) {
+            $this->next();
+            $filter->doFilter($request, $response, $this);
+        } else {
+            $this->next();
+        }
     }
 
     /**
@@ -44,7 +44,7 @@ class PassThroughFilterChain implements FilterChainInterface, \Iterator
      */
     public function current()
     {
-        return $this->_filters[$this->_pos];
+        return isset($this->_filters[$this->_pos]) ? $this->_filters[$this->_pos] : null;
     }
 
     /**
@@ -79,7 +79,7 @@ class PassThroughFilterChain implements FilterChainInterface, \Iterator
     public function valid()
     {
         $current = $this->current();
-        return null != $current && $current instanceof FilterInterface;
+        return null !== $current && $current instanceof FilterInterface;
     }
 
     /**

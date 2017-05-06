@@ -7,5 +7,7 @@ use Psr\Http\Message\ResponseInterface;
 
 interface FilterChainInterface
 {
-    public function doFilter(RequestInterface $request, ResponseInterface $response);
+    public function getId();
+
+    public function doFilter(RequestInterface &$request, ResponseInterface &$response);
 }

@@ -9,13 +9,15 @@ interface FilterInterface
 {
 	public function init();
 
+    public function getId();
+
     /**
      * @param RequestInterface $request
      * @param ResponseInterface $response
      * @param FilterChainInterface $filterChain
      * @return mixed
      */
-    public function doFilter(RequestInterface $request, ResponseInterface $response, FilterChainInterface $filterChain);
+    public function doFilter(RequestInterface &$request, ResponseInterface &$response, FilterChainInterface $filterChain);
 
 	public function destroy();
 }

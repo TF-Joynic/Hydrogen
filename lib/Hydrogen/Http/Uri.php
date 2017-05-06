@@ -4,10 +4,15 @@
  */
 namespace Hydrogen\Http;
 
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\UriInterface;
 
 class Uri implements UriInterface
 {
+    const USERNAME_PASSWORD_SEPARATOR = ':';
+    const USER_INFO_HOST_SEPARATOR = '@';
+    const HOST_PORT_SEPARATOR = ':';
+
     private $_scheme = null;
     private $_host = null;
     private $_port = null;
@@ -15,8 +20,14 @@ class Uri implements UriInterface
     private $_query = null;
     private $_fragment = null;
 
-    public function __construct()
-    {}
+    private $_userInfo = null;
+
+    private $_request = null;
+
+    public function __construct(RequestInterface $request)
+    {
+        $this->_request = $request;
+    }
 
     /**
      * Retrieve the scheme component of the URI.
@@ -63,7 +74,10 @@ class Uri implements UriInterface
      */
     public function getAuthority()
     {
-        // TODO: Implement getAuthority() method.
+        $userInfo = $this->getUserInfo();
+        $port = $this->getPort();
+
+        return ($userInfo ? $userInfo.self::USER_INFO_HOST_SEPARATOR: '').$this->getHost().($port ? self::HOST_PORT_SEPARATOR.$port : '');
     }
 
     /**
@@ -83,7 +97,19 @@ class Uri implements UriInterface
      */
     public function getUserInfo()
     {
-        // TODO: Implement getUserInfo() method.
+        return null !== $this->_userInfo ? $this->_userInfo : $this->extractUserInfo();
+    }
+
+    /**
+     * retrive it from header
+     *
+     * "Authorization: Basic " . base64_encode("user:pass") . ""
+     */
+    private function extractUserInfo()
+    {
+        $basicAuthenticationHeader = $this->_request->getHeaderLine('Authorization');
+        $this->_userInfo = base64_decode(trim(str_replace('Basic ', '', trim($basicAuthenticationHeader))));
+        return $this->_userInfo;
     }
 
     /**
@@ -235,7 +261,7 @@ class Uri implements UriInterface
      */
     public function getFragment()
     {
-        
+        return '';
     }
 
     /**
@@ -255,7 +281,9 @@ class Uri implements UriInterface
      */
     public function withScheme($scheme)
     {
-        // TODO: Implement withScheme() method.
+        $newInstance = clone $this;
+        $this->_scheme = $scheme;
+        return $this;
     }
 
     /**
@@ -274,7 +302,9 @@ class Uri implements UriInterface
      */
     public function withUserInfo($user, $password = null)
     {
-        // TODO: Implement withUserInfo() method.
+        $userInfo = $user.(null !== $password ? self::USERNAME_PASSWORD_SEPARATOR.$password : '');
+        $this->_userInfo = $userInfo;
+        return $this;
     }
 
     /**
@@ -291,7 +321,11 @@ class Uri implements UriInterface
      */
     public function withHost($host)
     {
-        // TODO: Implement withHost() method.
+        if (!$host) {
+            $this->_host = '';
+        }
+
+        return $this;
     }
 
     /**
@@ -408,5 +442,12 @@ class Uri implements UriInterface
     public function __toString()
     {
         // TODO: Implement __toString() method.
+    }
+
+    public function __clone()
+    {
+        $newInstance = new self($this->_request);
+
+
     }
 }

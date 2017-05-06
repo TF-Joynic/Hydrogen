@@ -2,7 +2,6 @@
 
 namespace Hydrogen\Mvc\ViewModel;
 
-use Hydrogen\Http\Request\ServerRequest;
 use Hydrogen\Http\Response\Stream;
 
 class JsonViewModel extends ViewModel
@@ -18,7 +17,7 @@ class JsonViewModel extends ViewModel
     /**
      * Output http response body, and it must be an instance of Stream according to PSR-7
      *
-     * @return StreamInterface
+     * @return \Psr\Http\Message\StreamInterface
      */
     public function concreteBody()
     {
