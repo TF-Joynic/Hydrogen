@@ -28,7 +28,7 @@ $autoloader->attachCallback(
     )
 );
 
-Hydrogen\Load\Loader::getInstance()->import(LIB_PATH.'/Hydrogen/Include/Functions.php');
+Hydrogen\Load\Loader::import(LIB_PATH.'/Hydrogen/Include/Functions.php');
 
 //$argc --;
 //array_shift($argv);

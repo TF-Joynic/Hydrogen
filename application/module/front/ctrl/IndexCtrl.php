@@ -50,7 +50,7 @@ class IndexCtrl extends FrontCtrl
 
 	public function indexAct()
 	{
-        echo "index";
+        echo "index<br />";
         $request = $this->getRequest();
         $response = $this->getResponse();
 

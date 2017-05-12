@@ -2,6 +2,7 @@
 
 namespace Hydrogen\Route\Dispatch;
 
+use Hydrogen\Debug\Variable;
 use Hydrogen\Load\Loader;
 use Hydrogen\Mvc\Ctrl\Ctrl;
 use Hydrogen\Application\ApplicationContext;
@@ -218,7 +219,7 @@ class Dispatcher extends AbstractDispatcher
             return false;
         }
 
-        if (false === Loader::getInstance()->import($absPath)) {
+        if (false === Loader::import($absPath)) {
             throw new LoadFailedException('Failed to load file: '.$absPath);
         }
 

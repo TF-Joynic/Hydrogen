@@ -11,10 +11,8 @@ $router = Router::getInstance();
 /*$router->addRule(new RuleFixed('/simple/master'), function(Request $request,Response $response) {
 });*/
 
-$router->addRule(new RuleParam('/simple/:id'), function(Request $request,Response $response) {
+$ruleParamSimpleId = new RuleParam('/simple/'.RuleParam::RULE_PARAM_PREFIX.'id');
+$router->addRule($ruleParamSimpleId, function(Request $request,Response $response) {
     $request->setContextAttr(CTRL, 'branch')->setContextAttr(ACT, 'master');
     $request->withAttribute("cd", 1);
-
-    echo 'llll';
-    $response->withStatus("101");
 });

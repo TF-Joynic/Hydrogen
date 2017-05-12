@@ -11,6 +11,7 @@ class ErrorCtrl extends Ctrl
 
     public function indexAct()
     {
+        header("Content-type:text/html;charset=utf-8");
         $request = $this->getRequest();
         $response = $this->getResponse();
 
@@ -23,8 +24,6 @@ class ErrorCtrl extends Ctrl
          Ctrl: <font color=\"blue\">{$request->getContextAttr('ctrl')}</font> <br />
          Act: <font color=\"blue\">{$request->getContextAttr('act')}</font> <br />
          not found!";
-
-        header("Content-type:text/html;charset=utf-8");
 
         $var = new \stdClass();
         $var->name = "Terrance";

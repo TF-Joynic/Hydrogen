@@ -2,7 +2,7 @@
 
 use Hydrogen\Application\ApplicationContext;
 
-\Hydrogen\Load\Loader::getInstance()->import('application/module/ModuleInit.php');
+\Hydrogen\Load\Loader::import('application/module/ModuleInit.php');
 
 $baseModuleNS = 'application\\module\\front';
 ApplicationContext::setNamespaceDir($baseModuleNS, APPLICATION_PATH.'/module/front');

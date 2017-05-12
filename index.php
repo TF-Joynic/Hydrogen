@@ -49,11 +49,9 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
     $autoloader->attachNamespace('application', APPLICATION_PATH);
 
 	// include Framework constant
-	Loader::getInstance()
-		->import('lib/Hydrogen/Constant/Http.php');
+	Loader::import('lib/Hydrogen/Constant/Http.php');
 
-    Loader::getInstance()
-        ->import('lib/Hydrogen/Include/Functions.php');
+    Loader::import('lib/Hydrogen/Include/Functions.php');
 
 //    pre($autoloader->getRegisteredCallbacks());exit;
 	// config
@@ -78,7 +76,7 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
 
     ApplicationContext::setTemplatePostfix("tpl");
 
-    require(Loader::getInstance()->getAbsPath(APPLICATION_PATH.'/config/route.php'));
+    require(Loader::getAbsPath(APPLICATION_PATH.'/config/route.php'));
 
     // Executor filters
     $webSecurityFilterChain = new WebSecurityFilterChain();

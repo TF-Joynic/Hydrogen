@@ -50,7 +50,7 @@ class ConsoleHelper
                     $expectedClassName = $this->baseNamespace.NAMESPACE_SEPARATOR
                         .$module_to_be.NAMESPACE_SEPARATOR.$fileBasename;
 
-                    Loader::getInstance()->import($value->__toString());
+                    Loader::import($value->__toString());
                     if (!class_exists($expectedClassName, false)) { // not a standard class file!
                         continue;
                     }

@@ -2,23 +2,9 @@
 
 namespace Hydrogen\Load;
 
-use Hydrogen\Load\Exception\FileUnaccessibleException;
-
 class Loader
 {
-    private $_loadedFile = array();
-    public static $_instance = null;
-
-    private function __construct()
-    {}
-
-    public static function getInstance()
-    {
-        if (null === self::$_instance)
-            self::$_instance = new self();
-
-        return self::$_instance;
-    }
+    private static $_loadedFile = array();
 
     /**
      * check whether one class is loaded already.
@@ -26,28 +12,28 @@ class Loader
      * @param  string  $className
      * @return boolean
      */
-    public function isLoaded($className)
+    public static function isLoaded($className)
     {
         return class_exists($className, false);
     }
 
-    public function getLoadedFile()
+    public static function getLoadedFile()
     {
-        return $this->_loadedFile;
+        return self::$_loadedFile;
     }
 
-    public function _load($path, $force = false)
+    public static function _load($path, $force = false)
     {
-        if (($force || $this->checkLoadingPermission($path)) && (false !== $realPath = stream_resolve_include_path($path))) {
+        if (($force || self::checkLoadingPermission($path)) && (false !== $realPath = stream_resolve_include_path($path))) {
 
-            if (in_array($realPath, $this->_loadedFile)) {
+            if (in_array($realPath, self::$_loadedFile)) {
                 return true;
             }
 
             // if the class file do exist, we need to include it.
             /** @noinspection PhpIncludeInspection */
             if (include($realPath)) {
-                $this->_loadedFile[] = $realPath;
+                self::$_loadedFile[] = $realPath;
                 return true;
             }
         }
@@ -59,7 +45,7 @@ class Loader
      * @param $path
      * @return bool
      */
-    public function checkLoadingPermission($path)
+    public static function checkLoadingPermission($path)
     {
         // class or file beneath vendor  is always has permission to include
         if (0 === strpos($path, VENDOR_PATH)) {
@@ -99,7 +85,7 @@ class Loader
         return true;
     }
 
-    public function getAbsPath($filePath)
+    public static function getAbsPath($filePath)
     {
         if (!$filePath || !is_string($filePath)) {
             return false;
@@ -148,11 +134,9 @@ class Loader
      * @return bool
      * @throws \Exception
      */
-    public function import($filePath, $force = false)
+    public static function import($filePath, $force = false)
     {
-        return self::_load($this->getAbsPath($filePath), $force);
+        return self::_load(self::getAbsPath($filePath), $force);
     }
 
-    private function __clone()
-    {}
 }

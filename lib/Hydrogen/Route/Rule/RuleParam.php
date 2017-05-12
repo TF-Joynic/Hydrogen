@@ -2,6 +2,7 @@
 
 namespace Hydrogen\Route\Rule;
 
+use Hydrogen\Debug\Variable;
 use Hydrogen\Http\Exception\InvalidArgumentException;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;

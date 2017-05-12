@@ -48,11 +48,7 @@ class UrlMatcher extends AbstractUrlMatcher
                     && (false !== $ruleCallback = $routeRule->apply($sanitizedPath, $request, $response))) {
 
                     if ($routeRule->isTerminable()) {
-                        $this->tailing($DEFAULT_MODULE, $DEFAULT_CTRL, $DEFAULT_ACT);
-
-                        $request->setContextAttr('module', $this->_module);
-                        $request->setContextAttr('ctrl', $this->_ctrl);
-                        $request->setContextAttr('act', $this->_act);
+                        $this->tailing($request, $DEFAULT_MODULE, $DEFAULT_CTRL, $DEFAULT_ACT);
                         return true;
                     }
 
@@ -101,15 +97,11 @@ class UrlMatcher extends AbstractUrlMatcher
             }
         }
 
-        /*var_dump($this->_module);
-        var_dump($this->_ctrl);
-        var_dump($this->_act);exit;*/
+        $request->setContextAttr(MODULE, $this->_module);
+        $request->setContextAttr(CTRL, $this->_ctrl);
+        $request->setContextAttr(ACT, $this->_act);
+        $this->tailing($request, $DEFAULT_MODULE, $DEFAULT_CTRL, $DEFAULT_ACT);
 
-        $this->tailing($DEFAULT_MODULE, $DEFAULT_CTRL, $DEFAULT_ACT);
-
-        $request->setContextAttr('module', $this->_module);
-        $request->setContextAttr('ctrl', $this->_ctrl);
-        $request->setContextAttr('act', $this->_act);
         return true;
     }
 
@@ -184,24 +176,25 @@ class UrlMatcher extends AbstractUrlMatcher
     /**
      * process default module/ctrl/act name
      *
+     * @param ServerRequestInterface $request
      * @param $default_module
      * @param $default_ctrl
      * @param $default_act
      */
-    public function tailing($default_module, $default_ctrl, $default_act)
+    public function tailing(ServerRequestInterface &$request, $default_module, $default_ctrl, $default_act)
     {
-        if (!$this->_module) {
-            $this->_module = $default_module;
+        if (!$request->getContextAttr(MODULE)) {
+            $request->setContextAttr(MODULE, $default_module);
         }
 
-        if (!$this->_ctrl) {
-            $this->_ctrl = $default_ctrl;
+        if (!$request->getContextAttr(CTRL)) {
+            $request->setContextAttr(CTRL, $default_ctrl);
         }
 
-        $this->_ctrl = ucfirst($this->_ctrl);
+        $request->setContextAttr(CTRL, ucfirst($request->getContextAttr(CTRL)));
 
-        if (!$this->_act) {
-            $this->_act = $default_act;
+        if (!$request->getContextAttr(ACT)) {
+            $request->setContextAttr(ACT, $default_act);
         }
     }
 }

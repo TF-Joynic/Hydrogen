@@ -80,6 +80,6 @@ abstract class AbstractAutoLoader
 
 	private function _doLoad($path)
 	{
-		return Loader::getInstance()->_load($path);
+		return Loader::_load($path);
 	}
 }
