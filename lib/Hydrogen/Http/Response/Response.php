@@ -233,7 +233,7 @@ class Response implements ResponseInterface
      */
     public function getHeader($name)
     {
-        return $this->getMessage()->hasHeader($name);
+        return $this->getMessage()->getHeader($name);
     }
 
     /**
@@ -277,7 +277,8 @@ class Response implements ResponseInterface
      */
     public function withHeader($name, $value)
     {
-        return $this->getMessage()->withHeader($name, $value);
+        $this->getMessage()->withHeader($name, $value);
+        return $this;
     }
 
     /**
@@ -298,7 +299,8 @@ class Response implements ResponseInterface
      */
     public function withAddedHeader($name, $value)
     {
-        return $this->getMessage()->withAddedHeader($name, $value);
+        $this->getMessage()->withAddedHeader($name, $value);
+        return $this;
     }
 
     /**
@@ -315,7 +317,8 @@ class Response implements ResponseInterface
      */
     public function withoutHeader($name)
     {
-        return $this->getMessage()->withoutHeader($name);
+        $this->getMessage()->withoutHeader($name);
+        return $this;
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace Hydrogen\Route\Rule;
 
+use Hydrogen\Debug\Variable;
 use Hydrogen\Http\Request\ServerRequest as Request;
 use Hydrogen\Http\Response\Response;
 use Hydrogen\Load\Loader;
@@ -9,6 +10,12 @@ use Hydrogen\Route\Exception\InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
+/**
+ * this rule with set content-type header according to postfix mapping
+ *
+ * Class RulePostfix
+ * @package Hydrogen\Route\Rule
+ */
 class RulePostfix extends AbstractRule
 {
 
@@ -45,7 +52,7 @@ class RulePostfix extends AbstractRule
                     $response->withHeader(HTTP_HEADER_CONTENT_TYPE, $content_type);
                 }
 
-                $this->performCallback();
+                $this->performCallback($request, $response);
             }
         }
 

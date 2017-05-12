@@ -17,6 +17,8 @@ class ThriftCtrl extends FrontCtrl
 {
     public function indexAct()
     {
+        echo "this is thrift test...<br/>";
+
         $socket = new TSocket('localhost', 7911);
         $transport = new TBufferedTransport($socket);
         $protocol = new TBinaryProtocol($transport);
