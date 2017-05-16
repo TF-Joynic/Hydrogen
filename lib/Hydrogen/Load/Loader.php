@@ -54,10 +54,11 @@ class Loader
 
         $pathInfo = pathinfo($path);
 
-        $debug_backtrace = debug_backtrace();
         $firstCharAscii = ord($pathInfo['filename'][0]);
         if ('php' == $pathInfo['extension']
             && 97 <= $firstCharAscii && $firstCharAscii <= 122) {
+
+            $debug_backtrace = debug_backtrace();
             // this is a private class (file)
             // shall be visible to the parent dir only
 

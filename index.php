@@ -53,9 +53,6 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
 
     Loader::import('lib/Hydrogen/Include/Functions.php');
 
-//    pre($autoloader->getRegisteredCallbacks());exit;
-	// config
-
 	$CONFIG = Hydrogen\Config\Config::getInstance();
 	$CONFIG->mergeConfigFile(APPLICATION_PATH.
 		DIRECTORY_SEPARATOR.ApplicationContext::getApplicationConfigDir()
@@ -76,7 +73,8 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
 
     ApplicationContext::setTemplatePostfix("tpl");
 
-    require(Loader::getAbsPath(APPLICATION_PATH.'/config/route.php'));
+//    include(Loader::getAbsPath(APPLICATION_PATH.'/config/route.php'));
+    Loader::import('application/config/Route.php');
 
     // Executor filters
     $webSecurityFilterChain = new WebSecurityFilterChain();

@@ -65,7 +65,7 @@ class cookie
 
 			if (is_string($cookie) && 0 < strlen($cookie)) { 
 				$cookie = new CookieEntity($cookie);
-				$cookie->expires = $_SERVER['REQUEST_TIME'] - 86400;
+				$cookie->expire = $_SERVER['REQUEST_TIME'] - 86400;
 			} elseif (!($cookie instanceof CookieEntity)) {
 
 				throw new InvalidArgumentException(

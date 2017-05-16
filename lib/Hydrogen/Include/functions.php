@@ -20,6 +20,16 @@ if (!defined('ENV') || empty(ENV) || !in_array(ENV, array('production', 'test', 
 }
 // runtime environment definition end <-
 
+/**
+ * fallback __autoload function
+ */
+if (!function_exists('__autoload')) {
+    function __autoload($class) {
+        $classFilePath = str_replace(DIRECTORY_SEPARATOR, '\\', $class).'.php';
+        /** @noinspection PhpIncludeInspection */
+        require $classFilePath;
+    }
+}
 
 if (!function_exists('hydrogenErrorHandler')) {
     function hydrogenErrorHandler($errno, $errmsg, $filename, $errline, $vars) {
@@ -61,7 +71,3 @@ function pre($var) {
     print_r($var);
     echo "</pre>";
 }
-
-defined('SCOPE_APPICATION') || define('SCOPE_APPICATION', 'application');
-defined('SCOPE_DATABASE') || define('SCOPE_DATABASE', 'database');
-defined('SCOPE_MEMCACHE') || define('SCOPE_MEMCACHE', 'memcache');
