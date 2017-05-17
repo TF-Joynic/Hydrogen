@@ -14,6 +14,8 @@ class Autoloader extends AbstractAutoLoader
 
 	private static $_instance = null;
 
+    private $_classLoadMap = array();
+
 	private function __construct()
 	{}
 
@@ -24,6 +26,16 @@ class Autoloader extends AbstractAutoLoader
 
 		return self::$_instance;
 	}
+
+    public function setClassLoadMap($loadMap)
+    {
+        $this->_classLoadMap = $loadMap;
+    }
+
+    public function getClassLoadMap()
+    {
+        return $this->_classLoadMap;
+    }
 
     public function attachNamespace($namespace, $dir, $prepend = false)
     {
@@ -58,13 +70,17 @@ class Autoloader extends AbstractAutoLoader
         return true;
     }
 
-	public function attachCallback($callbackClassNames = array(self::CALLBACK_NS2PATH))
+	public function attachCallback($callbackClassNames)
 	{
+        if (!$callbackClassNames) {
+            return ;
+        }
+
 		if (!is_array($callbackClassNames)) {
 			$callbackClassNames = array($callbackClassNames);
 		}
 
-		$callbackClassPath = $this->_getCallbackClassPath();
+		$callbackClassPath = $this->getCallbackClassPath();
 
         require $callbackClassPath.'/AbstractAutoloadCallback.php';
 

@@ -9,9 +9,6 @@ abstract class AbstractAutoLoader
 {
     protected $_namespaces = array();
 
-    /**
-     * @var array(\Hydrogen\Load\AutoloadCallback\AutoloadCallbackInterface)
-     */
 	protected $_autoloadCallbacks = array();
 
     protected abstract function attachNamespace($namespace, $dir, $prepend = false);
@@ -24,11 +21,11 @@ abstract class AbstractAutoLoader
 //		return $this->_autoloadCallbacks;
 	}
 
-    protected abstract function attachCallback($callbackClassNames = array(self::CALLBACK_NS2PATH));
+    protected abstract function attachCallback($callbackClassNames);
 
 	protected abstract function detachCallback($callbackClassName);
 
-	protected function _getCallbackClassPath()
+	protected function getCallbackClassPath()
 	{
 		return __DIR__.DIRECTORY_SEPARATOR.'AutoloadCallback';
 	}
@@ -42,11 +39,14 @@ abstract class AbstractAutoLoader
 	 */
 	public function loadClass($classPath)
 	{
+        if (!$classPath) {
+            return ;
+        }
+
 		$classPath = ltrim($classPath, '/\\');
 
 		// if the class path start with 'Hydrogen', goto lib
-		if (0 === strpos($classPath, 'Hydrogen')) {
-			$fullPath = LIB_PATH.DIRECTORY_SEPARATOR.$classPath;
+		if ($fullPath = Loader::getAbsPath($classPath)) {
 			if ($this->_doLoad($fullPath)) {
 				return ;
 			}

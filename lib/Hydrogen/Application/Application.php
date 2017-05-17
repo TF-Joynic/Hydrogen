@@ -9,6 +9,8 @@
  */
 namespace Hydrogen\Application;
 
+use Hydrogen\Application\Bootstrap\PreloadFile;
+use Hydrogen\Load\Loader;
 use Hydrogen\Route\Router;
 use Hydrogen\Application\Bootstrap\Base;
 use Hydrogen\Application\Bootstrap\RuntimeCheckup;
@@ -31,12 +33,14 @@ final class Application
 
 		$bootstrap = new RuntimeCheckup($bootstrap);
 		$bootstrap = new Config($bootstrap);
+        $bootstrap = new PreloadFile($bootstrap);
 		$bootstrap->doBootstrap();
 	}
 
 	public function run()
 	{
         $this->bootstrap();
+        Loader::import('application/config/Route.php', true);
         Router::getInstance()->route();
 	}
 }

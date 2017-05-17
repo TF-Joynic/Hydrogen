@@ -22,9 +22,10 @@ class Loader
         return self::$_loadedFile;
     }
 
-    public static function _load($path, $force = false)
+    public static function _load($path, $force = false, $returnContent = false)
     {
-        if (($force || self::checkLoadingPermission($path)) && (false !== $realPath = stream_resolve_include_path($path))) {
+        if (($force || self::checkLoadingPermission($path))
+            && (false !== $realPath = stream_resolve_include_path($path))) {
 
             if (in_array($realPath, self::$_loadedFile)) {
                 return true;
@@ -32,10 +33,9 @@ class Loader
 
             // if the class file do exist, we need to include it.
             /** @noinspection PhpIncludeInspection */
-            if (include($realPath)) {
-                self::$_loadedFile[] = $realPath;
-                return true;
-            }
+            $content = require($realPath);
+            self::$_loadedFile[] = $realPath;
+            return $returnContent ? $content : true;
         }
 
         return false;
@@ -131,13 +131,14 @@ class Loader
      * include file manually
      *
      * @param  string $filePath
-     * @param bool $force
+     * @param bool $force ignore same dir
+     * @param bool $returnContent
      * @return bool
      * @throws \Exception
      */
-    public static function import($filePath, $force = false)
+    public static function import($filePath, $force = false, $returnContent = false)
     {
-        return self::_load(self::getAbsPath($filePath), $force);
+        return self::_load(self::getAbsPath($filePath), $force, $returnContent);
     }
 
 }

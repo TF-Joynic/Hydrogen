@@ -30,6 +30,8 @@ class ApplicationContext
 
     private static $_moduleInitFile = 'Init.php';
 
+    private static $_classLoadConfigFile = 'ClassLoadConfig.php';
+
     // common filters
     private static $_filters = array();
 
@@ -197,6 +199,22 @@ class ApplicationContext
     public static function setTemplatePostfix($templatePostfix)
     {
         self::$_templatePostfix = $templatePostfix;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getClassLoadConfigFile()
+    {
+        return self::$_classLoadConfigFile;
+    }
+
+    /**
+     * @param $classLoadConfigFile
+     */
+    public static function setClassLoadConfigFile($classLoadConfigFile)
+    {
+        self::$_classLoadConfigFile = $classLoadConfigFile;
     }
 
     /**
