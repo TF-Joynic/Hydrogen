@@ -53,7 +53,7 @@ class IndexCtrl extends FrontCtrl
 	{
         echo "index<br />";
 
-        echo Curl::OPT_VALUE_ARRAY;exit;
+        echo Curl::OPT_VALUE_ARRAY."<br />";
 
         $request = $this->getRequest();
         $response = $this->getResponse();
