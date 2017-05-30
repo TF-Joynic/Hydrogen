@@ -1,18 +1,36 @@
 <?php
-/**
- * Created by IntelliJ IDEA.
- * User: xiaolei
- * Date: 17/4/5
- * Time: 16:37
- */
 
 namespace Hydrogen\Utils;
 
 
 class Sanitizer
 {
-    public function sanitize()
+    public static function sanitizeXss($str)
     {
+        if (!$str) return $str;
 
+        if (is_string($str)) {
+            if (0 == strlen($str)) {
+                return $str;
+            }
+
+            $str = self::escape($str);
+        } elseif (is_array($str)) {
+            foreach ($str as &$v) {
+                $v = self::sanitizeXss($v);
+            }
+        }
+
+        return $str;
+    }
+
+    private static function escape($str)
+    {
+        /*if (!get_magic_quotes_gpc()) {
+            $str = addslashes($str);
+        }*/
+
+        $str = htmlspecialchars($str, ENT_QUOTES);
+        return $str;
     }
 }

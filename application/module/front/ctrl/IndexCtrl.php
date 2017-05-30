@@ -64,7 +64,8 @@ class IndexCtrl extends FrontCtrl
         $chain = new PassThroughFilterChain();
 
         $chainWebSe = new WebSecurityFilterChain();
-        echo WebSecurityFilterChain::class;exit;
+        $chainWebSe->addFilter($filter);
+
         echo $chainWebSe->getId();exit;
 
         echo $chain->getId();
