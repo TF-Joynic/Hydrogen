@@ -11,7 +11,7 @@ class BranchCtrl extends Ctrl
     {
         $response = $this->getResponse();
 //        $response->withHeader(HTTP_HEADER_CONTENT_TYPE, 'text/css');
-        var_dump($response->getHeader(HTTP_HEADER_CONTENT_TYPE));
+//        var_dump($response->getHeader(HTTP_HEADER_CONTENT_TYPE));
 //        Variable::dump($response-);
 
         echo "branch/master<br />";

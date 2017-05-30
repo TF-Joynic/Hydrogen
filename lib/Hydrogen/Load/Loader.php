@@ -4,7 +4,15 @@ namespace Hydrogen\Load;
 
 class Loader
 {
+    /**
+     * @var array abs file paths that have been loaded already
+     */
     private static $_loadedFile = array();
+
+    /**
+     * @var array files that need to be loaded in advance
+     */
+    private static $_preLoadFiles = array();
 
     /**
      * check whether one class is loaded already.
@@ -24,7 +32,7 @@ class Loader
 
     public static function _load($path, $force = false, $returnContent = false)
     {
-        if (($force || self::checkLoadingPermission($path))
+        if ($path && ($force || self::checkLoadingPermission($path))
             && (false !== $realPath = stream_resolve_include_path($path))) {
 
             if (in_array($realPath, self::$_loadedFile)) {
@@ -132,13 +140,27 @@ class Loader
      *
      * @param  string $filePath
      * @param bool $force ignore same dir
-     * @param bool $returnContent
+     * @param bool $returnContent return content(usually contains 'return' keyword) of the very file
      * @return bool
      * @throws \Exception
      */
     public static function import($filePath, $force = false, $returnContent = false)
     {
         return self::_load(self::getAbsPath($filePath), $force, $returnContent);
+    }
+
+    public static function setPreloadFiles($files)
+    {
+        if (!is_array($files)) {
+            $files = array($files);
+        }
+
+        self::$_preLoadFiles = $files;
+    }
+
+    public static function getPreloadFiles()
+    {
+        return self::$_preLoadFiles;
     }
 
 }

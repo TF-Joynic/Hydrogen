@@ -17,7 +17,7 @@ class Router
 {
 	private static $_instance = null;
 
-    public $_rules = array();
+    private $_rules = array();
 
 	private function __construct()
 	{}
@@ -36,9 +36,13 @@ class Router
 
     public function addRule(RuleInterface $routeRule, \Closure $callback)
     {
-        if (false !== $callbackClosure = $callback->bindTo($routeRule, $routeRule)) {
+        // must bind as a static Closure, otherwise will raise: Warning: Cannot bind an instance to a static closure(5.x)
+        if (false !== $callbackClosure = \Closure::bind($callback, null, $routeRule)) {
             $routeRule->setCallback($callbackClosure);
-        } else {
+        }
+        /*if (false !== $callbackClosure = $callback->bindTo($routeRule, $routeRule)) {
+            $routeRule->setCallback($callbackClosure);
+        }*/ else {
             throw new InvalidRuleCallbackException('invalid callback closure specified!');
         }
 

@@ -20,7 +20,7 @@ defined('HTTP_HEADER_ACCEPT_ENCODING') || define('HTTP_HEADER_ACCEPT_ENCODING', 
 defined('HTTP_HEADER_ACCEPT_LANGUAGE') || define('HTTP_HEADER_ACCEPT_LANGUAGE', 'Accept-Language');
 defined('HTTP_HEADER_CONTENT_TYPE') || define('HTTP_HEADER_CONTENT_TYPE', 'Content-Type');
 
-defined('SCOPE_APPICATION') || define('SCOPE_APPICATION', 'application');
+defined('SCOPE_APPLICATION') || define('SCOPE_APPLICATION', 'application');
 
-defined('PRELOADFILES') || define('PRELOADFILES', 'preloadFiles');
-defined('CLASSLOADMAP') || define('CLASSLOADMAP', 'classLoadMap');
+defined('PRELOAD_FILES') || define('PRELOAD_FILES', 'preloadFiles');
+defined('CLASS_LOAD_MAP') || define('CLASS_LOAD_MAP', 'classLoadMap');
