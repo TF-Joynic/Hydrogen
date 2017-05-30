@@ -3,12 +3,16 @@
 namespace Hydrogen\CoTask;
 
 use application\console\Task\CoTask;
+use Generator;
 
 /**
  * class that represent a Generator
  */
 class Task
 {
+    /**
+     * @var Generator
+     */
 	private $_generator = null;
 
 	const STATUS_RUNNING = 1;
@@ -21,32 +25,14 @@ class Task
 
 	private $_status = null;
 
-	/**
-	 * create a new task(generator)
-	 *
-	 * @param $taskName
-	 * @param $args
-	 * @throws \Exception
-	 * @internal param $ [type] $taskName [description]
-	 * @internal param $ [type] $args     [description]
-	 */
-	public function __construct($taskName, $args)
+    /**
+     * create a new task(generator)
+     *
+     * @param Generator $taskGen
+     */
+	public function __construct(Generator $taskGen)
 	{
-		if (!$taskName || !is_string($taskName)) {
-			throw new \InvalidArgumentException(
-				'taskName must be valid string');
-		}
-
-		$generator = call_user_func_array($taskName, $args);
-
-		if (!$generator instanceof \Generator) {
-			throw new \Exception('specified func: ' . $taskName . '()
-			 is not a generator!');
-		}
-
-		$this->_id = md5($taskName . '|' . implode('_', $args));
-		$this->_name = $taskName;
-		$this->_generator = $generator;
+		$this->_generator = $taskGen;
 		$this->_status = self::STATUS_SUSPENDED;
 	}
 

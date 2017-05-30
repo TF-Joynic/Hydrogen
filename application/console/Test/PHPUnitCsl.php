@@ -10,6 +10,8 @@ class PHPUnitCsl extends TestCsl
             echo "parameter needed!".PHP_EOL;
         }
 
+        $component = 'CoTask/Task';
+
         $target = 'HydrogenTest'.self::NS_SEPARATOR.
             str_replace(array('/', '\\'), self::NS_SEPARATOR, $component).'Test';
 
