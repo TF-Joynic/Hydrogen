@@ -12,7 +12,9 @@ class Autoloader extends AbstractAutoLoader
     CONST CALLBACK_COMPOSER = 'Composer';
     CONST CALLBACK_THRIFTCLIENT = 'ThriftClient';
 
-	public static $_instance = null;
+	private static $_instance = null;
+
+    private $_classLoadMap = array();
 
 	private function __construct()
 	{}
@@ -24,6 +26,16 @@ class Autoloader extends AbstractAutoLoader
 
 		return self::$_instance;
 	}
+
+    public function setClassLoadMap($loadMap)
+    {
+        $this->_classLoadMap = $loadMap;
+    }
+
+    public function getClassLoadMap()
+    {
+        return $this->_classLoadMap;
+    }
 
     public function attachNamespace($namespace, $dir, $prepend = false)
     {
@@ -58,13 +70,17 @@ class Autoloader extends AbstractAutoLoader
         return true;
     }
 
-	public function attachCallback($callbackClassNames = array(self::CALLBACK_NS2PATH))
+	public function attachCallback($callbackClassNames)
 	{
+        if (!$callbackClassNames) {
+            return ;
+        }
+
 		if (!is_array($callbackClassNames)) {
 			$callbackClassNames = array($callbackClassNames);
 		}
 
-		$callbackClassPath = $this->_getCallbackClassPath();
+		$callbackClassPath = $this->getCallbackClassPath();
 
         require $callbackClassPath.'/AbstractAutoloadCallback.php';
 
@@ -75,23 +91,31 @@ class Autoloader extends AbstractAutoLoader
 				include $callbackClassPath.DIRECTORY_SEPARATOR
 				.$callbackClassName.'.php';
 
-				// echo $callbackClassName;exit;
-
-				/*echo $callbackClassPath.DIRECTORY_SEPARATOR
-				.$callbackClassName.'.php';exit;*/
-
 				$callbackNsClass = 'Hydrogen\\Load\\AutoloadCallback\\'.$callbackClassName;
 
-				$callbackClass = new $callbackNsClass();
-				$callbackClass->registerCallback();
-				$this->_autoloadCallbacks[$callbackClassName] = $callbackClass;
+				$callbackClassInstance = new $callbackNsClass();
+                $callbackClassInstance->registerCallback();
+				$this->_autoloadCallbacks[$callbackClassName] = $callbackClassInstance;
 			}
 		}
 
 	}
 
-	public function detachCallback()
+	public function detachCallback($callbackClassName)
 	{
+        if (!$this->_autoloadCallbacks) {
+            return false;
+        }
+
+        if (isset($this->_autoloadCallbacks[$callbackClassName])) {
+            $fallback = 1 == count($this->_autoloadCallbacks);
+            $callbackClassInstance = $this->_autoloadCallbacks[$callbackClassName];
+            if ($callbackClassInstance->unregisterCallback($fallback)) {
+                unset($this->_autoloadCallbacks[$callbackClassName]);
+                return true;
+            }
+        }
+
 		return false;
 	}
 

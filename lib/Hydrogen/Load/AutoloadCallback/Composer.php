@@ -2,20 +2,21 @@
 
 namespace Hydrogen\Load\AutoloadCallback;
 
-use Hydrogen\Load\Autoloader;
 
 class Composer extends AbstractAutoloadCallback
 {
-    public static function autoLoad($class_name)
+    protected function resolveClassPath($className)
     {
-        $class_name = str_replace(self::NAMESPACE_SEPARATOR, DIRECTORY_SEPARATOR, $class_name);
+        if ($classLoadMapPath = parent::resolveClassPath($className)) {
+            return $classLoadMapPath;
+        }
 
-        $class_name_info = pathinfo($class_name);
+        $className = $this->namespaceSep2DirSep($className);
+
+        $class_name_info = pathinfo($className);
         $base_class_name = $class_name_info['basename'];
         $namespace = $class_name_info['dirname'];
 
-        $classPath = $namespace.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.$base_class_name.'.php';
-
-        Autoloader::getInstance()->loadClass($classPath);
+        return $namespace.DIRECTORY_SEPARATOR.'src'.DIRECTORY_SEPARATOR.$base_class_name.'.php';
     }
 }

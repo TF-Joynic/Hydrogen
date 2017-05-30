@@ -19,3 +19,8 @@ defined('HTTP_HEADER_USER_AGENT') || define('HTTP_HEADER_USER_AGENT', 'User-Agen
 defined('HTTP_HEADER_ACCEPT_ENCODING') || define('HTTP_HEADER_ACCEPT_ENCODING', 'Accept-Encoding');
 defined('HTTP_HEADER_ACCEPT_LANGUAGE') || define('HTTP_HEADER_ACCEPT_LANGUAGE', 'Accept-Language');
 defined('HTTP_HEADER_CONTENT_TYPE') || define('HTTP_HEADER_CONTENT_TYPE', 'Content-Type');
+
+defined('SCOPE_APPICATION') || define('SCOPE_APPICATION', 'application');
+
+defined('PRELOADFILES') || define('PRELOADFILES', 'preloadFiles');
+defined('CLASSLOADMAP') || define('CLASSLOADMAP', 'classLoadMap');

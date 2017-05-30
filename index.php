@@ -3,11 +3,6 @@
 use application\module\front\filter\WebSecurityFilterChain;
 use Hydrogen\Load\Loader;
 use Hydrogen\Debug\Variable;
-use Hydrogen\Route\Router;
-use Hydrogen\Route\Rule\RuleFixed;
-use Hydrogen\Route\Rule\RuleParam;
-use Hydrogen\Route\Rule\RulePostfix;
-use Hydrogen\Route\Rule\RuleClosure;
 use Hydrogen\Application\ApplicationContext;
 
 if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
@@ -34,8 +29,7 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
     defined('CTRL') || define('CTRL', 'ctrl');
     defined('ACT') || define('ACT', 'act');
 
-	require LIB_PATH.'/Hydrogen/Load/Autoloader.php';
-
+    require LIB_PATH.'/Hydrogen/Load/Autoloader.php';
 	$autoloader = Hydrogen\Load\Autoloader::getInstance();
 	$autoloader->attachCallback(
         array(
@@ -45,16 +39,16 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
         )
     );
 
-    $autoloader->attachNamespace('Psr', LIB_PATH.DIRECTORY_SEPARATOR.'Psr', true);
-    $autoloader->attachNamespace('application', APPLICATION_PATH);
+    $autoloader->attachNamespace('Psr', LIB_PATH.DIRECTORY_SEPARATOR.'Psr');
+    $autoloader->attachNamespace('application', APPLICATION_PATH, true);
+    $autoloader->attachNamespace('Hydrogen', LIB_PATH.DIRECTORY_SEPARATOR.'Hydrogen', true);
 
-	// include Framework constant
-	Loader::import('lib/Hydrogen/Constant/Http.php');
-
+    // include Framework constant
+    Loader::import('lib/Hydrogen/Constant/Http.php');
     Loader::import('lib/Hydrogen/Include/Functions.php');
 
-//    pre($autoloader->getRegisteredCallbacks());exit;
-	// config
+    $classLoadConfigArr = Loader::import('application/config/'.ApplicationContext::getClassLoadConfigFile(), true, true);
+    $autoloader->setClassLoadMap($classLoadConfigArr[CLASSLOADMAP]);
 
 	$CONFIG = Hydrogen\Config\Config::getInstance();
 	$CONFIG->mergeConfigFile(APPLICATION_PATH.
@@ -73,10 +67,7 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
 
     ApplicationContext::setModuleDir(APPLICATION_PATH.DIRECTORY_SEPARATOR.$CONFIG->get(SCOPE_APPICATION, 'application', '_module_dir'));
     ApplicationContext::setEnabledModules($CONFIG->get(SCOPE_APPICATION, 'application', '_enabled_modules'));
-
     ApplicationContext::setTemplatePostfix("tpl");
-
-    require(Loader::getAbsPath(APPLICATION_PATH.'/config/route.php'));
 
     // Executor filters
     $webSecurityFilterChain = new WebSecurityFilterChain();

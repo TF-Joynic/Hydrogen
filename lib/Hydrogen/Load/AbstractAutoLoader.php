@@ -8,6 +8,7 @@ include __DIR__.'/Loader.php';
 abstract class AbstractAutoLoader
 {
     protected $_namespaces = array();
+
 	protected $_autoloadCallbacks = array();
 
     protected abstract function attachNamespace($namespace, $dir, $prepend = false);
@@ -15,16 +16,16 @@ abstract class AbstractAutoLoader
     protected abstract function detachNamespace($namespace);
 
 	public function getRegisteredCallbacks()
-	{
-		// return spl_autoload_functions();
-		return $this->_autoloadCallbacks;
+    {
+        return spl_autoload_functions();
+//		return $this->_autoloadCallbacks;
 	}
 
-    protected abstract function attachCallback();
+    protected abstract function attachCallback($callbackClassNames);
 
-	protected abstract function detachCallback();
+	protected abstract function detachCallback($callbackClassName);
 
-	protected function _getCallbackClassPath()
+	protected function getCallbackClassPath()
 	{
 		return __DIR__.DIRECTORY_SEPARATOR.'AutoloadCallback';
 	}
@@ -38,13 +39,16 @@ abstract class AbstractAutoLoader
 	 */
 	public function loadClass($classPath)
 	{
+        if (!$classPath) {
+            return ;
+        }
+
 		$classPath = ltrim($classPath, '/\\');
 
 		// if the class path start with 'Hydrogen', goto lib
-		if (0 === strpos($classPath, 'Hydrogen')) {
-			$fullPath = LIB_PATH.DIRECTORY_SEPARATOR.$classPath;
+		if ($fullPath = Loader::getAbsPath($classPath)) {
 			if ($this->_doLoad($fullPath)) {
-				return true;
+				return ;
 			}
 		}
 
@@ -54,14 +58,9 @@ abstract class AbstractAutoLoader
                 foreach ($ns_dir as $ns => $dir) {
                     $dir = rtrim($dir, '/\\');
 
-                    /*if (false !== strpos($classPath, 'Executor')) {
-                        pre($ns);
-                        pre($classPath);exit;
-                    }*/
-
                     if (0 === strpos($classPath, str_replace('\\', DIRECTORY_SEPARATOR, $ns))) {
                         if ($this->_doLoad(rtrim($dir, $ns).$classPath))
-                            return true;
+                            return ;
                         else
                             continue;
 
@@ -70,7 +69,7 @@ abstract class AbstractAutoLoader
             }
         }
 
-        return false;
+        return ;
 	}
 
     public function getNamespaces()

@@ -9,6 +9,7 @@ use application\module\front\filter\WebSecurityFilterChain;
 use application\module\front\filter\XssFilter;
 use Hydrogen\Debug\Variable;
 use Hydrogen\Http\Filter\PassThroughFilterChain;
+use Hydrogen\Http\Request\Client\Curl;
 use Hydrogen\Http\Request\RequestMethod;
 use Hydrogen\Load\Loader;
 use Hydrogen\Mvc\Ctrl\Ctrl;
@@ -51,6 +52,9 @@ class IndexCtrl extends FrontCtrl
 	public function indexAct()
 	{
         echo "index<br />";
+
+        echo Curl::OPT_VALUE_ARRAY."<br />";
+
         $request = $this->getRequest();
         $response = $this->getResponse();
 
