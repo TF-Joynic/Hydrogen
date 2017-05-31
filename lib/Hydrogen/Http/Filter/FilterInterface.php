@@ -20,4 +20,5 @@ interface FilterInterface
     public function doFilter(RequestInterface &$request, ResponseInterface &$response, FilterChainInterface $filterChain);
 
 	public function destroy();
+
 }

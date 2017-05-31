@@ -22,4 +22,5 @@ spl_autoload_register(
     true,
     false
 );
+//spl_autoload()
 // @codeCoverageIgnoreEnd
