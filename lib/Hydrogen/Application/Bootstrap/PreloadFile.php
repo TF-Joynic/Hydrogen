@@ -12,9 +12,8 @@ class PreloadFile extends Decorator
     {
         $this->_bootstrap->doBootstrap();
 
-        global $classLoadConfigArr;
-        if (isset($classLoadConfigArr[PRELOADFILES]) && $classLoadConfigArr[PRELOADFILES]) {
-            foreach ($classLoadConfigArr[PRELOADFILES] as $preloadFile) {
+        if ($preloadFiles = Loader::getPreloadFiles()) {
+            foreach ($preloadFiles as $preloadFile) {
                 Loader::import($preloadFile, true);
             }
         }

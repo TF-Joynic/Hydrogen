@@ -1,201 +1,19 @@
 <?php
 
-namespace Hydrogen\Http\Request;
+namespace application\module\front\filter;
 
-use Hydrogen\Http\Exception\InvalidArgumentException;
-use Hydrogen\Http\Message;
+
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
-use Hydrogen\Http\Uri;
 use Psr\Http\Message\UriInterface;
 
-/**
- * Class ServerRequest
- * @package Hydrogen\Http\Request
- */
-class ServerRequest implements ServerRequestInterface
+class XssRequestDecorator implements ServerRequestInterface
 {
-    const SERVER_HTTP_HEADER_PREFIX = 'HTTP_';
+    private $_request = null;
 
-    private $_param = array();
-    private $_context_attr = array();
-
-    private $_request_method = '';
-    private $_predefined_request_methods = [];
-
-    private $_request_target = '';
-
-    private $_SERVER = [];
-    private $_COOKIE = [];
-    private $_GET = [];
-    private $_POST = [];
-
-    private $_message = null;
-    private $_uri = null;
-
-    public function __construct()
+    public function __construct(ServerRequestInterface $request)
     {
-        $this->_GET = $_GET;
-        $this->_POST = $_POST;
-        $this->_SERVER = $_SERVER;
-        $this->_COOKIE = $_COOKIE;
-
-        $this->_request_method = isset($_SERVER['REQUEST_METHOD'])
-            ? strtoupper($_SERVER['REQUEST_METHOD']) : '';
-
-        // Reflect RequestMethod Constants
-        $reflectionClass = new \ReflectionClass(RequestMethod::class);
-        $requestMethods = $reflectionClass->getConstants();
-        $this->_predefined_request_methods = $requestMethods;
-
-        $this->_request_target = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';
-    }
-
-    /**
-     * @return int
-     */
-    private function getMethodBitwise()
-    {
-        return $this->_predefined_request_methods[$this->_request_method];
-    }
-
-    public function isGet()
-    {
-        return 0 != RequestMethod::GET & $this->getMethodBitwise();
-    }
-
-    public function isPost()
-    {
-        return 0 != RequestMethod::POST & $this->getMethodBitwise();
-    }
-
-    public function isPut()
-    {
-        return 0 != RequestMethod::PUT & $this->getMethodBitwise();
-    }
-
-    public function isPatch()
-    {
-        return 0 != RequestMethod::PATCH & $this->getMethodBitwise();
-    }
-
-    public function isDelete()
-    {
-        return 0 != RequestMethod::DELETE & $this->getMethodBitwise();
-    }
-
-    public function isHead()
-    {
-        return 0 != RequestMethod::HEAD & $this->getMethodBitwise();
-    }
-
-    public function isOptions()
-    {
-        return 0 != RequestMethod::OPTIONS & $this->getMethodBitwise();
-    }
-
-    public function isAjax()
-    {
-        return 'XMLHttpRequest' == $_SERVER['HTTP_X_REQUESTED_WITH'];
-    }
-
-    public function getQuery($name, $default_value = null)
-    {
-        return isset($this->_GET[$name]) ? $this->_sanitize($this->_GET[$name]) : $default_value;
-    }
-
-    public function getQueryInt($name, $default_value = 0)
-    {
-        return isset($this->_GET[$name]) ? intval($this->_GET[$name]) : $default_value;
-    }
-
-    public function getQueryRaw($name, $default_value = null)
-    {
-        return isset($this->_GET[$name]) ? $this->_GET[$name] : $default_value;
-    }
-
-    public function getPost($name, $default_value = null)
-    {
-        return isset($this->_POST[$name]) ? $this->_sanitize($this->_POST[$name]) : $default_value;
-    }
-
-    public function getPostInt($name, $default_value = 0)
-    {
-        return isset($this->_POST[$name]) ? intval($this->_POST[$name]) : $default_value;
-    }
-
-    public function getPostRaw($name, $default_value = null)
-    {
-        return isset($this->_POST[$name]) ? $this->_POST[$name] : $default_value;
-    }
-
-    public function getPostJson2Arr($name, $default_value = null)
-    {
-        $jsonStr = isset($this->_POST[$name]) ? $this->_POST[$name] : $default_value;
-        if (is_string($jsonStr) && $jsonStr = json_decode($jsonStr, true) && null === json_last_error()) {
-            return $jsonStr;
-        } else {
-            return $default_value;
-        }
-    }
-
-    public function getAttributeInt($name, $default_value = null)
-    {
-        return intval($this->getAttributeRaw($name, $default_value));
-    }
-
-    public function getAttributeRaw($name, $default_value = null)
-    {
-
-        return isset($this->_GET[$name]) ? $this->_GET[$name] :
-            (isset($this->_POST[$name]) ? $this->_POST[$name] : $default_value);
-
-    }
-
-    /*public function getParams(array $params = array())
-    {
-        if (!$params) {
-            return array_merge($this->_GET, $this->_POST, $this->_param);
-        }
-
-        $fields = array();
-        foreach ($params as $index => $default_value) {
-            if (is_int($index)) {
-                // the default_value is index actually
-                $fields[$default_value] = $this->getAttribute($default_value);
-            } else {
-                $fields[$index] = $this->getAttribute($index, $default_value);
-            }
-        }
-
-        return $fields;
-    }*/
-
-    public function getHeader($name)
-    {
-        return $this->getMessage()->getHeader($name);
-    }
-
-    public function setContextAttr($name, $value)
-    {
-        if ($name && is_string($name))
-            $this->_context_attr[$name] = $value;
-
-        return $this;
-    }
-
-    public function getContextAttr($name)
-    {
-        if (!$name || !isset($this->_context_attr[$name])) {
-            return null;
-        }
-
-        return $this->_context_attr[$name];
-    }
-
-    public function __toString()
-    {
-        return http_build_query($_GET).PHP_EOL.var_export($_POST, true);
+        $this->_request = $request;
     }
 
     /**
@@ -207,7 +25,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function getProtocolVersion()
     {
-        return $this->getMessage()->getProtocolVersion();
+        return $this->_request->getProtocolVersion();
     }
 
     /**
@@ -225,7 +43,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function withProtocolVersion($version)
     {
-        $this->getMessage()->withProtocolVersion($version);
+        $this->_request->withProtocolVersion($version);
         return $this;
     }
 
@@ -256,7 +74,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function getHeaders()
     {
-        return $this->getMessage()->getHeaders();
+        return $this->_request->getHeaders();
     }
 
     /**
@@ -269,7 +87,26 @@ class ServerRequest implements ServerRequestInterface
      */
     public function hasHeader($name)
     {
-        return $this->getMessage()->hasHeader($name);
+        return $this->_request->hasHeader($name);
+    }
+
+    /**
+     * Retrieves a message header value by the given case-insensitive name.
+     *
+     * This method returns an array of all the header values of the given
+     * case-insensitive header name.
+     *
+     * If the header does not appear in the message, this method MUST return an
+     * empty array.
+     *
+     * @param string $name Case-insensitive header field name.
+     * @return string[] An array of string values as provided for the given
+     *    header. If the header does not appear in the message, this method MUST
+     *    return an empty array.
+     */
+    public function getHeader($name)
+    {
+        return $this->_request->getHeader($name);
     }
 
     /**
@@ -293,7 +130,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function getHeaderLine($name)
     {
-        return $this->getMessage()->getHeaderLine($name);
+        return $this->_request->getHeaderLine($name);
     }
 
     /**
@@ -313,7 +150,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function withHeader($name, $value)
     {
-        $this->getMessage()->withHeader($name, $value);
+        $this->_request->withHeader($name, $value);
         return $this;
     }
 
@@ -335,7 +172,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function withAddedHeader($name, $value)
     {
-        $this->getMessage()->withAddedHeader($name, $value);
+        $this->_request->withAddedHeader($name, $value);
         return $this;
     }
 
@@ -353,7 +190,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function withoutHeader($name)
     {
-        $this->getMessage()->withoutHeader($name);
+        $this->_request->withoutHeader($name);
         return $this;
     }
 
@@ -364,7 +201,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function getBody()
     {
-        return new Stream();
+        return $this->_request->getBody();
     }
 
     /**
@@ -382,7 +219,8 @@ class ServerRequest implements ServerRequestInterface
      */
     public function withBody(StreamInterface $body)
     {
-        // TODO: Implement withBody() method.
+        $this->_request->withBody($body);
+        return $this;
     }
 
     /**
@@ -403,7 +241,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function getRequestTarget()
     {
-        return $this->_request_target;
+        return $this->_request->getRequestTarget();
     }
 
     /**
@@ -425,7 +263,8 @@ class ServerRequest implements ServerRequestInterface
      */
     public function withRequestTarget($requestTarget)
     {
-        $this->_request_target = $requestTarget;
+        $this->_request->withRequestTarget($requestTarget);
+        return $this;
     }
 
     /**
@@ -435,7 +274,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function getMethod()
     {
-        return $this->_request_method;
+        return $this->_request->getMethod();
     }
 
     /**
@@ -455,22 +294,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function withMethod($method)
     {
-        if (!in_array($method, array('GET', 'POST', 'HEAD', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'))) {
-            throw new InvalidArgumentException('invalid request method specified');
-        }
-
-        $this->_request_method = $method;
-        return $this;
-    }
-
-    public function getMessage()
-    {
-        if (null !== $this->_message && $this->_message instanceof Message) {
-            return $this->_message;
-        }
-
-        $this->_message = new Message();
-        return $this->_message;
+        // TODO: Implement withMethod() method.
     }
 
     /**
@@ -479,17 +303,12 @@ class ServerRequest implements ServerRequestInterface
      * This method MUST return a UriInterface instance.
      *
      * @link http://tools.ietf.org/html/rfc3986#section-4.3
-     * @return Uri Returns a UriInterface instance
+     * @return UriInterface Returns a UriInterface instance
      *     representing the URI of the request.
      */
     public function getUri()
     {
-        if (null !== $this->_uri && $this->_uri instanceof Uri) {
-            return $this->_uri;
-        }
-
-        $this->_uri = new Uri($this);
-        return $this->_uri;
+        // TODO: Implement getUri() method.
     }
 
     /**
@@ -524,13 +343,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function withUri(UriInterface $uri, $preserveHost = false)
     {
-        if (!$preserveHost) {
-            $host = isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '';
-            $uri->withHost($host);
-        }
-
-        $this->_uri = $uri;
-        return $this;
+        // TODO: Implement withUri() method.
     }
 
     /**
@@ -544,7 +357,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function getServerParams()
     {
-        return $this->_SERVER;
+        // TODO: Implement getServerParams() method.
     }
 
     /**
@@ -559,7 +372,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function getCookieParams()
     {
-        return $this->_COOKIE;
+        // TODO: Implement getCookieParams() method.
     }
 
     /**
@@ -581,8 +394,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function withCookieParams(array $cookies)
     {
-        $this->_COOKIE = $cookies + $this->_COOKIE;
-        return $this;
+        // TODO: Implement withCookieParams() method.
     }
 
     /**
@@ -599,7 +411,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function getQueryParams()
     {
-        return $this->_GET;
+        // TODO: Implement getQueryParams() method.
     }
 
     /**
@@ -626,8 +438,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function withQueryParams(array $query)
     {
-        $this->_GET = $query + $this->_GET;
-        return $this;
+        // TODO: Implement withQueryParams() method.
     }
 
     /**
@@ -644,7 +455,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function getUploadedFiles()
     {
-
+        // TODO: Implement getUploadedFiles() method.
     }
 
     /**
@@ -660,7 +471,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function withUploadedFiles(array $uploadedFiles)
     {
-
+        // TODO: Implement withUploadedFiles() method.
     }
 
     /**
@@ -729,7 +540,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function getAttributes()
     {
-        return $this->_GET + $this->_POST + $this->_param;
+        // TODO: Implement getAttributes() method.
     }
 
     /**
@@ -749,9 +560,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function getAttribute($name, $default = null)
     {
-        return isset($this->_GET[$name]) ? $this->_sanitize($this->_GET[$name]) :
-            (isset($this->_POST[$name]) ? $this->_sanitize($this->_POST[$name])
-                : (isset($this->_param[$name]) ? $this->_sanitize($this->_param[$name]) : $default));
+//        return
     }
 
     /**
@@ -771,28 +580,7 @@ class ServerRequest implements ServerRequestInterface
      */
     public function withAttribute($name, $value)
     {
-        if (is_string($name) && 0 < strlen($name)) {
-            $this->_param[$name] = $value;
-        }
-
-        return $this;
-    }
-
-    public function withAttributes($attrs)
-    {
-        if (!is_array($attrs)) {
-            $attrs = array($attrs);
-        }
-
-        foreach ($attrs as $attr => $value) {
-            if (is_int($attr)) {
-                $this->withAttribute($value, null);
-            } else {
-                $this->withAttribute($attr, $value);
-            }
-        }
-
-        return $this;
+        // TODO: Implement withAttribute() method.
     }
 
     /**
@@ -811,10 +599,6 @@ class ServerRequest implements ServerRequestInterface
      */
     public function withoutAttribute($name)
     {
-        if (isset($this->_param[$name])) {
-            unset($this->_param[$name]);
-        }
-
-        return $this;
+        // TODO: Implement withoutAttribute() method.
     }
 }

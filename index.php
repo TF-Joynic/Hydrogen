@@ -44,11 +44,12 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
     $autoloader->attachNamespace('Hydrogen', LIB_PATH.DIRECTORY_SEPARATOR.'Hydrogen', true);
 
     // include Framework constant
-    Loader::import('lib/Hydrogen/Constant/Http.php');
+    Loader::import('lib/Hydrogen/Constant/FRAMEWORK.php');
     Loader::import('lib/Hydrogen/Include/Functions.php');
 
     $classLoadConfigArr = Loader::import('application/config/'.ApplicationContext::getClassLoadConfigFile(), true, true);
-    $autoloader->setClassLoadMap($classLoadConfigArr[CLASSLOADMAP]);
+    Loader::setPreloadFiles($classLoadConfigArr[PRELOAD_FILES]);
+    $autoloader->setClassLoadMap($classLoadConfigArr[CLASS_LOAD_MAP]);
 
 	$CONFIG = Hydrogen\Config\Config::getInstance();
 	$CONFIG->mergeConfigFile(APPLICATION_PATH.
@@ -65,8 +66,8 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
         .DIRECTORY_SEPARATOR.DIRECTORY_SEPARATOR
         .'database.ini');
 
-    ApplicationContext::setModuleDir(APPLICATION_PATH.DIRECTORY_SEPARATOR.$CONFIG->get(SCOPE_APPICATION, 'application', '_module_dir'));
-    ApplicationContext::setEnabledModules($CONFIG->get(SCOPE_APPICATION, 'application', '_enabled_modules'));
+    ApplicationContext::setModuleDir(APPLICATION_PATH.DIRECTORY_SEPARATOR.$CONFIG->get(SCOPE_APPLICATION, 'application', '_module_dir'));
+    ApplicationContext::setEnabledModules($CONFIG->get(SCOPE_APPLICATION, 'application', '_enabled_modules'));
     ApplicationContext::setTemplatePostfix("tpl");
 
     // Executor filters

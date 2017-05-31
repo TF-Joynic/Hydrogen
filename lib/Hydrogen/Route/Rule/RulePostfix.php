@@ -46,7 +46,7 @@ class RulePostfix extends AbstractRule
             if ($postfix == $this->_ruleStr) {
                 $path = $realPath;
 
-                Loader::import("lib/Hydrogen/Http/Response/MIME.php");
+                Loader::import('lib/Hydrogen/Http/Response/MIME.php');
                 // automatically setup Content-type
                 if (null !== $content_type = getMIMEheader($postfix)) {
                     $response->withHeader(HTTP_HEADER_CONTENT_TYPE, $content_type);

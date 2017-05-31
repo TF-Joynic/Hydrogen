@@ -11,6 +11,10 @@ class TestCsl extends Console
 
     public function log()
     {
+    }
 
+    public function printAct($a)
+    {
+        echo '$a: '.$a;
     }
 }

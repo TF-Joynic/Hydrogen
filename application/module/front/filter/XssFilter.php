@@ -29,7 +29,7 @@ class XssFilter implements FilterInterface
     public function doFilter(RequestInterface &$request, ResponseInterface &$response, FilterChainInterface $filterChain)
     {
         if (null != $request) {
-            echo "filtered xss<br />";
+            $request = new XssRequestWrapper();
         }
 
         $filterChain->doFilter($request, $response);

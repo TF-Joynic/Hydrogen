@@ -88,7 +88,7 @@ class Autoloader extends AbstractAutoLoader
 
 			if (!isset($this->_autoloadCallbacks[$callbackClassName])) {
 
-				include $callbackClassPath.DIRECTORY_SEPARATOR
+				require $callbackClassPath.DIRECTORY_SEPARATOR
 				.$callbackClassName.'.php';
 
 				$callbackNsClass = 'Hydrogen\\Load\\AutoloadCallback\\'.$callbackClassName;
