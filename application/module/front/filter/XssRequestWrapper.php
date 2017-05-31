@@ -10,7 +10,7 @@ class XssRequestWrapper extends ServerRequest
 {
     public function getAttribute($name, $default = null)
     {
-        return Sanitizer::san(parent::getAttribute($name, $default));
+        return Sanitizer::sanitizeXss(parent::getAttribute($name, $default));
     }
 
 

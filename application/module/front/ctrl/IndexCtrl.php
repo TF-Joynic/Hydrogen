@@ -32,21 +32,21 @@ class IndexCtrl extends FrontCtrl
 
     public function filters()
     {
-        return array(
+        return array_merge(parent::filters(), array(
             WebSecurityFilterChain::class => array(
                 'index' => RequestMethod::ALL ^ RequestMethod::HEAD
             ),
-        );
+        ));
     }
 
     public function interceptors()
     {
-        return array(
+        return array_merge(parent::interceptors(), array(
             AuthenticationInterceptor::class => array(
-                'index' => false,
-                'about',
+                'index' => RequestMethod::ALL ^ RequestMethod::HEAD,
+                'about' => RequestMethod::ALL,
             )
-        );
+        ));
     }
 
 	public function indexAct()

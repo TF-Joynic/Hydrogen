@@ -24,13 +24,8 @@ class Sanitizer
         return $str;
     }
 
-    private static function escape($str)
+    public static function escape($str)
     {
-        /*if (!get_magic_quotes_gpc()) {
-            $str = addslashes($str);
-        }*/
-
-        $str = htmlspecialchars($str, ENT_QUOTES);
-        return $str;
+        return htmlspecialchars($str, ENT_QUOTES);
     }
 }

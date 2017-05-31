@@ -39,5 +39,8 @@ class PrintFilter implements FilterInterface
 
     }
 
-    public function
+    public function __destruct()
+    {
+        $this->destroy();
+    }
 }

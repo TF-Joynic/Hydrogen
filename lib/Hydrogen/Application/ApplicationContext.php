@@ -32,8 +32,9 @@ class ApplicationContext
 
     private static $_classLoadConfigFile = 'ClassLoadConfig.php';
 
-    // common filters
-    private static $_filters = array();
+    private static $_filterInstances = array();
+
+    private static $_interceptorInstances = array();
 
     public static function setEnabledModules($modules)
     {
@@ -217,6 +218,16 @@ class ApplicationContext
         self::$_classLoadConfigFile = $classLoadConfigFile;
     }
 
+    public static function setInterceptorInstances($interceptorCtxArr)
+    {
+        self::$_interceptorInstances = $interceptorCtxArr;
+    }
+
+    public static function getInterceptorInstances()
+    {
+        return self::$_interceptorInstances;
+    }
+
     /**
      * [
      *  Chain::class => $chainObj
@@ -224,13 +235,13 @@ class ApplicationContext
      *
      * @param $filterCtxArr array
      */
-    public static function setFilters($filterCtxArr)
+    public static function setFilterInstances($filterCtxArr)
     {
-        self::$_filters = $filterCtxArr;
+        self::$_filterInstances = $filterCtxArr;
     }
 
-    public static function getFilters()
+    public static function getFilterInstances()
     {
-        return self::$_filters;
+        return self::$_filterInstances;
     }
 }

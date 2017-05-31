@@ -2,6 +2,7 @@
 
 namespace Hydrogen\Http\Request;
 
+
 use Hydrogen\Http\Exception\InvalidArgumentException;
 use Hydrogen\Http\Message;
 use Psr\Http\Message\ServerRequestInterface;
@@ -680,7 +681,11 @@ class ServerRequest implements ServerRequestInterface
      */
     public function getParsedBody()
     {
-        // TODO: Implement getParsedBody() method.
+        if ($this->isPost()) {
+            return $this->_POST;
+        }
+
+
     }
 
     /**
@@ -749,9 +754,11 @@ class ServerRequest implements ServerRequestInterface
      */
     public function getAttribute($name, $default = null)
     {
-        return isset($this->_GET[$name]) ? $this->_sanitize($this->_GET[$name]) :
-            (isset($this->_POST[$name]) ? $this->_sanitize($this->_POST[$name])
-                : (isset($this->_param[$name]) ? $this->_sanitize($this->_param[$name]) : $default));
+
+        return isset($this->_GET[$name]) ? $this->_GET[$name] :
+            (isset($this->_POST[$name]) ? $this->_POST[$name]
+                : (isset($this->_param[$name]) ? $this->_param[$name] : $default));
+
     }
 
     /**

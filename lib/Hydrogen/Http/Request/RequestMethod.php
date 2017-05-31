@@ -3,13 +3,12 @@
 namespace Hydrogen\Http\Request;
 
 
+/**
+ * Bummer! Contant expression is supported since PHP 5.6 :(
+ * , thus we assign the final result here.
+ */
 class RequestMethod
 {
-    /**
-     * Bummer! Contant expression is supported since PHP 5.6 :(
-     * , thus we assign the final result here.
-     */
-
     // 1 << 0
     const GET = 1;
 

@@ -3,12 +3,14 @@
 namespace Hydrogen\Route\Dispatch;
 
 use Hydrogen\Debug\Variable;
+use Hydrogen\Http\Interceptor\InterceptorInterface;
 use Hydrogen\Load\Loader;
 use Hydrogen\Mvc\Ctrl\Ctrl;
 use Hydrogen\Application\ApplicationContext;
 use Hydrogen\Route\Exception\RuntimeException;
 use Hydrogen\Route\Exception\DispatchException;
 use Hydrogen\Load\Exception\LoadFailedException;
+use PHPUnit\Runner\Exception;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
@@ -128,49 +130,54 @@ class Dispatcher extends AbstractDispatcher
             throw new DispatchException('Ctrl class: '.$mvcCtrlClassName.' is not subclass of Ctrl', 404);
         }
 
-        // preDispatch
-        $mvcCtrlInstance->preDispatch();
-
         $methodVar = array($mvcCtrlInstance, $actMethodName);
         if (!method_exists($mvcCtrlInstance, $actMethodName) || !is_callable($methodVar, true, $callable_name)) {
             throw new DispatchException('ctrl: ' . $mvcCtrlClassName . ' has no act called: ' . $actMethodName, 404);
         }
 
-        // plugin
-        $mvcCtrlInstance->activatePlugins();
+        try {
+            $mvcCtrlInstance->withRequest($this->_request);
+            $mvcCtrlInstance->withResponse($this->_response);
 
-        // filter
-        
+            // preDispatch
+            $mvcCtrlInstance->preDispatch();
 
-        // interceptor
+            // plugin
+            $mvcCtrlInstance->activatePlugins();
+
+            // interceptor
 
 
-        $mvcCtrlInstance->withRequest($this->_request);
-        $mvcCtrlInstance->withResponse($this->_response);
+            // filter
 
-        // init
-        $mvcCtrlInstance->init();
 
-        $viewModel = $this->invokeCtrlAct($mvcCtrlInstance, $actMethodName);
+            // init
+            $mvcCtrlInstance->init();
 
-        $mvcCtrlInstanceResp = $mvcCtrlInstance->getResponse();
+            $viewModel = $this->runCtrlAct($mvcCtrlInstance, $actMethodName);
 
-        // http header(s)
-        foreach ($viewModel->concreteHeader() as $headerName => $headerValue) {
-            $mvcCtrlInstanceResp->withHeader($headerName, $headerValue);
+            $mvcCtrlInstanceResp = $mvcCtrlInstance->getResponse();
+
+            // http header(s)
+            foreach ($viewModel->concreteHeader() as $headerName => $headerValue) {
+                $mvcCtrlInstanceResp->withHeader($headerName, $headerValue);
+            }
+
+            // http body
+            $mvcCtrlInstanceResp->withBody($viewModel->concreteBody());
+
+            // plugin
+            $mvcCtrlInstance->terminatePlugins();
+
+            // postDispatch
+            $mvcCtrlInstance->postDispatch();
+
+            // response http body!
+            $this->performResponse($mvcCtrlInstanceResp);
+        } catch (\Exception $x) {
+            throw new DispatchException('An error occured! ' .$x->getMessage(), 500, $x);
         }
 
-        // http body
-        $mvcCtrlInstanceResp->withBody($viewModel->concreteBody());
-
-        // plugin
-        $mvcCtrlInstance->terminatePlugins();
-
-        // postDispatch
-        $mvcCtrlInstance->postDispatch();
-
-        // response http body!
-        $this->performResponse($mvcCtrlInstanceResp);
     }
 
     /**
@@ -178,7 +185,7 @@ class Dispatcher extends AbstractDispatcher
      * @param $actMethodName
      * @return \Hydrogen\Mvc\ViewModel\ViewModel
      */
-    private function invokeCtrlAct(&$mvcCtrlInstance, $actMethodName)
+    private function runCtrlAct(&$mvcCtrlInstance, $actMethodName)
     {
         return $mvcCtrlInstance->$actMethodName();
     }
@@ -188,30 +195,53 @@ class Dispatcher extends AbstractDispatcher
      */
     private function performResponse(&$response)
     {
-        if (true) {
-            ob_start();
-            /*pre($response->getHeaders());exit;*/
-            foreach ($response->getHeaders() as $headerName => $headerValue) {
-                header(sprintf('%s: %s', $headerName, $headerValue), false);
-            }
+        ob_start();
 
-            $responseBody = $response->getBody();
-            echo $responseBody->__toString();
-            $responseBody->close();
-            ob_end_flush();
+        foreach ($response->getHeaders() as $headerName => $headerValue) {
+            header(sprintf('%s: %s', $headerName, $headerValue), false);
         }
 
+        $responseBody = $response->getBody();
+        echo $responseBody->__toString();
+        $responseBody->close();
+        ob_end_flush();
     }
 
-    /*private function beforeActHooks()
+    /**
+     * @param $mvcCtrlInstance Ctrl
+     */
+    private function applyInterceptor(&$mvcCtrlInstance)
     {
+        // fetch interceptors from Ctrl instance
+        $interceptors = $mvcCtrlInstance->interceptors();
+        if (!$interceptors) return ;
+
+        $ctxInterceptors = ApplicationContext::getInterceptorInstances();
+
+        foreach ($interceptors as $interceptor) {
+            // fetch from ApplicationContext, if none, instantiate it
+
+            $interceptorInstance = null;
+            if (isset($ctxInterceptors[$interceptor])) {
+                $interceptorInstance = $ctxInterceptors[$interceptor];
+            } else {
+                $interceptorInstance = new $interceptor;
+            }
+
+            $this->intercept($interceptorInstance);
+
+
+        }
+
 
     }
 
-    private function afterActHooks()
+    /**
+     * @param InterceptorInterface $interceptor
+     */
+    private function intercept(InterceptorInterface $interceptor)
     {
-
-    }*/
+    }
 
     private function importFileByAbsPath($absPath)
     {

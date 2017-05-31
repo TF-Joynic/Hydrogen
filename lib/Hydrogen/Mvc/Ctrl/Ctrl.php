@@ -2,6 +2,7 @@
 
 namespace Hydrogen\Mvc\Ctrl;
 
+use application\module\front\filter\WebSecurityFilterChain;
 use Hydrogen\Application\ApplicationContext;
 use Hydrogen\Http\Filter\FilterChainInterface;
 use Hydrogen\Http\Request\ServerRequest as Request;
@@ -34,14 +35,16 @@ class Ctrl
      */
     protected $_doRender = true;
 
-    private $_view = null;
+    protected $_view = null;
 
     /**
      * @var array of PluginInterface
      */
-    private $_plugins = array();
+    protected $_plugins = array();
 
     private $_active_plugins = array();
+
+    protected $_layoutEnabled = true;
 
     /**
      * @var \Hydrogen\Http\Filter\FilterChainInterface|array
@@ -102,11 +105,16 @@ class Ctrl
 
     }
 
-    public function render($tpl, $vars, $output = false, $enableLayout = false)
+    public function enableLayout($doEnable = true)
+    {
+        $this->_layoutEnabled = true;
+    }
+
+    public function render($tpl, $vars, $output = false)
     {
         if (null == $this->_view) {
             $absTplPath = $this->getAbsTplFilePath($tpl);
-            $this->_view = new View($absTplPath, $vars, $enableLayout ? $this->getAbsTplFilePath($this->_layout) : null);
+            $this->_view = new View($absTplPath, $vars, $this->_layoutEnabled ? $this->getAbsTplFilePath($this->_layout) : null);
         }
 
         return $this->_view->render($output);
@@ -209,8 +217,22 @@ class Ctrl
         return $this;
     }
 
-    public function filters()
+    /**
+     * @return array
+     */
+    public function interceptors()
     {
         return array();
+    }
+
+    /**
+     * @return array
+     */
+    public function filters()
+    {
+        return array(
+            WebSecurityFilterChain::class => array(
+            )
+        );
     }
 }

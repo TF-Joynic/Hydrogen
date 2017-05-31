@@ -12,6 +12,8 @@ class Uri implements UriInterface
     const USERNAME_PASSWORD_SEPARATOR = ':';
     const USER_INFO_HOST_SEPARATOR = '@';
     const HOST_PORT_SEPARATOR = ':';
+    const QUESTION_MARK = '?';
+    const FRAGMENT_MARK = '#';
 
     private $_scheme = null;
     private $_host = null;
@@ -77,7 +79,8 @@ class Uri implements UriInterface
         $userInfo = $this->getUserInfo();
         $port = $this->getPort();
 
-        return ($userInfo ? $userInfo.self::USER_INFO_HOST_SEPARATOR: '').$this->getHost().($port ? self::HOST_PORT_SEPARATOR.$port : '');
+        return ($userInfo ? $userInfo.self::USER_INFO_HOST_SEPARATOR: '')
+            .$this->getHost().($port ? self::HOST_PORT_SEPARATOR.$port : '');
     }
 
     /**
@@ -193,7 +196,7 @@ class Uri implements UriInterface
     private function extractPath()
     {
         if (isset($_SERVER['REQUEST_URI'])) {
-            if (false !== $path = strstr($_SERVER['REQUEST_URI'], '?', true)) {
+            if (false !== $path = strstr($_SERVER['REQUEST_URI'], self::QUESTION_MARK, true)) {
                 $this->_path = $path;
             } else {
                 $this->_path = $_SERVER['REQUEST_URI'];
@@ -235,7 +238,7 @@ class Uri implements UriInterface
         if (isset($_SERVER['QUERY_STRING'])) {
             $this->_query = $_SERVER['QUERY_STRING'];
         } elseif (isset($_SERVER['REQUEST_URI'])) {
-            if (false !== $query = strstr($_SERVER['REQUEST_URI'], '?')) {
+            if (false !== $query = strstr($_SERVER['REQUEST_URI'], self::QUESTION_MARK)) {
                 $this->_query = substr($query, 1);
             }
         }
@@ -261,7 +264,7 @@ class Uri implements UriInterface
      */
     public function getFragment()
     {
-        return '';
+        return null;
     }
 
     /**
@@ -281,8 +284,12 @@ class Uri implements UriInterface
      */
     public function withScheme($scheme)
     {
-        $newInstance = clone $this;
-        $this->_scheme = $scheme;
+        if ($scheme) {
+            $this->_scheme = strtolower($scheme);
+        } else {
+            $this->_scheme = '';
+        }
+
         return $this;
     }
 
@@ -302,8 +309,13 @@ class Uri implements UriInterface
      */
     public function withUserInfo($user, $password = null)
     {
-        $userInfo = $user.(null !== $password ? self::USERNAME_PASSWORD_SEPARATOR.$password : '');
-        $this->_userInfo = $userInfo;
+        if ($user) {
+            $userInfo = $user.(null !== $password ? self::USERNAME_PASSWORD_SEPARATOR.$password : '');
+            $this->_userInfo = $userInfo;
+        } else {
+            $this->_userInfo = '';
+        }
+
         return $this;
     }
 
@@ -321,7 +333,9 @@ class Uri implements UriInterface
      */
     public function withHost($host)
     {
-        if (!$host) {
+        if ($host) {
+            $this->_host = $host;
+        } else {
             $this->_host = '';
         }
 
@@ -347,7 +361,16 @@ class Uri implements UriInterface
      */
     public function withPort($port)
     {
-        // TODO: Implement withPort() method.
+        if (null === $port) {
+            $this->_port = null;
+        }
+
+        if (!is_int($port) || $port < 0 || 65535 < $port) {
+            throw new \InvalidArgumentException('invalid port!');
+        }
+        $this->_port = $port;
+
+        return $this;
     }
 
     /**
@@ -374,7 +397,12 @@ class Uri implements UriInterface
      */
     public function withPath($path)
     {
-        // TODO: Implement withPath() method.
+        if (!$path) {
+            $path = '';
+        }
+
+        $this->_path = $path;
+        return $this;
     }
 
     /**
@@ -394,7 +422,12 @@ class Uri implements UriInterface
      */
     public function withQuery($query)
     {
-        // TODO: Implement withQuery() method.
+        if (!is_string($query)) {
+            throw new \InvalidArgumentException('invalid query string');
+        }
+
+        $this->_query = $query;
+        return $this;
     }
 
     /**
@@ -413,7 +446,11 @@ class Uri implements UriInterface
      */
     public function withFragment($fragment)
     {
-        // TODO: Implement withFragment() method.
+        if (is_string($fragment)) {
+            $this->_fragment = $fragment;
+        }
+
+        return $this;
     }
 
     /**
@@ -441,13 +478,30 @@ class Uri implements UriInterface
      */
     public function __toString()
     {
-        // TODO: Implement __toString() method.
+        $scheme = $this->_scheme ? ':'.$this->_scheme : '';
+        $authority = $this->_userInfo ? '//'.$this->_userInfo  : '';
+        $path = '';
+
+        static $slash = '/';
+        static $doubleSlash = '//';
+        if ($slash !== $this->_path[0] && $authority) {
+            $path = $slash.$path;
+        }
+
+        if (!$authority && 0 === strpos($path, $doubleSlash)) {
+            $path = $slash.ltrim($path, $slash);
+        }
+
+        $query = $this->_query ? self::QUESTION_MARK.$this->_query : '';
+        $fragment = $this->_fragment ? self::FRAGMENT_MARK.$this->_fragment : '';
+
+        return implode('', [
+            $scheme,
+            $authority,
+            $path,
+            $query,
+            $fragment
+        ]);
     }
 
-    public function __clone()
-    {
-        $newInstance = new self($this->_request);
-
-
-    }
 }
