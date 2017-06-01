@@ -9,5 +9,5 @@ interface FilterChainInterface
 {
     public function getId();
 
-    public function doFilter(RequestInterface &$request, ResponseInterface &$response);
+    public function doFilter(RequestInterface $request, ResponseInterface $response);
 }

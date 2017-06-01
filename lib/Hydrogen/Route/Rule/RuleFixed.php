@@ -26,7 +26,7 @@ class RuleFixed extends AbstractRule
      * @param ResponseInterface $response
      * @return \Closure|bool
      */
-    public function apply(&$path, ServerRequestInterface &$request, ResponseInterface &$response)
+    public function apply(&$path, ServerRequestInterface $request, ResponseInterface $response)
     {
         if (!is_string($path) || 0 == strlen($path)) {
             throw new InvalidArgumentException('path must be type string and can not be empty!');

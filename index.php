@@ -75,7 +75,7 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
     $commonFilters = array(
         WebSecurityFilterChain::class => $webSecurityFilterChain
     );
-    ApplicationContext::setFilters($commonFilters);
+    ApplicationContext::setFilterInstances($commonFilters);
 
 	$application = new Hydrogen\Application\Application();
 	$application->run();

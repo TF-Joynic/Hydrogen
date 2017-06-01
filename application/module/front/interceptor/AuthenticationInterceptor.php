@@ -17,7 +17,7 @@ class AuthenticationInterceptor implements InterceptorInterface
      * @param Ctrl $ctrl
      * @return boolean
      */
-    public function preHandle(RequestInterface $request, ResponseInterface &$response, Ctrl &$ctrl)
+    public function preHandle(RequestInterface $request, ResponseInterface $response, Ctrl $ctrl)
     {
 
     }
@@ -29,7 +29,7 @@ class AuthenticationInterceptor implements InterceptorInterface
      * @param ViewModel $viewModel
      * @return void
      */
-    public function postHandle(RequestInterface $request, ResponseInterface &$response, Ctrl &$ctrl, ViewModel &$viewModel)
+    public function postHandle(RequestInterface $request, ResponseInterface $response, Ctrl $ctrl, ViewModel $viewModel)
     {
         // TODO: Implement postHandle() method.
     }
@@ -40,7 +40,7 @@ class AuthenticationInterceptor implements InterceptorInterface
      * @param Ctrl $ctrl
      * @return void
      */
-    public function afterCompletion(RequestInterface $request, ResponseInterface &$response, Ctrl &$ctrl)
+    public function afterCompletion(RequestInterface $request, ResponseInterface $response, Ctrl $ctrl)
     {
         // TODO: Implement afterCompletion() method.
     }

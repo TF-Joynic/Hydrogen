@@ -23,7 +23,7 @@ class RuleVersion extends AbstractRule
      * @param ResponseInterface $response
      * @return bool|\Closure
      */
-    public function apply(&$path, ServerRequestInterface &$request, ResponseInterface &$response)
+    public function apply(&$path, ServerRequestInterface $request, ResponseInterface $response)
     {
         // TODO: Implement apply() method.
     }

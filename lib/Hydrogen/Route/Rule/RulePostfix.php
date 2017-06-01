@@ -37,7 +37,7 @@ class RulePostfix extends AbstractRule
      * @param ResponseInterface $response
      * @return bool|\Closure
      */
-    public function apply(&$path, ServerRequestInterface &$request, ResponseInterface &$response)
+    public function apply(&$path, ServerRequestInterface $request, ResponseInterface $response)
     {
         if (false !== $postfixPos = strrpos($path, '.')) {
             $realPath = substr($path, 0, $postfixPos);

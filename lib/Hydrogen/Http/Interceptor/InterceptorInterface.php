@@ -10,11 +10,11 @@ use Psr\Http\Message\ResponseInterface;
 interface InterceptorInterface
 {
     // interceptor logic
-    public function preHandle(RequestInterface $request, ResponseInterface &$response, Ctrl &$ctrl);
+    public function preHandle(RequestInterface $request, ResponseInterface $response, Ctrl $ctrl);
 
     // before render
-    public function postHandle(RequestInterface $request, ResponseInterface &$response, Ctrl &$ctrl, ViewModel &$viewModel);
+    public function postHandle(RequestInterface $request, ResponseInterface $response, Ctrl $ctrl, ViewModel $viewModel);
 
     // after render
-    public function afterCompletion(RequestInterface $request, ResponseInterface &$response, Ctrl &$ctrl);
+    public function afterCompletion(RequestInterface $request, ResponseInterface $response, Ctrl $ctrl);
 }

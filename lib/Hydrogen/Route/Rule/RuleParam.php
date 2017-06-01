@@ -27,7 +27,7 @@ class RuleParam extends AbstractRule
      * @param ResponseInterface $response
      * @return \Closure|bool
      */
-    public function apply(&$path, ServerRequestInterface &$request, ResponseInterface &$response)
+    public function apply(&$path, ServerRequestInterface $request, ResponseInterface $response)
     {
         list ($param_names, $rule_segments) = $this->extractFromRuleStr();
         if (empty($param_names)) {

@@ -185,7 +185,7 @@ class Dispatcher extends AbstractDispatcher
      * @param $actMethodName
      * @return \Hydrogen\Mvc\ViewModel\ViewModel
      */
-    private function runCtrlAct(&$mvcCtrlInstance, $actMethodName)
+    private function runCtrlAct($mvcCtrlInstance, $actMethodName)
     {
         return $mvcCtrlInstance->$actMethodName();
     }
@@ -193,7 +193,7 @@ class Dispatcher extends AbstractDispatcher
     /**
      * @param ResponseInterface $response
      */
-    private function performResponse(&$response)
+    private function performResponse($response)
     {
         ob_start();
 
@@ -210,7 +210,7 @@ class Dispatcher extends AbstractDispatcher
     /**
      * @param $mvcCtrlInstance Ctrl
      */
-    private function applyInterceptor(&$mvcCtrlInstance)
+    private function applyInterceptor($mvcCtrlInstance)
     {
         // fetch interceptors from Ctrl instance
         $interceptors = $mvcCtrlInstance->interceptors();
@@ -241,6 +241,9 @@ class Dispatcher extends AbstractDispatcher
      */
     private function intercept(InterceptorInterface $interceptor)
     {
+        if (1) {
+
+        }
     }
 
     private function importFileByAbsPath($absPath)

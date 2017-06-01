@@ -32,7 +32,7 @@ class UrlMatcher extends AbstractUrlMatcher
      * @param ResponseInterface $response
      * @return boolean
      */
-    public function match(ServerRequestInterface &$request, ResponseInterface &$response)
+    public function match(ServerRequestInterface $request, ResponseInterface $response)
     {
         $sanitizedPath = trim(preg_replace('/\/{2,}/', '/', $request->getUri()->getPath()));
 
@@ -181,7 +181,7 @@ class UrlMatcher extends AbstractUrlMatcher
      * @param $default_ctrl
      * @param $default_act
      */
-    public function tailing(ServerRequestInterface &$request, $default_module, $default_ctrl, $default_act)
+    public function tailing(ServerRequestInterface $request, $default_module, $default_ctrl, $default_act)
     {
         if (!$request->getContextAttr(MODULE)) {
             $request->setContextAttr(MODULE, $default_module);

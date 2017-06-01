@@ -17,6 +17,7 @@ use Hydrogen\Mvc\View;
 use Hydrogen\Mvc\ViewModel\JsonViewModel;
 use Hydrogen\Mvc\ViewModel\TplViewModel;
 use application\module\front\interceptor\AuthenticationInterceptor;
+use Hydrogen\Utils\Str;
 
 class IndexCtrl extends FrontCtrl
 {

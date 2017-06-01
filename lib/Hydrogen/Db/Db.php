@@ -42,4 +42,19 @@ class Db extends AbstractDb
 	{
 		// TODO: Implement listTables() method.
 	}
+
+    /**
+     * close an opened connection
+     *
+     * @return mixed
+     */
+    public function closeConnection()
+    {
+        // TODO: Implement closeConnection() method.
+    }
+
+    public function escapeStr($str)
+    {
+        // TODO: Implement escapeStr() method.
+    }
 }

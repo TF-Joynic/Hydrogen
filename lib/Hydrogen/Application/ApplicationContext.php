@@ -6,6 +6,7 @@ use Hydrogen\Config\Config;
 use Hydrogen\Mvc\Ctrl\Ctrl;
 use Hydrogen\Load\Autoloader;
 use Hydrogen\Mvc\Ctrl\Plugin\PluginInterface;
+use Hydrogen\Utils\Str;
 
 class ApplicationContext
 {
@@ -52,7 +53,7 @@ class ApplicationContext
 
     public static function setModuleDir($dir)
     {
-        if (is_dir($dir))
+        if (Str::isDirStr($dir))
             self::$_moduleDir = $dir;
     }
 
@@ -63,7 +64,7 @@ class ApplicationContext
 
     public static function setApplicationConfigDir($dir)
     {
-        if (is_dir($dir))
+        if (Str::isDirStr($dir))
             self::$_applicationConfigDir = $dir;
     }
 
@@ -79,9 +80,9 @@ class ApplicationContext
 
     public static function setTemplateDir($templateDir)
     {
-        self::$_templateDir = $templateDir;
+        if (Str::isDirStr($templateDir))
+            self::$_templateDir = $templateDir;
     }
-
 
     public static function setDefaultModule($module)
     {
@@ -141,6 +142,9 @@ class ApplicationContext
 
     public static function setNamespaceDir($namespace, $dir, $prepend = false)
     {
+        if (!Str::isDirStr($dir))
+            return false;
+
         return Autoloader::getInstance()->attachNamespace($namespace, $dir, $prepend);
     }
 
@@ -170,7 +174,7 @@ class ApplicationContext
      */
     public static function registerPlugin(Ctrl $ctrl, PluginInterface $plugin)
     {
-        if (class_exists($ctrl) || !method_exists($ctrl, 'registerPlugin')) {
+        if (!class_exists($ctrl, false) || !method_exists($ctrl, 'registerPlugin')) {
             return false;
         }
 
@@ -179,7 +183,7 @@ class ApplicationContext
 
     public static function clearPlugin(Ctrl $ctrl)
     {
-        if (class_exists($ctrl) || !method_exists($ctrl, 'clearPlugin')) {
+        if (!class_exists($ctrl, false) || !method_exists($ctrl, 'clearPlugin')) {
             return false;
         }
 

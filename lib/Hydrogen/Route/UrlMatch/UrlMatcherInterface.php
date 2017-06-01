@@ -12,5 +12,5 @@ interface UrlMatcherInterface
      * @param ResponseInterface $response
      * @return mixed
      */
-    public function match(ServerRequestInterface &$request, ResponseInterface &$response);
+    public function match(ServerRequestInterface $request, ResponseInterface $response);
 }
