@@ -2,8 +2,7 @@
 
 namespace Hydrogen\Load;
 
-// use Hydrogen\Load;
-include __DIR__.'/Loader.php';
+require __DIR__.'/Loader.php';
 
 abstract class AbstractAutoLoader
 {

@@ -2,13 +2,11 @@
 
 namespace Hydrogen\Route\Rule;
 
-use Hydrogen\Debug\Variable;
-use Hydrogen\Http\Request\ServerRequest as Request;
-use Hydrogen\Http\Response\Response;
+
 use Hydrogen\Load\Loader;
 use Hydrogen\Route\Exception\InvalidArgumentException;
+use Hydrogen\Http\Request\FrameworkServerRequestInterface as RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * this rule with set content-type header according to postfix mapping
@@ -33,11 +31,11 @@ class RulePostfix extends AbstractRule
      * $path: user/profile.json
      *
      * @param $path
-     * @param ServerRequestInterface $request
+     * @param RequestInterface $request
      * @param ResponseInterface $response
      * @return bool|\Closure
      */
-    public function apply(&$path, ServerRequestInterface $request, ResponseInterface $response)
+    public function apply(&$path, RequestInterface $request, ResponseInterface $response)
     {
         if (false !== $postfixPos = strrpos($path, '.')) {
             $realPath = substr($path, 0, $postfixPos);

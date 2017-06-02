@@ -13,7 +13,7 @@ class Config
 	private $_scopes = array(); // config array scopes
 
 	private static $_instance = null;
-	private static $_merge_count = 0;
+	private static $_mergeCount = 0;
 
 	private function __construct()
 	{}
@@ -61,7 +61,7 @@ class Config
 		}
 
 		try {
-			if (self::$_merge_count >= 1) {
+			if (self::$_mergeCount >= 1) {
 				// clear keys in newConfigArr that starts with '_'
 				$this->_nestUnsertPrivateKey($newConfigArr);
 			}
@@ -73,7 +73,7 @@ class Config
 				$newConfigArr
 			);
 
-			self::$_merge_count ++;
+			self::$_mergeCount ++;
 			$op_source = $configArr;
 
 			if ('' !== $mergingScope 

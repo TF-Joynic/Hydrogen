@@ -3,11 +3,11 @@
 namespace application\module\front\filter;
 
 
-use Psr\Http\Message\ServerRequestInterface;
+use Hydrogen\Http\Request\FrameworkServerRequestInterface as RequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 
-class XssRequestDecorator implements ServerRequestInterface
+class XssRequestDecorator implements RequestInterface
 {
     private $_request = null;
 
@@ -600,5 +600,121 @@ class XssRequestDecorator implements ServerRequestInterface
     public function withoutAttribute($name)
     {
         // TODO: Implement withoutAttribute() method.
+    }
+
+    public function isGet()
+    {
+        // TODO: Implement isGet() method.
+    }
+
+    public function isPost()
+    {
+        // TODO: Implement isPost() method.
+    }
+
+    public function isPut()
+    {
+        // TODO: Implement isPut() method.
+    }
+
+    public function isPatch()
+    {
+        // TODO: Implement isPatch() method.
+    }
+
+    public function isDelete()
+    {
+        // TODO: Implement isDelete() method.
+    }
+
+    public function isHead()
+    {
+        // TODO: Implement isHead() method.
+    }
+
+    public function isOptions()
+    {
+        // TODO: Implement isOptions() method.
+    }
+
+    public function isAjax()
+    {
+        // TODO: Implement isAjax() method.
+    }
+
+    public function getQuery($name, $default = null)
+    {
+        // TODO: Implement getQuery() method.
+    }
+
+    public function getQueryInt($name, $default = 0)
+    {
+        // TODO: Implement getQueryInt() method.
+    }
+
+    /**
+     * get raw query param without filter
+     *
+     * @param $name
+     * @param null $default
+     * @return mixed
+     */
+    public function getQueryRaw($name, $default = null)
+    {
+        // TODO: Implement getQueryRaw() method.
+    }
+
+    public function getPost($name, $default = null)
+    {
+        // TODO: Implement getPost() method.
+    }
+
+    public function getPostInt($name, $default = 0)
+    {
+        // TODO: Implement getPostInt() method.
+    }
+
+    public function getPostRaw($name, $default = null)
+    {
+        // TODO: Implement getPostRaw() method.
+    }
+
+    public function getPostJson2Arr($name, $default = null)
+    {
+        // TODO: Implement getPostJson2Arr() method.
+    }
+
+    public function getAttributeInt($name, $default = null)
+    {
+        // TODO: Implement getAttributeInt() method.
+    }
+
+    public function getAttributeRaw($name, $default = null)
+    {
+        // TODO: Implement getAttributeRaw() method.
+    }
+
+    public function withAttributes($attrs)
+    {
+        // TODO: Implement withAttributes() method.
+    }
+
+    /**
+     * @param $name
+     * @return array
+     */
+    public function getContextAttr($name)
+    {
+        // TODO: Implement getContextAttr() method.
+    }
+
+    /**
+     * @param $name
+     * @param $value
+     * @return self
+     */
+    public function withContextAttr($name, $value)
+    {
+        // TODO: Implement withContextAttr() method.
     }
 }

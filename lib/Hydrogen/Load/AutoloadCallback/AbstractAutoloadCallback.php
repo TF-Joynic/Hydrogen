@@ -4,7 +4,7 @@ namespace Hydrogen\Load\AutoloadCallback;
 
 use Hydrogen\Load\Autoloader;
 
-include __DIR__.DIRECTORY_SEPARATOR.'AutoloadCallbackInterface.php';
+require __DIR__.DIRECTORY_SEPARATOR.'AutoloadCallbackInterface.php';
 
 abstract class AbstractAutoloadCallback implements AutoloadCallbackInterface
 {

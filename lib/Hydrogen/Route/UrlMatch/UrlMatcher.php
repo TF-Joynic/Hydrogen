@@ -2,11 +2,11 @@
 
 namespace Hydrogen\Route\UrlMatch;
 
-use Hydrogen\Debug\Variable;
+
 use Hydrogen\Application\ApplicationContext;
 use Hydrogen\Route\Rule\RuleInterface;
+use Hydrogen\Http\Request\FrameworkServerRequestInterface as RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 
 
 class UrlMatcher extends AbstractUrlMatcher
@@ -28,11 +28,11 @@ class UrlMatcher extends AbstractUrlMatcher
     /**
      * match and extact module, ctrl and act
      *
-     * @param ServerRequestInterface $request
+     * @param RequestInterface $request
      * @param ResponseInterface $response
      * @return boolean
      */
-    public function match(ServerRequestInterface $request, ResponseInterface $response)
+    public function match(RequestInterface $request, ResponseInterface $response)
     {
         $sanitizedPath = trim(preg_replace('/\/{2,}/', '/', $request->getUri()->getPath()));
 
@@ -97,9 +97,9 @@ class UrlMatcher extends AbstractUrlMatcher
             }
         }
 
-        $request->setContextAttr(MODULE, $this->_module);
-        $request->setContextAttr(CTRL, $this->_ctrl);
-        $request->setContextAttr(ACT, $this->_act);
+        $request->withContextAttr(MODULE, $this->_module);
+        $request->withContextAttr(CTRL, $this->_ctrl);
+        $request->withContextAttr(ACT, $this->_act);
         $this->tailing($request, $DEFAULT_MODULE, $DEFAULT_CTRL, $DEFAULT_ACT);
 
         return true;
@@ -176,25 +176,25 @@ class UrlMatcher extends AbstractUrlMatcher
     /**
      * process default module/ctrl/act name
      *
-     * @param ServerRequestInterface $request
+     * @param RequestInterface $request
      * @param $default_module
      * @param $default_ctrl
      * @param $default_act
      */
-    public function tailing(ServerRequestInterface $request, $default_module, $default_ctrl, $default_act)
+    public function tailing(RequestInterface $request, $default_module, $default_ctrl, $default_act)
     {
         if (!$request->getContextAttr(MODULE)) {
-            $request->setContextAttr(MODULE, $default_module);
+            $request->withContextAttr(MODULE, $default_module);
         }
 
         if (!$request->getContextAttr(CTRL)) {
-            $request->setContextAttr(CTRL, $default_ctrl);
+            $request->withContextAttr(CTRL, $default_ctrl);
         }
 
-        $request->setContextAttr(CTRL, ucfirst($request->getContextAttr(CTRL)));
+        $request->withContextAttr(CTRL, ucfirst($request->getContextAttr(CTRL)));
 
         if (!$request->getContextAttr(ACT)) {
-            $request->setContextAttr(ACT, $default_act);
+            $request->withContextAttr(ACT, $default_act);
         }
     }
 }

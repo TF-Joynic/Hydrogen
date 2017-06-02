@@ -2,7 +2,6 @@
 
 namespace Hydrogen\Route\Dispatch;
 
-use Hydrogen\Debug\Variable;
 use Hydrogen\Http\Interceptor\InterceptorInterface;
 use Hydrogen\Load\Loader;
 use Hydrogen\Mvc\Ctrl\Ctrl;
@@ -10,38 +9,25 @@ use Hydrogen\Application\ApplicationContext;
 use Hydrogen\Route\Exception\RuntimeException;
 use Hydrogen\Route\Exception\DispatchException;
 use Hydrogen\Load\Exception\LoadFailedException;
-use PHPUnit\Runner\Exception;
-use Psr\Http\Message\ServerRequestInterface;
+use Hydrogen\Http\Request\FrameworkServerRequestInterface as RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class Dispatcher extends AbstractDispatcher
 {
     /**
-     * @var ServerRequestInterface
+     * dispatch request to Ctrl::Act
+     *
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
+     * @return bool
      */
-    private $_request;
-
-    /**
-     * @var ResponseInterface
-     */
-    private $_response;
-
-    public function __construct(ServerRequestInterface $request, ResponseInterface $response)
+    public function dispatch(RequestInterface $request, ResponseInterface $response)
     {
-        $this->_request = $request;
-        $this->_response = $response;
-    }
+        $targetModule = $request->getContextAttr(MODULE);
+        $targetCtrl = $request->getContextAttr(CTRL);
+        $targetAct = $request->getContextAttr(ACT);
 
-    /**
-     * concrete request & response
-     */
-    public function dispatch()
-    {
-        $target_module = $this->_request->getContextAttr(MODULE);
-        $target_ctrl = $this->_request->getContextAttr(CTRL);
-        $target_act = $this->_request->getContextAttr(ACT);
-
-        if (!$target_module || !$target_act || !$target_ctrl) {
+        if (!$targetModule || !$targetCtrl || !$targetAct) {
             return false;
         }
 
@@ -54,18 +40,23 @@ class Dispatcher extends AbstractDispatcher
         $moduleInitFile = $moduleDir . '/Module' . $initFileNamePost;
         $this->importFileByAbsPath($moduleInitFile);
 
-        $mvcInitFile = $moduleDir . '/' . $target_module . '/' . ucfirst($target_module) . $initFileNamePost;
+        $mvcInitFile = implode(DIRECTORY_SEPARATOR, array_filter(array(
+            $moduleDir,
+            $targetModule,
+            ucfirst($targetModule) . $initFileNamePost
+        )));
+
         $this->importFileByAbsPath($mvcInitFile);
         $moduleBaseNamespace = ltrim(str_replace(APPLICATION_PATH, '', $moduleDir), '/\\');
 
         $tmp = $moduleBaseNamespace ? $moduleBaseNamespace .'\\' : '';
 
-        $ctrlClassBaseName = ($target_ctrl) . ApplicationContext::getCtrlClassPostfix();
-        $mvcCtrlClassName = 'application\\'.$tmp.$target_module
+        $ctrlClassBaseName = ($targetCtrl) . ApplicationContext::getCtrlClassPostfix();
+        $mvcCtrlClassName = 'application\\'.$tmp.$targetModule
             . '\\ctrl\\' . $ctrlClassBaseName;
 
         $actPostFix = ApplicationContext::getActMethodPostfix();
-        $actMethodName = $target_act . $actPostFix;
+        $actMethodName = $targetAct . $actPostFix;
 
         $actViewModel = null;
 
@@ -248,10 +239,6 @@ class Dispatcher extends AbstractDispatcher
 
     private function importFileByAbsPath($absPath)
     {
-        if (!file_exists($absPath)) {
-            return false;
-        }
-
         if (false === Loader::import($absPath)) {
             throw new LoadFailedException('Failed to load file: '.$absPath);
         }

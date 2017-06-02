@@ -76,8 +76,8 @@ class Router
         }
 
         // dispatch now
-        $dispatcher = new Dispatcher($request, $response);
-        $dispatcher->dispatch();
+        $dispatcher = new Dispatcher();
+        $dispatcher->dispatch($request, $response);
 	}
 
 }

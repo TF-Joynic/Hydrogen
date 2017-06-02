@@ -11,16 +11,15 @@ $router = Router::getInstance();
 
 $rulePostfixUserJson = new RulePostfix('.js');
 $router->addRule($rulePostfixUserJson, function (Request $request, Response $response) {
-//    $request->setContextAttr(CTRL, 'branch')->setContextAttr(ACT, 'master');
 });
 
 $router->addRule(new RuleFixed('/simple/master'), function(Request $request,Response $response) {
-    $request->setContextAttr(CTRL, 'branch')->setContextAttr(ACT, 'master');
+    $request->withContextAttr(CTRL, 'branch')->withContextAttr(ACT, 'master');
 });
 
 $ruleParamSimpleId = new RuleParam('/simple/'.RuleParam::RULE_PARAM_PREFIX.'id');
 $router->addRule($ruleParamSimpleId, function(Request $request,Response $response) {
-    $request->setContextAttr(CTRL, 'branch')->setContextAttr(ACT, 'master');
+    $request->withContextAttr(CTRL, 'branch')->withContextAttr(ACT, 'master');
     $request->withAttribute("cd", 1);
 });
 

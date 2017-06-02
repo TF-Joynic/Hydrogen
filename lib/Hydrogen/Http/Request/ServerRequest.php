@@ -5,7 +5,6 @@ namespace Hydrogen\Http\Request;
 
 use Hydrogen\Http\Exception\InvalidArgumentException;
 use Hydrogen\Http\Message;
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Hydrogen\Http\Uri;
 use Psr\Http\Message\UriInterface;
@@ -14,7 +13,7 @@ use Psr\Http\Message\UriInterface;
  * Class ServerRequest
  * @package Hydrogen\Http\Request
  */
-class ServerRequest implements ServerRequestInterface
+class ServerRequest implements FrameworkServerRequestInterface
 {
     const SERVER_HTTP_HEADER_PREFIX = 'HTTP_';
 
@@ -22,14 +21,14 @@ class ServerRequest implements ServerRequestInterface
     private $_context_attr = array();
 
     private $_request_method = '';
-    private $_predefined_request_methods = [];
+    private $_predefined_request_methods = array();
 
     private $_request_target = '';
 
-    private $_SERVER = [];
-    private $_COOKIE = [];
-    private $_GET = [];
-    private $_POST = [];
+    private $_SERVER = array();
+    private $_COOKIE = array();
+    private $_GET = array();
+    private $_POST = array();
 
     private $_message = null;
     private $_uri = null;
@@ -100,84 +99,62 @@ class ServerRequest implements ServerRequestInterface
         return 'XMLHttpRequest' == $_SERVER['HTTP_X_REQUESTED_WITH'];
     }
 
-    public function getQuery($name, $default_value = null)
+    public function getQuery($name, $default = null)
     {
-        return isset($this->_GET[$name]) ? $this->_sanitize($this->_GET[$name]) : $default_value;
+        return isset($this->_GET[$name]) ? $this->_GET[$name] : $default;
     }
 
-    public function getQueryInt($name, $default_value = 0)
+    public function getQueryInt($name, $default = 0)
     {
-        return isset($this->_GET[$name]) ? intval($this->_GET[$name]) : $default_value;
+        return isset($this->_GET[$name]) ? intval($this->_GET[$name]) : $default;
     }
 
-    public function getQueryRaw($name, $default_value = null)
+    public function getQueryRaw($name, $default = null)
     {
-        return isset($this->_GET[$name]) ? $this->_GET[$name] : $default_value;
+        return isset($this->_GET[$name]) ? $this->_GET[$name] : $default;
     }
 
-    public function getPost($name, $default_value = null)
+    public function getPost($name, $default = null)
     {
-        return isset($this->_POST[$name]) ? $this->_sanitize($this->_POST[$name]) : $default_value;
+        return isset($this->_POST[$name]) ? $this->_POST[$name] : $default;
     }
 
-    public function getPostInt($name, $default_value = 0)
+    public function getPostInt($name, $default = 0)
     {
-        return isset($this->_POST[$name]) ? intval($this->_POST[$name]) : $default_value;
+        return isset($this->_POST[$name]) ? intval($this->_POST[$name]) : $default;
     }
 
-    public function getPostRaw($name, $default_value = null)
+    public function getPostRaw($name, $default = null)
     {
-        return isset($this->_POST[$name]) ? $this->_POST[$name] : $default_value;
+        return isset($this->_POST[$name]) ? $this->_POST[$name] : $default;
     }
 
-    public function getPostJson2Arr($name, $default_value = null)
+    public function getPostJson2Arr($name, $default = null)
     {
-        $jsonStr = isset($this->_POST[$name]) ? $this->_POST[$name] : $default_value;
+        $jsonStr = isset($this->_POST[$name]) ? $this->_POST[$name] : $default;
         if (is_string($jsonStr) && $jsonStr = json_decode($jsonStr, true) && null === json_last_error()) {
             return $jsonStr;
         } else {
-            return $default_value;
+            return $default;
         }
     }
 
-    public function getAttributeInt($name, $default_value = null)
+    public function getAttributeInt($name, $default = null)
     {
-        return intval($this->getAttributeRaw($name, $default_value));
+        return intval($this->getAttributeRaw($name, $default));
     }
 
-    public function getAttributeRaw($name, $default_value = null)
+    public function getAttributeRaw($name, $default = null)
     {
-
-        return isset($this->_GET[$name]) ? $this->_GET[$name] :
-            (isset($this->_POST[$name]) ? $this->_POST[$name] : $default_value);
-
+        return $this->getAttribute($name, $default);
     }
-
-    /*public function getParams(array $params = array())
-    {
-        if (!$params) {
-            return array_merge($this->_GET, $this->_POST, $this->_param);
-        }
-
-        $fields = array();
-        foreach ($params as $index => $default_value) {
-            if (is_int($index)) {
-                // the default_value is index actually
-                $fields[$default_value] = $this->getAttribute($default_value);
-            } else {
-                $fields[$index] = $this->getAttribute($index, $default_value);
-            }
-        }
-
-        return $fields;
-    }*/
 
     public function getHeader($name)
     {
         return $this->getMessage()->getHeader($name);
     }
 
-    public function setContextAttr($name, $value)
+    public function withContextAttr($name, $value)
     {
         if ($name && is_string($name))
             $this->_context_attr[$name] = $value;
@@ -192,11 +169,6 @@ class ServerRequest implements ServerRequestInterface
         }
 
         return $this->_context_attr[$name];
-    }
-
-    public function __toString()
-    {
-        return http_build_query($_GET).PHP_EOL.var_export($_POST, true);
     }
 
     /**
@@ -823,5 +795,10 @@ class ServerRequest implements ServerRequestInterface
         }
 
         return $this;
+    }
+
+    public function __toString()
+    {
+        return 'Object ServerRequest: '.http_build_query($_GET).PHP_EOL.var_export($_POST, true);
     }
 }

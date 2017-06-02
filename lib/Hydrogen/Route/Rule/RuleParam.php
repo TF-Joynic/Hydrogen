@@ -2,10 +2,10 @@
 
 namespace Hydrogen\Route\Rule;
 
-use Hydrogen\Debug\Variable;
-use Hydrogen\Http\Exception\InvalidArgumentException;
-use Psr\Http\Message\ServerRequestInterface;
+
+use Hydrogen\Http\Request\FrameworkServerRequestInterface as RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Hydrogen\Http\Exception\InvalidArgumentException;
 
 class RuleParam extends AbstractRule
 {
@@ -23,11 +23,11 @@ class RuleParam extends AbstractRule
 
     /**
      * @param $path
-     * @param ServerRequestInterface $request
+     * @param RequestInterface $request
      * @param ResponseInterface $response
      * @return \Closure|bool
      */
-    public function apply(&$path, ServerRequestInterface $request, ResponseInterface $response)
+    public function apply(&$path, RequestInterface $request, ResponseInterface $response)
     {
         list ($param_names, $rule_segments) = $this->extractFromRuleStr();
         if (empty($param_names)) {

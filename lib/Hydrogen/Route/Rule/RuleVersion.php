@@ -2,8 +2,9 @@
 
 namespace Hydrogen\Route\Rule;
 
+
+use Hydrogen\Http\Request\FrameworkServerRequestInterface as RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 
 class RuleVersion extends AbstractRule
 {
@@ -19,11 +20,11 @@ class RuleVersion extends AbstractRule
 
     /**
      * @param $path
-     * @param ServerRequestInterface $request
+     * @param RequestInterface $request
      * @param ResponseInterface $response
      * @return bool|\Closure
      */
-    public function apply(&$path, ServerRequestInterface $request, ResponseInterface $response)
+    public function apply(&$path, RequestInterface $request, ResponseInterface $response)
     {
         // TODO: Implement apply() method.
     }
