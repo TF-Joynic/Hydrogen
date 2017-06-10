@@ -2,28 +2,26 @@
 
 namespace Hydrogen\Mvc\Ctrl\Act;
 
+use Hydrogen\Mvc\Ctrl\Ctrl;
+
+
 class Act
 {
-    /**
-     * @var \Hydrogen\Mvc\Ctrl\Ctrl
-     */
-    private $_ctrlInstance = null;
-
     /**
      * @var string
      */
     private $_actName = null;
 
-    public function __construct($ctrlInstance, $actName)
+    public function __construct()
     {
-        $this->_ctrlInstance = $ctrlInstance;
-        $this->_actName = $actName;
     }
 
     /**
      * execute the act
+     * @param Ctrl $ctrlInstance
+     * @param $actName
      */
-    public function execute()
+    public function execute(Ctrl $ctrlInstance, $actName)
     {
 
     }

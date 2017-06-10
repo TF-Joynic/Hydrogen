@@ -3,7 +3,7 @@
 namespace Hydrogen\Load\AutoloadCallback;
 
 
-class Composer extends AbstractAutoloadCallback
+class Psr extends AbstractAutoloadCallback
 {
     protected function resolveClassPath($className)
     {

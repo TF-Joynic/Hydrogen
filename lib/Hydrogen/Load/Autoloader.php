@@ -4,13 +4,12 @@ namespace Hydrogen\Load;
 
 require __DIR__.'/AbstractAutoLoader.php';
 
-use Hydrogen\Load\AutoloadCallback;
 
 class Autoloader extends AbstractAutoLoader
 {
-	CONST CALLBACK_NS2PATH = 'Namespace2path';
-    CONST CALLBACK_COMPOSER = 'Composer';
-    CONST CALLBACK_THRIFTCLIENT = 'ThriftClient';
+	const CALLBACK_NS2PATH = 'Namespace2path';
+    const CALLBACK_PSR = 'Psr';
+    const CALLBACK_THRIFTCLIENT = 'ThriftClient';
 
 	private static $_instance = null;
 
@@ -70,7 +69,10 @@ class Autoloader extends AbstractAutoLoader
         return true;
     }
 
-	public function attachCallback($callbackClassNames)
+    /**
+     * @param $callbackClassNames
+     */
+    public function attachCallback($callbackClassNames)
 	{
         if (!$callbackClassNames) {
             return ;
@@ -118,6 +120,19 @@ class Autoloader extends AbstractAutoLoader
 
 		return false;
 	}
+
+	public function getComposerAutoloadClassMap()
+    {
+        $composerAutoloadFile = VENDOR_PATH.DIRECTORY_SEPARATOR.COMPOSER
+            .DIRECTORY_SEPARATOR.COMPOSER_AUTOLOAD_CLASS_MAP_FILENAME;
+
+        if (is_readable($composerAutoloadFile)) {
+            /** @noinspection PhpIncludeInspection */
+            return require($composerAutoloadFile);
+        }
+
+        return array();
+    }
 
 	private function __clone()
 	{}

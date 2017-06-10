@@ -4,6 +4,7 @@ use application\module\front\filter\WebSecurityFilterChain;
 use Hydrogen\Load\Loader;
 use Hydrogen\Debug\Variable;
 use Hydrogen\Application\ApplicationContext;
+use PHPUnit\Framework\Constraint\ArrayHasKey;
 
 if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
 	echo '<strong>Hello, SAE!</strong>';
@@ -34,8 +35,8 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
 	$autoloader->attachCallback(
         array(
             Hydrogen\Load\Autoloader::CALLBACK_NS2PATH,
-            Hydrogen\Load\Autoloader::CALLBACK_COMPOSER,
-            Hydrogen\Load\Autoloader::CALLBACK_THRIFTCLIENT
+            Hydrogen\Load\Autoloader::CALLBACK_PSR,
+            Hydrogen\Load\Autoloader::CALLBACK_THRIFTCLIENT,
         )
     );
 
@@ -49,7 +50,10 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
 
     $classLoadConfigArr = Loader::import('application/config/'.ApplicationContext::getClassLoadConfigFile(), true, true);
     Loader::setPreloadFiles($classLoadConfigArr[PRELOAD_FILES]);
-    $autoloader->setClassLoadMap($classLoadConfigArr[CLASS_LOAD_MAP]);
+
+    // merge Composer autoload_classmap if necessary
+    $autoloader->setClassLoadMap(array_merge($classLoadConfigArr[CLASS_LOAD_MAP]
+        , $autoloader->getComposerAutoloadClassMap()));
 
 	$CONFIG = Hydrogen\Config\Config::getInstance();
 	$CONFIG->mergeConfigFile(APPLICATION_PATH.

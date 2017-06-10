@@ -63,7 +63,7 @@ class Config
 		try {
 			if (self::$_mergeCount >= 1) {
 				// clear keys in newConfigArr that starts with '_'
-				$this->_nestUnsertPrivateKey($newConfigArr);
+				$this->_nestUnsetPrivateKey($newConfigArr);
 			}
 			
 			// then we merge 'em!
@@ -165,14 +165,14 @@ class Config
 	 * @param  array &$array 
 	 * @return void
 	 */
-	private function _nestUnsertPrivateKey(&$array)
+	private function _nestUnsetPrivateKey(&$array)
 	{
 		foreach ($array as $k => &$v) {
 			if (0 === strpos($k, '_')) {
 				// not allow overwrite
 				unset($array[$k]);
 			} elseif (is_array($v)) {
-				$this->_nestUnsertPrivateKey($v);
+				$this->_nestUnsetPrivateKey($v);
 			}
 		}
 	}

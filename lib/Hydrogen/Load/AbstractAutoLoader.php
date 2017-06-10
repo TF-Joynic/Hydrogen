@@ -34,7 +34,7 @@ abstract class AbstractAutoLoader
 	 * include a class by specifying its path, and append to loaded
 	 * 
 	 * @param  string $classPath classPath: 'Hydrogen/Log/Logger.php' for instance.
-     * @return boolean
+     * @return boolean|void
 	 */
 	public function loadClass($classPath)
 	{
