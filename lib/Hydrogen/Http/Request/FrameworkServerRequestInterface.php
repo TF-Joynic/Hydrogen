@@ -42,8 +42,6 @@ interface FrameworkServerRequestInterface extends ServerRequestInterface
 
     public function getPostRaw($name, $default = null);
 
-    public function getPostJson2Arr($name, $default = null);
-
     public function getAttributeInt($name, $default = null);
 
     public function getAttributeRaw($name, $default = null);

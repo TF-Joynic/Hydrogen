@@ -5,25 +5,31 @@ namespace Hydrogen\Mvc\Ctrl\Act;
 use Hydrogen\Mvc\Ctrl\Ctrl;
 
 
-class Act
+class Act extends AbstractAct
 {
+    /**
+     * @var Ctrl
+     */
+    private $_ctrlInstance = null;
+
     /**
      * @var string
      */
     private $_actName = null;
 
-    public function __construct()
+    public function __construct(Ctrl $ctrlInstance)
     {
+        $this->_ctrlInstance = $ctrlInstance;
     }
 
     /**
      * execute the act
-     * @param Ctrl $ctrlInstance
+     *
      * @param $actName
      */
-    public function execute(Ctrl $ctrlInstance, $actName)
+    public function execute($actName)
     {
-
+        
     }
 
     public function render()

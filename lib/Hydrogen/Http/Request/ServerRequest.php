@@ -129,16 +129,6 @@ class ServerRequest implements FrameworkServerRequestInterface
         return isset($this->_POST[$name]) ? $this->_POST[$name] : $default;
     }
 
-    public function getPostJson2Arr($name, $default = null)
-    {
-        $jsonStr = isset($this->_POST[$name]) ? $this->_POST[$name] : $default;
-        if (is_string($jsonStr) && $jsonStr = json_decode($jsonStr, true) && null === json_last_error()) {
-            return $jsonStr;
-        } else {
-            return $default;
-        }
-    }
-
     public function getAttributeInt($name, $default = null)
     {
         return intval($this->getAttributeRaw($name, $default));

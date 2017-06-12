@@ -4,6 +4,7 @@ namespace Hydrogen\Route\Dispatch;
 
 use Hydrogen\Http\Interceptor\InterceptorInterface;
 use Hydrogen\Load\Loader;
+use Hydrogen\Mvc\Ctrl\Act\Act;
 use Hydrogen\Mvc\Ctrl\Ctrl;
 use Hydrogen\Application\ApplicationContext;
 use Hydrogen\Route\Exception\RuntimeException;
@@ -72,6 +73,16 @@ class Dispatcher extends AbstractDispatcher
 
         }
 
+    }
+
+    /**
+     * get Ctrl instance of target ctrl
+     *
+     * @return Ctrl
+     */
+    public function getCtrlInstance()
+    {
+        // TODO: Implement getCtrlInstance() method.
     }
 
     /**
@@ -245,4 +256,6 @@ class Dispatcher extends AbstractDispatcher
 
         return true;
     }
+
+
 }
