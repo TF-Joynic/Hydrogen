@@ -57,20 +57,20 @@ if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
 
 	$CONFIG = Hydrogen\Config\Config::getInstance();
 	$CONFIG->mergeConfigFile(APPLICATION_PATH.
-		DIRECTORY_SEPARATOR.ApplicationContext::getApplicationConfigDir()
+		DIRECTORY_SEPARATOR.ApplicationContext::getApplicationConfigDirName()
 		.DIRECTORY_SEPARATOR.'application.ini');
 
 	$CONFIG->mergeConfigFile(APPLICATION_PATH.
-		DIRECTORY_SEPARATOR.ApplicationContext::getApplicationConfigDir()
+		DIRECTORY_SEPARATOR.ApplicationContext::getApplicationConfigDirName()
 		.DIRECTORY_SEPARATOR.ENV.DIRECTORY_SEPARATOR
 		.'application.ini');
 
     $CONFIG->mergeConfigFile(APPLICATION_PATH.
-        DIRECTORY_SEPARATOR.ApplicationContext::getApplicationConfigDir()
+        DIRECTORY_SEPARATOR.ApplicationContext::getApplicationConfigDirName()
         .DIRECTORY_SEPARATOR.DIRECTORY_SEPARATOR
         .'database.ini');
 
-    ApplicationContext::setModuleDir(APPLICATION_PATH.DIRECTORY_SEPARATOR.$CONFIG->get(SCOPE_APPLICATION, 'application', '_module_dir'));
+    ApplicationContext::setModuleDirPath(APPLICATION_PATH.DIRECTORY_SEPARATOR.$CONFIG->get(SCOPE_APPLICATION, 'application', '_module_dir'));
     ApplicationContext::setEnabledModules($CONFIG->get(SCOPE_APPLICATION, 'application', '_enabled_modules'));
     ApplicationContext::setTemplatePostfix("tpl");
 

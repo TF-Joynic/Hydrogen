@@ -22,6 +22,11 @@ defined('HTTP_HEADER_USER_AGENT') || define('HTTP_HEADER_USER_AGENT', 'User-Agen
 defined('HTTP_HEADER_ACCEPT_ENCODING') || define('HTTP_HEADER_ACCEPT_ENCODING', 'Accept-Encoding');
 defined('HTTP_HEADER_ACCEPT_LANGUAGE') || define('HTTP_HEADER_ACCEPT_LANGUAGE', 'Accept-Language');
 defined('HTTP_HEADER_CONTENT_TYPE') || define('HTTP_HEADER_CONTENT_TYPE', 'Content-Type');
+defined('HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN') || define('HTTP_HEADER_ACCESS_CONTROL_ALLOW_ORIGIN', 'Access-Control-Allow-Origin');
+/**
+ * HTTP Header(s) definition end.
+ */
+
 
 defined('SCOPE_APPLICATION') || define('SCOPE_APPLICATION', 'application');
 

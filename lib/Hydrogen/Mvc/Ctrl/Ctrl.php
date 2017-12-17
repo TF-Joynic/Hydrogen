@@ -60,6 +60,14 @@ class Ctrl
     }
 
     /**
+     * name that represent this Ctrl instance
+     */
+    public function getName()
+    {
+        return static::class;
+    }
+
+    /**
      * forward to another action
      *
      * @return void
@@ -133,9 +141,9 @@ class Ctrl
         $module = $this->_request->getContextAttr(MODULE);
 
         $templatePath = implode(DIRECTORY_SEPARATOR, array_filter(array(
-            ApplicationContext::getModuleDir(),
+            ApplicationContext::getModuleDirPath(),
             $module,
-            ApplicationContext::getTemplateDir()
+            ApplicationContext::getTemplateDirName()
         )));
 
         return $templatePath.DIRECTORY_SEPARATOR.$tpl.'.'.ApplicationContext::getTemplatePostfix();

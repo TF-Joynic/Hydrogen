@@ -1,8 +1,10 @@
 <?php
 
 namespace Hydrogen\Mvc\ViewModel;
+
+
 use Psr\Http\Message\StreamInterface;
-use Hydrogen\Http\Response\Response;
+
 
 abstract class ViewModel
 {
@@ -21,7 +23,7 @@ abstract class ViewModel
 
     public function setHeader($name, $value)
     {
-
+        $this->_headers[$name] = $value;
     }
 
     /**

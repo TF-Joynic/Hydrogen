@@ -37,9 +37,9 @@ class UrlMatcher extends AbstractUrlMatcher
         $sanitizedPath = trim(preg_replace('/\/{2,}/', '/', $request->getUri()->getPath()));
 
         $AVAILABLE_MODULES = ApplicationContext::getEnabledModules();
-        $DEFAULT_MODULE = ApplicationContext::getDefaultModule();
-        $DEFAULT_CTRL = ApplicationContext::getDefaultCtrl();
-        $DEFAULT_ACT = ApplicationContext::getDefaultAct();
+        $DEFAULT_MODULE = ApplicationContext::getDefaultModuleName();
+        $DEFAULT_CTRL = ApplicationContext::getDefaultCtrlName();
+        $DEFAULT_ACT = ApplicationContext::getDefaultActName();
 
         if ($this->_rules) {
             foreach ($this->_rules as $routeRule) {

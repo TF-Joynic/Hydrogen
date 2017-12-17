@@ -16,24 +16,22 @@ use Psr\Http\Message\ResponseInterface;
 class Dispatcher extends AbstractDispatcher
 {
     /**
-     * dispatch request to Ctrl::Act
+     * @var int
+     */
+    private static $_dispatchCount;
+
+    /**
+     * initialize public module logic and target module before get Ctrl instance
      *
      * @param RequestInterface $request
      * @param ResponseInterface $response
-     * @return bool
      */
-    public function dispatch(RequestInterface $request, ResponseInterface $response)
+    public function initModule(RequestInterface $request, ResponseInterface $response)
     {
         $targetModule = $request->getContextAttr(MODULE);
-        $targetCtrl = $request->getContextAttr(CTRL);
-        $targetAct = $request->getContextAttr(ACT);
 
-        if (!$targetModule || !$targetCtrl || !$targetAct) {
-            return false;
-        }
-
-        // firstly we must confirm the ctrl is reachable
-        $moduleDir = ApplicationContext::getModuleDir();
+        // init common module INIT logic
+        $moduleDir = ApplicationContext::getModuleDirPath();
 
         $moduleDir = rtrim($moduleDir, '/\\');
         $initFileNamePost = ApplicationContext::getModuleInitFileName();
@@ -48,51 +46,136 @@ class Dispatcher extends AbstractDispatcher
         )));
 
         $this->importFileByAbsPath($mvcInitFile);
-        $moduleBaseNamespace = ltrim(str_replace(APPLICATION_PATH, '', $moduleDir), '/\\');
+    }
 
-        $tmp = $moduleBaseNamespace ? $moduleBaseNamespace .'\\' : '';
+    /**
+     * get ctrl and act name
+     *
+     * @param $targetModule
+     * @param $targetCtrl
+     * @param $targetAct
+     * @return array
+     */
+    public function getCtrlClassAndActMethodName($targetModule, $targetCtrl, $targetAct)
+    {
+        $ctrlNamespace = $this->getCtrlNamespace($targetModule);
 
-        $ctrlClassBaseName = ($targetCtrl) . ApplicationContext::getCtrlClassPostfix();
-        $mvcCtrlClassName = 'application\\'.$tmp.$targetModule
-            . '\\ctrl\\' . $ctrlClassBaseName;
+        $ctrlClassName = $targetCtrl . ApplicationContext::getCtrlClassPostfix();
+        $mvcCtrlClassName = $ctrlNamespace.'\\' . $ctrlClassName;
 
         $actPostFix = ApplicationContext::getActMethodPostfix();
         $actMethodName = $targetAct . $actPostFix;
 
-        $actViewModel = null;
+        return array($mvcCtrlClassName, $actMethodName);
+    }
 
-        try {
-            $this->executeAct($mvcCtrlClassName, $actMethodName);
+    private function getCtrlNamespace($targetModule)
+    {
+        $moduleDir = ApplicationContext::getModuleDirPath();
 
-        } catch (DispatchException $e) {
+        $moduleBaseNamespace = ltrim(str_replace(APPLICATION_PATH, '', $moduleDir), '/\\');
+        $tmp = $moduleBaseNamespace ? $moduleBaseNamespace .'\\' : '';
 
-            // force to ErrorCtrl -> (indexAct) beneath the same dir
-            $actViewModel = $this->handleMvcError(str_replace($ctrlClassBaseName,
-                ApplicationContext::getErrorCtrl().ApplicationContext::getCtrlClassPostfix(),
-                $mvcCtrlClassName), ApplicationContext::getErrorAct().$actPostFix, $e);
-
-        }
-
+        return 'application\\'.$tmp.$targetModule
+            . '\\'.strtolower(ApplicationContext::getCtrlClassPostfix());
     }
 
     /**
      * get Ctrl instance of target ctrl
      *
+     * @param $ctrlClassName
      * @return Ctrl
      */
-    public function getCtrlInstance()
+    public function getCtrlInstance($ctrlClassName)
     {
-        // TODO: Implement getCtrlInstance() method.
+        if (!class_exists($ctrlClassName, true)) {
+            // second argument means we use autoload impl to find the class
+            throw new DispatchException('ctrl class: ' . $ctrlClassName . ' is not found', 404);
+        }
+
+        $mvcCtrlInstance = new $ctrlClassName();
+        if (! $mvcCtrlInstance instanceof Ctrl) {
+            throw new DispatchException('Ctrl class: '.$ctrlClassName.' is not subclass of Ctrl', 404);
+        }
+
+        return $mvcCtrlInstance;
+    }
+
+    public function executeCtrlAct(Ctrl $ctrlInstance, $actMethodName, RequestInterface $request, ResponseInterface $response)
+    {
+        self::$_dispatchCount ++;
+
+        try {
+            // plugin
+            $ctrlInstance->activatePlugins();
+
+            $ctrlInstance->withRequest($request);
+            $ctrlInstance->withResponse($response);
+
+            // preDispatch
+            $ctrlInstance->preDispatch();
+
+            // interceptor
+
+
+            // filter
+
+            // init
+            $ctrlInstance->init();
+
+            $actInstance = new Act($ctrlInstance, $actMethodName);
+            $viewModel = $actInstance->execute();
+
+            $ctrlInstanceResp = $ctrlInstance->getResponse();
+
+            // http header(s)
+            foreach ($viewModel->concreteHeader() as $headerName => $headerValue) {
+                $ctrlInstanceResp->withHeader($headerName, $headerValue);
+            }
+
+            // http body
+            $ctrlInstanceResp->withBody($viewModel->concreteBody());
+
+            // postDispatch
+            $ctrlInstance->postDispatch();
+
+            // response http body!
+            $this->performResponse($ctrlInstanceResp);
+
+            // plugin
+            $ctrlInstance->terminatePlugins();
+        } catch (\Exception $x) {
+            $dispatchException = new DispatchException('An error occurred! ' .$x->getMessage(), 500, $x);
+            $targetModule = $request->getContextAttr(MODULE);
+            $dispatchException->setModule($targetModule);
+            $dispatchException->setCtrl($request->getContextAttr(CTRL));
+            $dispatchException->setAct($request->getContextAttr(ACT));
+            $dispatchException->setCtrlNamespace($this->getCtrlNamespace($targetModule));
+
+            throw new DispatchException('An error occurred! ' .$x->getMessage(), 500, $x);
+        }
     }
 
     /**
-     * @param string $mvcErrorCtrlClassName
-     * @param string $mvcErrorActName
+     * handle mvc error to return human readable page
+     *
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
      * @param DispatchException $e
      * @return \Hydrogen\Mvc\ViewModel\ViewModel
      */
-    public function handleMvcError($mvcErrorCtrlClassName, $mvcErrorActName, DispatchException $e)
+    public function handleMvcError(RequestInterface $request, ResponseInterface $response, DispatchException $e)
     {
+        $mvcErrorCtrlClassName = ApplicationContext::getErrorCtrlName();
+        $mvcErrorCtrlClassName = $e->getCtrlNamespace().'\\'.$mvcErrorCtrlClassName;
+
+        if (self::$_dispatchCount > 1) {
+
+            throw new RuntimeException('Error ctrl class: ' . $mvcErrorCtrlClassName
+                . ' caused loop dispatch! current dispatch count: '.self::$_dispatchCount);
+
+        }
+
         if (!class_exists($mvcErrorCtrlClassName, true)) {
             // second argument means we use autoload impl to find the class
             throw new RuntimeException('Error ctrl class: ' . $mvcErrorCtrlClassName . ' is not properly defined!');
@@ -103,93 +186,8 @@ class Dispatcher extends AbstractDispatcher
             throw new DispatchException('Ctrl class: '.$mvcErrorCtrlClassName.' is not subclass of Ctrl', 404);
         }
 
-        $methodVar = array($mvcCtrlInstance, $mvcErrorActName);
-        if (!method_exists($mvcCtrlInstance, $mvcErrorActName) || !is_callable($methodVar, true)) {
-            throw new DispatchException('Error ctrl: ' . $mvcErrorCtrlClassName . ' has no act called: ' . $mvcErrorActName, 404);
-        }
-
-        $mvcCtrlInstance->withRequest($this->_request);
-        $this->_response->withStatus($e->getCode());
-        $mvcCtrlInstance->withResponse($this->_response);
-
-        return $mvcCtrlInstance->$mvcErrorActName();
-    }
-
-    /**
-     * @param string $mvcCtrlClassName
-     * @param string $actMethodName
-     */
-    private function executeAct($mvcCtrlClassName, $actMethodName)
-    {
-        if (!class_exists($mvcCtrlClassName, true)) {
-            // second argument means we use autoload impl to find the class
-            throw new DispatchException('ctrl class: ' . $mvcCtrlClassName . ' is not found', 404);
-        }
-
-        $mvcCtrlInstance = new $mvcCtrlClassName();
-
-        if (! $mvcCtrlInstance instanceof Ctrl) {
-            throw new DispatchException('Ctrl class: '.$mvcCtrlClassName.' is not subclass of Ctrl', 404);
-        }
-
-        $methodVar = array($mvcCtrlInstance, $actMethodName);
-        if (!method_exists($mvcCtrlInstance, $actMethodName) || !is_callable($methodVar, true, $callable_name)) {
-            throw new DispatchException('ctrl: ' . $mvcCtrlClassName . ' has no act called: ' . $actMethodName, 404);
-        }
-
-        try {
-            $mvcCtrlInstance->withRequest($this->_request);
-            $mvcCtrlInstance->withResponse($this->_response);
-
-            // preDispatch
-            $mvcCtrlInstance->preDispatch();
-
-            // plugin
-            $mvcCtrlInstance->activatePlugins();
-
-            // interceptor
-
-
-            // filter
-
-
-            // init
-            $mvcCtrlInstance->init();
-
-            $viewModel = $this->runCtrlAct($mvcCtrlInstance, $actMethodName);
-
-            $mvcCtrlInstanceResp = $mvcCtrlInstance->getResponse();
-
-            // http header(s)
-            foreach ($viewModel->concreteHeader() as $headerName => $headerValue) {
-                $mvcCtrlInstanceResp->withHeader($headerName, $headerValue);
-            }
-
-            // http body
-            $mvcCtrlInstanceResp->withBody($viewModel->concreteBody());
-
-            // plugin
-            $mvcCtrlInstance->terminatePlugins();
-
-            // postDispatch
-            $mvcCtrlInstance->postDispatch();
-
-            // response http body!
-            $this->performResponse($mvcCtrlInstanceResp);
-        } catch (\Exception $x) {
-            throw new DispatchException('An error occured! ' .$x->getMessage(), 500, $x);
-        }
-
-    }
-
-    /**
-     * @param $mvcCtrlInstance
-     * @param $actMethodName
-     * @return \Hydrogen\Mvc\ViewModel\ViewModel
-     */
-    private function runCtrlAct($mvcCtrlInstance, $actMethodName)
-    {
-        return $mvcCtrlInstance->$actMethodName();
+        return $this->executeCtrlAct($mvcCtrlInstance, ApplicationContext::getErrorActName()
+            .ApplicationContext::getActMethodPostfix(), $request, $response);
     }
 
     /**

@@ -2,7 +2,7 @@
 
 namespace Hydrogen\Application;
 
-use Hydrogen\Config\Config;
+
 use Hydrogen\Mvc\Ctrl\Ctrl;
 use Hydrogen\Load\Autoloader;
 use Hydrogen\Mvc\Ctrl\Plugin\PluginInterface;
@@ -10,20 +10,20 @@ use Hydrogen\Utils\Str;
 
 class ApplicationContext
 {
-    private static $_defaultModule = 'front';
-    private static $_defaultCtrl = 'Index';
-    private static $_defaultAct = 'index';
+    private static $_defaultModuleName = 'front';
+    private static $_defaultCtrlName = 'Index';
+    private static $_defaultActName = 'index';
 
     private static $_ctrlClassPostfix = 'Ctrl';
     private static $_actMethodPostfix = 'Act';
 
-    private static $_errorCtrl = 'Error';
-    private static $_errorAct = 'index';
+    private static $_errorCtrlName = 'Error';
+    private static $_errorActName = 'index';
 
     private static $_modules = array();   // enabled modules
-    private static $_moduleDir = APPLICATION_PATH;
-    private static $_applicationConfigDir = 'config';
-    private static $_templateDir = 'view';
+    private static $_moduleDirPath = APPLICATION_PATH;
+    private static $_applicationConfigDirName = 'config';
+    private static $_templateDirName = 'view';
 
     private static $_templatePostfix = 'phtml';
 
@@ -51,59 +51,59 @@ class ApplicationContext
         return self::$_modules;
     }
 
-    public static function setModuleDir($dir)
+    public static function setModuleDirPath($dir)
     {
         if (Str::isDirStr($dir))
-            self::$_moduleDir = $dir;
+            self::$_moduleDirPath = $dir;
     }
 
-    public static function getModuleDir()
+    public static function getModuleDirPath()
     {
-        return self::$_moduleDir;
+        return self::$_moduleDirPath;
     }
 
-    public static function setApplicationConfigDir($dir)
+    public static function setApplicationConfigDirName($dir)
     {
         if (Str::isDirStr($dir))
-            self::$_applicationConfigDir = $dir;
+            self::$_applicationConfigDirName = $dir;
     }
 
-    public static function getApplicationConfigDir()
+    public static function getApplicationConfigDirName()
     {
-        return self::$_applicationConfigDir;
+        return self::$_applicationConfigDirName;
     }
 
-    public static function getTemplateDir()
+    public static function getTemplateDirName()
     {
-        return self::$_templateDir;
+        return self::$_templateDirName;
     }
 
-    public static function setTemplateDir($templateDir)
+    public static function setTemplateDirName($templateDir)
     {
         if (Str::isDirStr($templateDir))
-            self::$_templateDir = $templateDir;
+            self::$_templateDirName = $templateDir;
     }
 
-    public static function setDefaultModule($module)
+    public static function setDefaultModuleName($module)
     {
         if ($module && is_string($module)) {
-            self::$_defaultModule = $module;
+            self::$_defaultModuleName = $module;
         }
     }
 
-    public static function getDefaultModule()
+    public static function getDefaultModuleName()
     {
-        return self::$_defaultModule;
+        return self::$_defaultModuleName;
     }
 
-    public static function getDefaultCtrl()
+    public static function getDefaultCtrlName()
     {
-        return self::$_defaultCtrl;
+        return self::$_defaultCtrlName;
     }
 
-    public static function getDefaultAct()
+    public static function getDefaultActName()
     {
-        return self::$_defaultAct;
+        return self::$_defaultActName;
     }
 
     public static function getCtrlClassPostfix()
@@ -148,21 +148,21 @@ class ApplicationContext
         return Autoloader::getInstance()->attachNamespace($namespace, $dir, $prepend);
     }
 
-    public static function setErrorCtrl($ctrl_name)
+    public static function setErrorCtrlName($ctrl_name)
     {
         if (is_string($ctrl_name) && 0 < strlen($ctrl_name)) {
-            self::$_errorCtrl = $ctrl_name;
+            self::$_errorCtrlName = $ctrl_name;
         }
     }
 
-    public static function getErrorCtrl()
+    public static function getErrorCtrlName()
     {
-        return self::$_errorCtrl;
+        return self::$_errorCtrlName;
     }
 
-    public static function getErrorAct()
+    public static function getErrorActName()
     {
-        return self::$_errorAct;
+        return self::$_errorActName;
     }
 
     /**
