@@ -4,7 +4,7 @@ use application\module\front\filter\WebSecurityFilterChain;
 use Hydrogen\Load\Loader;
 use Hydrogen\Debug\Variable;
 use Hydrogen\Application\ApplicationContext;
-use PHPUnit\Framework\Constraint\ArrayHasKey;
+
 
 if ('WINNT' != PHP_OS && false === stripos(PHP_OS, 'darwin')) {
 	echo '<strong>Hello, SAE!</strong>';

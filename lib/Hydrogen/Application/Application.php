@@ -6,6 +6,7 @@
  * @category Hydrogen
  * @package Hydrogen\Application
  * @author Terrance Fung <wkf.joynic@gmail.com>
+ * @since 1.0
  */
 namespace Hydrogen\Application;
 

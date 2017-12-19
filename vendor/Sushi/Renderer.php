@@ -20,7 +20,7 @@ class Renderer implements RendererInterface
      * @param $tplFilePath
      * @param $vars
      * @param bool $output
-     * @return string|void
+     * @return string
      */
     public function render($tplFilePath, $vars, $output = false)
     {
@@ -31,7 +31,7 @@ class Renderer implements RendererInterface
         eval('?>'.$compileContent);
 
         if ($output) {
-            $content = ob_get_clean();
+            $content = ob_get_contents();
             ob_end_clean();
             return $content;
         } else {

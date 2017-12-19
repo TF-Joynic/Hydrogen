@@ -69,17 +69,6 @@ class Dispatcher extends AbstractDispatcher
         return array($mvcCtrlClassName, $actMethodName);
     }
 
-    private function getCtrlNamespace($targetModule)
-    {
-        $moduleDir = ApplicationContext::getModuleDirPath();
-
-        $moduleBaseNamespace = ltrim(str_replace(APPLICATION_PATH, '', $moduleDir), '/\\');
-        $tmp = $moduleBaseNamespace ? $moduleBaseNamespace .'\\' : '';
-
-        return 'application\\'.$tmp.$targetModule
-            . '\\'.strtolower(ApplicationContext::getCtrlClassPostfix());
-    }
-
     /**
      * get Ctrl instance of target ctrl
      *
@@ -105,55 +94,44 @@ class Dispatcher extends AbstractDispatcher
     {
         self::$_dispatchCount ++;
 
-        try {
-            // plugin
-            $ctrlInstance->activatePlugins();
+        // plugin
+        $ctrlInstance->activatePlugins();
 
-            $ctrlInstance->withRequest($request);
-            $ctrlInstance->withResponse($response);
+        $ctrlInstance->withRequest($request);
+        $ctrlInstance->withResponse($response);
 
-            // preDispatch
-            $ctrlInstance->preDispatch();
+        // preDispatch
+        $ctrlInstance->preDispatch();
 
-            // interceptor
+        // interceptor
 
 
-            // filter
+        // filter
 
-            // init
-            $ctrlInstance->init();
+        // init
+        $ctrlInstance->init();
 
-            $actInstance = new Act($ctrlInstance, $actMethodName);
-            $viewModel = $actInstance->execute();
+        $actInstance = new Act($ctrlInstance, $actMethodName);
+        $viewModel = $actInstance->execute();
 
-            $ctrlInstanceResp = $ctrlInstance->getResponse();
+        $ctrlInstanceResp = $ctrlInstance->getResponse();
 
-            // http header(s)
-            foreach ($viewModel->concreteHeader() as $headerName => $headerValue) {
-                $ctrlInstanceResp->withHeader($headerName, $headerValue);
-            }
-
-            // http body
-            $ctrlInstanceResp->withBody($viewModel->concreteBody());
-
-            // postDispatch
-            $ctrlInstance->postDispatch();
-
-            // response http body!
-            $this->performResponse($ctrlInstanceResp);
-
-            // plugin
-            $ctrlInstance->terminatePlugins();
-        } catch (\Exception $x) {
-            $dispatchException = new DispatchException('An error occurred! ' .$x->getMessage(), 500, $x);
-            $targetModule = $request->getContextAttr(MODULE);
-            $dispatchException->setModule($targetModule);
-            $dispatchException->setCtrl($request->getContextAttr(CTRL));
-            $dispatchException->setAct($request->getContextAttr(ACT));
-            $dispatchException->setCtrlNamespace($this->getCtrlNamespace($targetModule));
-
-            throw new DispatchException('An error occurred! ' .$x->getMessage(), 500, $x);
+        // http header(s)
+        foreach ($viewModel->concreteHeader() as $headerName => $headerValue) {
+            $ctrlInstanceResp->withHeader($headerName, $headerValue);
         }
+
+        // http body
+        $ctrlInstanceResp->withBody($viewModel->concreteBody());
+
+        // postDispatch
+        $ctrlInstance->postDispatch();
+
+        // response http body!
+        $this->performResponse($ctrlInstanceResp);
+
+        // plugin
+        $ctrlInstance->terminatePlugins();
     }
 
     /**
@@ -166,13 +144,13 @@ class Dispatcher extends AbstractDispatcher
      */
     public function handleMvcError(RequestInterface $request, ResponseInterface $response, DispatchException $e)
     {
-        $mvcErrorCtrlClassName = ApplicationContext::getErrorCtrlName();
+        $mvcErrorCtrlClassName = ApplicationContext::getErrorCtrlName().ApplicationContext::getCtrlClassPostfix();
         $mvcErrorCtrlClassName = $e->getCtrlNamespace().'\\'.$mvcErrorCtrlClassName;
 
         if (self::$_dispatchCount > 1) {
 
-            throw new RuntimeException('Error ctrl class: ' . $mvcErrorCtrlClassName
-                . ' caused loop dispatch! current dispatch count: '.self::$_dispatchCount);
+            throw new RuntimeException('Error ctrl class: ' . $mvcErrorCtrlClassName. '::'.$e->getAct()
+                .' caused loop dispatch! current dispatch count: '.self::$_dispatchCount);
 
         }
 
@@ -196,9 +174,10 @@ class Dispatcher extends AbstractDispatcher
     private function performResponse($response)
     {
         ob_start();
+        ob_clean();
 
         foreach ($response->getHeaders() as $headerName => $headerValue) {
-            header(sprintf('%s: %s', $headerName, $headerValue), false);
+            header(sprintf('%s: %s', $headerName, $headerValue));
         }
 
         $responseBody = $response->getBody();

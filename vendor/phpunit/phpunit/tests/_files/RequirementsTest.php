@@ -80,7 +80,8 @@ class RequirementsTest extends TestCase
     }
 
     /**
-     * @requires OS Linux
+     * @requires OS SunOS
+     * @requires OSFAMILY Solaris
      */
     public function testEleven()
     {
@@ -146,6 +147,13 @@ class RequirementsTest extends TestCase
      * @requires OS DOESNOTEXIST
      */
     public function testAlwaysSkip3()
+    {
+    }
+
+    /**
+     * @requires OSFAMILY DOESNOTEXIST
+     */
+    public function testAlwaysSkip4()
     {
     }
 
@@ -395,7 +403,7 @@ class RequirementsTest extends TestCase
 
     /**
      * @requires PHP ~5.6.22 || ~7.0.17
-     * @requires @requires PHPUnit ^5.0.5 || ^6.0.6
+     * @requires PHPUnit ^5.0.5 || ^6.0.6
      */
     public function testVersionConstraintTildeOr()
     {

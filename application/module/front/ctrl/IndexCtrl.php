@@ -28,7 +28,6 @@ class IndexCtrl extends FrontCtrl
      */
     public function init()
     {
-
     }
 
     public function filters()
@@ -59,7 +58,7 @@ class IndexCtrl extends FrontCtrl
         $request = $this->getRequest();
         $response = $this->getResponse();
 
-        $filter = new XssFilter();
+        /*$filter = new XssFilter();
         $filter2 = new PrintFilter();
 
         $chain = new PassThroughFilterChain();
@@ -77,12 +76,7 @@ class IndexCtrl extends FrontCtrl
         $chain->addFilter($filter2);
 
         $chain->doFilter($request, $response);
-        exit();
-
-
-        if ($request->isHead()) {
-            $headerAccept = $request->getHeader(HTTP_HEADER_ACCEPT);
-        }
+        exit();*/
 
         $var = new \stdClass();
         $var->name = 'Andy';
@@ -92,11 +86,15 @@ class IndexCtrl extends FrontCtrl
         $view = $this->render('account/par', $var, true);
 
         var_dump($view);exit;
-        return null;
 	}
 
     public function aboutAct()
     {
+        $jsonArr = array();
+        $jsonArr['page'] = 'about';
+        $jsonArr['date'] = date('Y-m-d H:i:s');
+        $viewModel = new JsonViewModel($jsonArr);
 
+        return $viewModel;
     }
 }

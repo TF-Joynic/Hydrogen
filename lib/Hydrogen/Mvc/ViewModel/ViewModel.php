@@ -12,6 +12,9 @@ abstract class ViewModel
         HTTP_HEADER_CONTENT_TYPE => 'text/html;charset=utf-8'
     );
 
+    /**
+     * @var array|object
+     */
     protected $_vars = null;
     protected $_tpl = null;
 

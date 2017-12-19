@@ -11,15 +11,14 @@
 namespace PHPUnit\Util\Log;
 
 use PHPUnit\Framework\AssertionFailedError;
-use PHPUnit\Framework\Exception;
 use PHPUnit\Framework\ExceptionWrapper;
 use PHPUnit\Framework\ExpectationFailedException;
-use PHPUnit\Framework\Warning;
-use PHPUnit\Framework\TestSuite;
-use PHPUnit\Framework\TestResult;
-use PHPUnit\Framework\TestFailure;
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Test;
+use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\TestFailure;
+use PHPUnit\Framework\TestResult;
+use PHPUnit\Framework\TestSuite;
+use PHPUnit\Framework\Warning;
 use PHPUnit\TextUI\ResultPrinter;
 use PHPUnit\Util\Filter;
 use ReflectionClass;
@@ -42,7 +41,7 @@ class TeamCity extends ResultPrinter
     private $startedTestName;
 
     /**
-     * @var string
+     * @var int|false
      */
     private $flowId;
 
@@ -121,17 +120,17 @@ class TeamCity extends ResultPrinter
             if ($comparisonFailure instanceof ComparisonFailure) {
                 $expectedString = $comparisonFailure->getExpectedAsString();
 
-                if (\is_null($expectedString) || empty($expectedString)) {
+                if (null === $expectedString || empty($expectedString)) {
                     $expectedString = self::getPrimitiveValueAsString($comparisonFailure->getExpected());
                 }
 
                 $actualString = $comparisonFailure->getActualAsString();
 
-                if (\is_null($actualString) || empty($actualString)) {
+                if (null === $actualString || empty($actualString)) {
                     $actualString = self::getPrimitiveValueAsString($comparisonFailure->getActual());
                 }
 
-                if (!\is_null($actualString) && !\is_null($expectedString)) {
+                if (null !== $actualString && null !== $expectedString) {
                     $parameters['type']     = 'comparisonFailure';
                     $parameters['actual']   = $actualString;
                     $parameters['expected'] = $expectedString;
@@ -337,9 +336,9 @@ class TeamCity extends ResultPrinter
     {
         $message = '';
 
-        if (!$e instanceof Exception) {
-            if (\strlen(\get_class($e)) != 0) {
-                $message .= \get_class($e);
+        if ($e instanceof ExceptionWrapper) {
+            if (\strlen($e->getClassName()) != 0) {
+                $message .= $e->getClassName();
             }
 
             if (\strlen($message) != 0 && \strlen($e->getMessage()) != 0) {
@@ -380,7 +379,7 @@ class TeamCity extends ResultPrinter
      */
     private static function getPrimitiveValueAsString($value)
     {
-        if (\is_null($value)) {
+        if (null === $value) {
             return 'null';
         }
 
@@ -418,8 +417,7 @@ class TeamCity extends ResultPrinter
     private static function getFileName($className)
     {
         $reflectionClass = new ReflectionClass($className);
-        $fileName        = $reflectionClass->getFileName();
 
-        return $fileName;
+        return $reflectionClass->getFileName();
     }
 }
