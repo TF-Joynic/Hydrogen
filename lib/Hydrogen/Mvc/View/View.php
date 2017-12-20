@@ -4,7 +4,6 @@ namespace Hydrogen\Mvc\View;
 
 use Hydrogen\Http\Exception\InvalidArgumentException;
 use Hydrogen\Mvc\View\Exception\InvalidTemplateFileException;
-use Sushi\Renderer;
 
 class View
 {
